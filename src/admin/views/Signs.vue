@@ -7,17 +7,11 @@
     <p>Gestion des signes.</p>
 
     <div class="card">
-      <div class="flex justify-end">
+      <div class="flex justify-end mb-2">
         <Button label="Ajouter un signe" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="signs" tableStyle="min-width: 50rem">
         <Column field="name" header="Terme"></Column>
-        <Column header="Image">
-          <template #body="slotProps">
-            <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
-              :alt="slotProps.data.image" class="w-24 rounded" />
-          </template>
-        </Column>
         <Column field="category" header="Catégorie(s)">
           <template #body="slotProps">
             {{ categories(slotProps.data.expand.Category) }}
@@ -30,13 +24,15 @@
         </Column>
         <Column header="Configuration">
           <template #body="slotProps">
-            <Tag :value="slotProps.data.configuration" severity="success" />
+            {{ slotProps.data.expand.ConfigurationRight?.name }}
+            <span v-if="slotProps.data.expand.ConfigurationLeft"> / {{ slotProps.data.expand.ConfigurationLeft.name
+            }}</span>
           </template>
         </Column>
         <template #footer> Nombre total de signes: {{ signs ? signs.length : 0 }}. </template>
       </DataTable>
     </div>
-    <AddSignModal v-model="showAddModal" />
+    <SignFormModal v-model="showAddModal" @saved="loadSigns" />
   </div>
 </template>
 <script setup lang="ts">
@@ -45,9 +41,8 @@ import useSigns from '../composables/useSigns';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Rating from 'primevue/rating';
-import Tag from 'primevue/tag';
 import Button from 'primevue/button'
-import AddSignModal from '../components/SignAddModal.vue';
+import SignFormModal from '../components/SignFormModal.vue';
 
 const { signs, loadSigns } = useSigns();
 const showAddModal = ref(false);
@@ -58,7 +53,7 @@ const numericLevel = (level: string) => {
 };
 
 const categories = (category: any[]) => {
-  return category.map(c => c.tag).join('<br>')
+  return category.map(c => c.tag).join(', ')
 };
 
 const openAddModal = () => {
