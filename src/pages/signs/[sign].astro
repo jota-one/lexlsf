@@ -31,12 +31,13 @@ const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
   expand: 'Category,ConfigurationRight,ConfigurationLeft',
 })
 
+const hasConfiguration = record.expand?.ConfigurationRight && record.expand?.ConfigurationRight?.illustration
 const hasLeftConfiguration = record.expand?.ConfigurationLeft && record.expand?.ConfigurationLeft?.illustration
 
 const videoUrl =
   `${config.apiBaseUrl}/api/files/sign/${record.id}/${record.video}`
 
-const configurationUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${record.expand?.ConfigurationRight.id}/${record.expand?.ConfigurationRight.illustration}`
+const configurationUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${record.expand?.ConfigurationRight?.id}/${record.expand?.ConfigurationRight?.illustration}`
 const configurationLeftUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${record.expand?.ConfigurationLeft?.id}/${record.expand?.ConfigurationLeft?.illustration}`
 
 // extract categories with parent category
@@ -104,9 +105,8 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
         </div>
       </div>
       <div class="col-span-12 md:col-span-2">
-        <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" />
+        { hasConfiguration && <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" /> }
         { hasLeftConfiguration && <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" /> }
-        <h2 class="text-2xl mt-4">Configuration</h2>
         <p class="text-gray-600">
           {record.expand?.ConfigurationRight?.name}
           {hasLeftConfiguration && ` - ${record.expand?.ConfigurationLeft?.name}`}
@@ -114,7 +114,6 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
       </div>
       <div class="col-span-12 md:col-span-3">
         <img src={locationImg.src} alt="Placements" class="w-full h-auto rounded-lg shadow-md" />
-        <h2 class="text-2xl mt-4">Placement</h2>
         <p class="text-gray-600">
           {record.location_right}
         </p>  

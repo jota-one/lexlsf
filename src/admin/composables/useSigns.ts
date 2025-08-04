@@ -7,6 +7,10 @@ const translateNumericLevel = (level: number) => {
     return levels[level - 1] || '';
 }
 
+const getNumericLevel = (level: string) => {
+    return ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(level) + 1
+};
+
 const learningSourceOptions = [
     { label: 'Dictionnaire', value: 'dictionary' },
     { label: 'Enseignant', value: 'teacher' },
@@ -29,46 +33,78 @@ const verificationStatusOptions = [
     { label: 'Contesté', value: 'disputed' }
 ];
 
+const setFormData = (payload) => {
+    const formData = new FormData();
+    // set regular text field
+    if (payload.video && payload.video instanceof File) {
+        formData.append('video', payload.video);
+    }
+    formData.append('name', payload.name);
+    formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'));
+    formData.append('level', translateNumericLevel(payload.level));
+    payload.Category.forEach((cat) => {
+        formData.append('Category', cat);
+    })
+    formData.append('verification_status', payload.verification_status);
+    formData.append('ConfigurationRight', payload.ConfigurationRight);
+    formData.append('ConfigurationLeft', payload.ConfigurationLeft);
+    formData.append('location_right', payload.location_right);
+    formData.append('location_left', payload.location_left);
+    // formData.append('category', payload.category);
+    formData.append('learning_source', payload.learning_source);
+    formData.append('learning_source_detail', payload.learning_source_detail);
+    formData.append('primary_language', payload.primary_language);
+
+    return formData;
+}
+
 export default function useSigns() {
     const pb = new PocketBase(config.apiBaseUrl)
 
     const signs = ref([]);
     const loadSigns = async () => {
         signs.value = await pb.collection('sign').getFullList({
-            fields: 'id, name, video, slug, level, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
+            fields: 'id, name, video, slug, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
             expand: 'Category,ConfigurationRight,ConfigurationLeft',
-            sort: '-created',
+            sort: '-updated',
         })
     }
 
-    const addSign = async (payload) => {
-        const formData = new FormData();
+    const loadSign = async (id: string) => {
+        return pb.collection('sign').getOne(id, {
+            fields: '*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
+            expand: 'Category,ConfigurationRight,ConfigurationLeft'
+        });
+    }
 
-        // set regular text field
-        formData.append('video', payload.video);
-        formData.append('name', payload.name);
-        formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'));
-        formData.append('level', translateNumericLevel(payload.level));
-        formData.append('verification_status', payload.verification_status);
-        formData.append('ConfigurationRight', payload.ConfigurationRight);
-        formData.append('ConfigurationLeft', payload.ConfigurationLeft);
-        formData.append('location_right', payload.location_right);
-        formData.append('location_left', payload.location_left);
-        // formData.append('category', payload.category);
-        formData.append('learning_source', payload.learning_source);
-        formData.append('learning_source_detail', payload.learning_source_detail);
-        formData.append('primary_language', payload.primary_language);
+    const addSign = async (payload) => {
+        const formData = setFormData(payload);
 
         // upload and create new record
         return pb.collection('sign').create(formData);
     }
 
+    const updateSign = async (id: string, payload) => {
+        const formData = setFormData(payload);
+
+        // upload and update record
+        return pb.collection('sign').update(id, formData);
+    }
+
+    const deleteSign = async (id: string) => {
+        return pb.collection('sign').delete(id);
+    }
+
     return {
         signs,
         loadSigns,
+        loadSign,
         addSign,
+        getNumericLevel,
         learningSourceOptions,
         primaryLanguageOptions,
-        verificationStatusOptions
+        verificationStatusOptions,
+        deleteSign,
+        updateSign
     }
 }

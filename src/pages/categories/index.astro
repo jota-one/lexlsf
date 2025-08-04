@@ -1,21 +1,13 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
-import PocketBase from 'pocketbase'
 import image from '@images/teach.png'
 
-import config from '../../config'
+import useCategories from 'src/admin/composables/useCategories'
 
 export const prerender = false
 
-const pb = new PocketBase(config.apiBaseUrl)
-const categories = await pb.collection('category').getFullList({
-    fields: 'id, tag, slug, expand.category_via_Parent.*',
-    sort: 'tag',
-    filter: 'Parent = null',
-    expand: 'category_via_Parent',
-})
-
-console.log(categories)
+const { categories, loadCategories } = useCategories()
+await loadCategories()
 ---
 
 <PageLayout>
@@ -24,7 +16,7 @@ console.log(categories)
     <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 md:col-span-6">
             {
-                categories.map(cat => (
+                categories.value.map(cat => (
                     <h2 class="text-2xl mb-4 font-display text-primary">
                         {cat.tag}
                         <ul class="list bg-base-100 rounded-box shadow-md mt-2">
