@@ -38,10 +38,16 @@ export default function useCategories() {
         await loadCategories();
     };
 
+    const deleteCategory = async (id: string) => {
+        await pb.collection('category').delete(id);
+        await loadCategories();
+    };
+
     return {
         categories,
         loadingCategories,
         loadCategories,
-        saveCategory
+        saveCategory,
+        deleteCategory
     };
 }

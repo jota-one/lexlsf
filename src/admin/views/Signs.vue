@@ -4,8 +4,6 @@
       <span class="i-fa-solid-hands"></span>
       Signes
     </h2>
-    <p>Gestion des signes.</p>
-
     <div class="card">
       <div class="flex justify-end mb-2">
         <Button label="Ajouter un signe" icon="i-fa-solid-plus" size="small" @click="openAddModal" />

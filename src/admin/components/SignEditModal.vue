@@ -90,5 +90,5 @@ watch(visible, async (isVisible) => {
     (sign.expand?.Category || []).forEach(cat => {
         selectedCategories.value[cat.Parent] = cat.id;
     });
-})
+}, { immediate: true });
 </script>

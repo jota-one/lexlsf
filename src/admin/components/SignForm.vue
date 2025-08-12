@@ -20,7 +20,7 @@
                 <!-- Statut de vérification -->
                 <div class="flex items-center gap-4">
                     <label for="verification_status" class="font-semibold w-40">Statut</label>
-                    <Dropdown v-model="form.verification_status" :options="verificationStatusOptions"
+                    <Select v-model="form.verification_status" :options="verificationStatusOptions"
                         id="verification_status" class="w-full" placeholder="Sélectionner" optionLabel="label"
                         optionValue="value" required />
                 </div>
@@ -32,7 +32,7 @@
                 <!-- Source d'apprentissage -->
                 <div class="flex items-center gap-4">
                     <label for="learning_source" class="font-semibold w-40">Source d'apprentissage</label>
-                    <Dropdown v-model="form.learning_source" :options="learningSourceOptions" id="learning_source"
+                    <Select v-model="form.learning_source" :options="learningSourceOptions" id="learning_source"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
                 </div>
                 <div class="flex items-center gap-4">
@@ -44,7 +44,7 @@
                 <!-- Langue principale -->
                 <div class="flex items-center gap-4">
                     <label for="primary_language" class="font-semibold w-40">Langue principale</label>
-                    <Dropdown v-model="form.primary_language" :options="primaryLanguageOptions" id="primary_language"
+                    <Select v-model="form.primary_language" :options="primaryLanguageOptions" id="primary_language"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
                 </div>
             </TabPanel>
@@ -53,7 +53,7 @@
                     <template v-for="parent in parentCategories" :key="parent.id">
                         <div>
                             <span class="font-semibold">{{ parent.tag }}</span>
-                            <Dropdown v-model="selectedCategories[parent.id]"
+                            <Select v-model="selectedCategories[parent.id]"
                                 :options="[{ tag: 'Sélectionner une catégorie', id: null }, ...childCategoryOptions(parent)]"
                                 :placeholder="'Sélectionner une catégorie...'" optionLabel="tag" optionValue="id"
                                 class="w-full mt-1" :showClear="true"
@@ -66,35 +66,34 @@
                 <!-- Right hand configuration -->
                 <div class="flex items-center gap-4">
                     <label for="dominant_hand_config" class="font-semibold w-40">Config main droite</label>
-                    <Dropdown v-model="form.ConfigurationRight" :options="handConfigOptions" id="dominant_hand_config"
+                    <Select v-model="form.ConfigurationRight" :options="handConfigOptions" id="dominant_hand_config"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
                         :loading="loadingHandConfigurations" required />
                 </div>
                 <!-- Left hand configuration -->
                 <div class="flex items-center gap-4">
                     <label for="non_dominant_hand_config" class="font-semibold w-40">Config main gauche</label>
-                    <Dropdown v-model="form.ConfigurationLeft" :options="handConfigOptions"
-                        id="non_dominant_hand_config" class="w-full" placeholder="Sélectionner" optionLabel="label"
-                        optionValue="value" :loading="loadingHandConfigurations" />
+                    <Select v-model="form.ConfigurationLeft" :options="handConfigOptions" id="non_dominant_hand_config"
+                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
+                        :loading="loadingHandConfigurations" />
                 </div>
                 <!-- Right hand location -->
                 <div class="flex items-center gap-4">
                     <label for="dominant_hand_location" class="font-semibold w-40">Placement main droite</label>
-                    <Dropdown v-model="form.location_right" :options="handLocationOptions" id="dominant_hand_location"
+                    <Select v-model="form.location_right" :options="handLocationOptions" id="dominant_hand_location"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
                 </div>
                 <!-- Non-dominant hand location -->
                 <div class="flex items-center gap-4">
                     <label for="non_dominant_hand_location" class="font-semibold w-40">Placement main
                         gauche</label>
-                    <Dropdown v-model="form.location_left" :options="handLocationOptions"
-                        id="non_dominant_hand_location" class="w-full" placeholder="Sélectionner" optionLabel="label"
-                        optionValue="value" />
+                    <Select v-model="form.location_left" :options="handLocationOptions" id="non_dominant_hand_location"
+                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" />
                 </div>
                 <!-- Dominant hand movement -->
                 <div class="flex items-center gap-4">
                     <label for="dominant_hand_movement" class="font-semibold w-40">Mouvement main droite</label>
-                    <Dropdown v-model="form.dominant_hand_movement" :options="dominantHandMovementOptions"
+                    <Select v-model="form.dominant_hand_movement" :options="dominantHandMovementOptions"
                         id="dominant_hand_movement" class="w-full" placeholder="Sélectionner" optionLabel="label"
                         optionValue="value" :loading="loadingHandMovements" required />
                 </div>
@@ -102,14 +101,14 @@
                 <div class="flex items-center gap-4">
                     <label for="non_dominant_hand_movement" class="font-semibold w-40">Mouvement main
                         gauche</label>
-                    <Dropdown v-model="form.non_dominant_hand_movement" :options="nonDominantHandMovementOptions"
+                    <Select v-model="form.non_dominant_hand_movement" :options="nonDominantHandMovementOptions"
                         id="non_dominant_hand_movement" class="w-full" placeholder="Sélectionner" optionLabel="label"
                         optionValue="value" :loading="loadingHandMovements" />
                 </div>
                 <!-- Coordination des mains -->
                 <div class="flex items-center gap-4">
                     <label for="hand_coordination" class="font-semibold w-40">Coordination des mains</label>
-                    <Dropdown v-model="form.hand_coordination" :options="handCoordinationOptions" id="hand_coordination"
+                    <Select v-model="form.hand_coordination" :options="handCoordinationOptions" id="hand_coordination"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
                 </div>
             </TabPanel>
@@ -119,7 +118,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
