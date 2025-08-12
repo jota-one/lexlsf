@@ -10,18 +10,23 @@ export default function useHandConfigurations() {
     const loadHandConfigurations = async () => {
         loadingHandConfigurations.value = true;
         handConfigurations.value = await pb.collection('hand_configurations').getFullList({
-            fields: 'id,hand_type,name,illustration',
+            fields: 'id,name,illustration',
             sort: '-created'
         });
         loadingHandConfigurations.value = false;
     };
+
+    const loadHandConfiguration = async (id: string) => {
+        return pb.collection('hand_configurations').getOne(id, {
+            fields: 'id,name,illustration'
+        });
+    }
 
     const addHandConfiguration = async (payload) => {
         loadingHandConfigurations.value = true;
         const formData = new FormData();
 
         // set regular text field
-        formData.append('hand_type', payload.hand_type);
         formData.append('name', payload.name);
         formData.append('illustration', payload.illustration);
 
@@ -29,10 +34,31 @@ export default function useHandConfigurations() {
         return pb.collection('hand_configurations').create(formData);
     }
 
+    const updateHandConfiguration = async (id, payload) => {
+        loadingHandConfigurations.value = true;
+        const formData = new FormData();
+
+        // set regular text field
+        formData.append('name', payload.name);
+        if (payload.illustration) {
+            formData.append('illustration', payload.illustration);
+        }
+
+        // upload and update record
+        return pb.collection('hand_configurations').update(id, formData);
+    }
+
+    const deleteHandConfiguration = async (id: string) => {
+        return pb.collection('hand_configurations').delete(id);
+    };
+
     return {
         addHandConfiguration,
         handConfigurations,
+        loadHandConfiguration,
         loadingHandConfigurations,
-        loadHandConfigurations
+        loadHandConfigurations,
+        updateHandConfiguration,
+        deleteHandConfiguration
     };
 }
