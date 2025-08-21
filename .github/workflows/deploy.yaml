@@ -39,8 +39,24 @@ jobs:
           path: pb
 
   deploy:
-    uses: jota-one/infra/.github/workflows/deploy-app.yaml@feat/vps-deploy
-    with:
-      build-artifact-name: dist
-    secrets: inherit
-    needs: build
+    # uses: jota-one/infra/.github/workflows/deploy-app.yaml@feat/vps-deploy
+    # with:
+    #   build-artifact-name: dist
+    # secrets: inherit
+    # needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        uses: actions/create-github-app-token@v1.11.6
+        id: app-token
+        with:
+          app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
+          private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
+          owner: jota-one
+
+      - name: Run infra workflow
+        run: |
+          echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
+          gh auth setup-git
+          gh workflow run deploy-app.yml -R jota-one/infra -r feat/vps-deploy
