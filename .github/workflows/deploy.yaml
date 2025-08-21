@@ -39,7 +39,7 @@ jobs:
           path: pb
 
   deploy:
-    uses: jota-one/infra/gh/workflows/deploy-app.yaml@feat/vps-deploy
+    uses: jota-one/infra/.github/workflows/deploy-app.yaml@feat/vps-deploy
     with:
       build-artifact-name: dist
     needs: build
