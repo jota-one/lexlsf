@@ -2,9 +2,9 @@ name: Release App
 
 on:
   push:
-    branches:
-      - master
-      - main
+    # branches:
+    #   - master
+    #   - main
 
 jobs:
   build:
