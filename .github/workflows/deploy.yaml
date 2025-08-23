@@ -29,14 +29,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build app
-        run: pnpm build
+      # - name: Build app
+      #   run: pnpm build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: pb
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: dist
+      #     path: pb
 
   deploy:
     # uses: jota-one/infra/.github/workflows/deploy-app.yaml@feat/vps-deploy
