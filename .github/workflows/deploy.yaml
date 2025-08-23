@@ -48,25 +48,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      # - name: Generate GitHub App token
-      #   uses: actions/create-github-app-token@v1.11.6
-      #   id: app-token
-      #   with:
-      #     app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
-      #     private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
-      #     owner: jota-one
+      - name: Generate GitHub App token
+        uses: actions/create-github-app-token@v1.11.6
+        id: app-token
+        with:
+          app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
+          private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
+          owner: jota-one
 
       - name: Checkout repository from other organization
         uses: actions/checkout@v4.2.2
         with:
           repository: jota-one/infra
-          # token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Show cloned repository
         run: ls -la
 
-      # - name: Run infra workflow
-      #   run: |
-      #     echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
-      #     gh auth setup-git
-      #     gh workflow run deploy-app.yaml --repo jota-one/infra
+      - name: Run infra workflow
+        run: |
+          echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
+          gh workflow run deploy-app.yaml --repo jota-one/infra --ref feat/vps-deploy --field build-artifact-name=dist
