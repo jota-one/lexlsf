@@ -59,4 +59,5 @@ jobs:
       - name: Run infra workflow
         run: |
           echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
-          gh workflow run deploy-app.yaml --repo jota-one/infra --ref feat/vps-deploy
+          gh auth setup-git
+          gh workflow run deploy-app.yaml --repo jota-one/infra
