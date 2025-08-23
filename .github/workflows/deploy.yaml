@@ -59,7 +59,7 @@ jobs:
       - name: Checkout repository from other organization
         uses: actions/checkout@v4.2.2
         with:
-          repository: target-organization-name/repository-name
+          repository: jota-one/infra
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Show cloned repository
