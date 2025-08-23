@@ -14,20 +14,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
+      # - uses: pnpm/action-setup@v4
+      #   name: Install pnpm
+      #   with:
+      #     version: 10
+      #     run_install: false
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
+      # - name: Install Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20
+      #     cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      # - name: Install dependencies
+      #   run: pnpm install
 
       # - name: Build app
       #   run: pnpm build
@@ -56,8 +56,17 @@ jobs:
           private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
           owner: jota-one
 
-      - name: Run infra workflow
-        run: |
-          echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
-          gh auth setup-git
-          gh workflow run deploy-app.yaml --repo jota-one/infra
+      - name: Checkout repository from other organization
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: target-organization-name/repository-name
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Show cloned repository
+        run: ls -la
+
+      # - name: Run infra workflow
+      #   run: |
+      #     echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
+      #     gh auth setup-git
+      #     gh workflow run deploy-app.yaml --repo jota-one/infra
