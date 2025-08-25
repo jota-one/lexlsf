@@ -7,9 +7,29 @@ on:
     #   - main
 
 jobs:
+  # deploy-db:
+  #   name: Deploy Db
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Generate GitHub App token
+  #       uses: actions/create-github-app-token@v1.11.6
+  #       id: app-token
+  #       with:
+  #         app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
+  #         private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
+  #         owner: jota-one
+
+  #     - name: Deploy db on jota infra
+  #       run: |
+  #         echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
+  #         gh workflow run deploy-pb-db.yaml \
+  #           --repo jota-one/infra \
+  #           --ref feat/vps-deploy \
+  #           --field commit-sha=
   build:
     name: Build
     runs-on: ubuntu-latest
+    # needs: deploy-db
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,13 +58,8 @@ jobs:
       #     name: dist
       #     path: pb
 
-  deploy:
-    # uses: jota-one/infra/.github/workflows/deploy-app.yaml@feat/vps-deploy
-    # with:
-    #   build-artifact-name: dist
-    # secrets: inherit
-    # needs: build
-    name: Deploy
+  deploy-app:
+    name: Deploy App
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -56,16 +71,14 @@ jobs:
           private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
           owner: jota-one
 
-      - name: Checkout repository from other organization
-        uses: actions/checkout@v4.2.2
-        with:
-          repository: jota-one/infra
-          token: ${{ steps.app-token.outputs.token }}
-
-      - name: Show cloned repository
-        run: ls -la
-
       - name: Run infra workflow
         run: |
           echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
-          gh workflow run deploy-app.yaml --repo jota-one/infra --ref feat/vps-deploy --field build-artifact-name=dist
+          gh workflow run deploy-app.yaml \
+            --repo jota-one/infra \
+            --ref feat/vps-deploy \
+            --field build-artifact-name=dist
+
+      - name: Test
+        run: |
+          echo "yo"
