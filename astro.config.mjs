@@ -10,9 +10,9 @@ import node from '@astrojs/node';
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
-    ssr: {
-      noExternal: ['vue', 'pocketbase'],
-    },
+    // ssr: {
+    //   noExternal: ['vue', 'pocketbase'],
+    // },
   },
 
   integrations: [vue({ appEntrypoint: "/src/pages/_app" })],
