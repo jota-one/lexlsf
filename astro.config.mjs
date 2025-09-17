@@ -1,24 +1,28 @@
 // @ts-check
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'astro/config'
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
 
-import vue from '@astrojs/vue';
+import vue from "@astrojs/vue";
 
-import node from '@astrojs/node';
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
-    // ssr: {
-    //   noExternal: ['vue', 'pocketbase'],
-    // },
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          ssr: {
+            noExternal: ["vue", "pocketbase"],
+          },
+        }
+      : {}),
   },
 
   integrations: [vue({ appEntrypoint: "/src/pages/_app" })],
-  outDir: 'pb/pb_public',
+  outDir: "pb/pb_public",
 
   adapter: node({
-    mode: 'standalone',
-  })
-})
+    mode: "standalone",
+  }),
+});
