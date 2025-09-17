@@ -33,6 +33,7 @@ jobs:
             --field commit-sha=$commit_sha \
             --field pb-path=pb \
             --field run-external-id=$run_external_id
+          sleep 5
           echo "wf_name"
           echo $wf_name
           echo "gh run list"
