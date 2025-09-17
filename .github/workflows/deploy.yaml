@@ -33,7 +33,11 @@ jobs:
             --field commit-sha=$commit_sha \
             --field pb-path=pb \
             --field run-external-id=$run_external_id
+          echo "wf_name"
+          echo $wf_name
+          echo "gh run list"
           gh run list -R jota-one/infra -L 10 --json name,databaseId
+          echo "gh run list with jq"
           gh run list -R jota-one/infra -L 10 --json name,databaseId | jq --arg n "$wf_name" '.[] | select(.name == $n).databaseId'
   build:
     name: Build
