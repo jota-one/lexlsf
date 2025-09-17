@@ -34,7 +34,10 @@ jobs:
             --field pb-path=pb \
             --field run-external-id=$run_external_id
           sleep 5
-          run_id=$(gh run list -R jota-one/infra -L 10 --json name,databaseId | jq --arg n "$wf_name" '.[] | select(.name == $n).databaseId')
+          gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n).databaseId' > .wf_run
+          run_id=$(cat .wf_run | jq '.databaseId')
+          run_url=$(cat .wf_run | jq '.url')
+          echo "Watching workflow run $run_url"
           gh run watch $run_id --repo jota-one/infra --compact --exit-status 1
   build:
     name: Build
