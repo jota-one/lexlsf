@@ -25,7 +25,7 @@ jobs:
           gh workflow run deploy-pb-db.yaml \
             --repo jota-one/infra \
             --ref feat/vps-deploy \
-            --field repo=jota-one/infra \
+            --field repo=${{ github.repository }} \
             --field commit-sha=${{ github.sha }} \
             --field pb-path=pb \
             --field run-external-id=$(date +%s)
