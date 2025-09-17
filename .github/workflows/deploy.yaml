@@ -27,7 +27,7 @@ jobs:
             --ref feat/vps-deploy \
             --field repo=jota-one/infra \
             --field commit-sha={{ GITHUB_SHA }} \
-            --field pb_path=pb \
+            --field pb-path=pb \
             --field run-external-id=$(date +%s)
   build:
     name: Build
