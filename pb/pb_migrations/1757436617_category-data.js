@@ -1,0 +1,121 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate((app) => {
+  const category = app.findCollectionByNameOrId("pbc_1174553048")
+
+    let record = new Record(category)
+    record.set("tag", "Grammaire")
+    record.set("slug", "grammaire")
+    app.save(record)
+    
+    let subrecord = new Record(category)
+    subrecord.set("tag", "Verbe")
+    subrecord.set("slug", "verbe")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Nom commun")
+    subrecord.set("slug", "nom-commun")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Nom propre")
+    subrecord.set("slug", "nom-propre")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Adjectif")
+    subrecord.set("slug", "adjectif")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    record = new Record(category)
+    record.set("tag", "Région")
+    record.set("slug", "region")
+    app.save(record)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Suisse Romande")
+    subrecord.set("slug", "suisse-romande")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Lyon / Rhône-Alpes")
+    subrecord.set("slug", "lyon")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Lille / Paris")
+    subrecord.set("slug", "lille-paris")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Toulouse / Sud-Ouest")
+    subrecord.set("slug", "toulouse")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Marseille / Sud-Est")
+    subrecord.set("slug", "marseille")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    record = new Record(category)
+    record.set("tag", "Général")
+    record.set("slug", "general")
+    app.save(record)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Vie quotidienne")
+    subrecord.set("slug", "vie-quotidienne")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Nourriture")
+    subrecord.set("slug", "nourriture")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Transports")
+    subrecord.set("slug", "transports")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    record = new Record(category)
+    record.set("tag", "Nature/Environnement")
+    record.set("slug", "nature")
+    app.save(record)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Animaux")
+    subrecord.set("slug", "animaux")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Météo/Climat")
+    subrecord.set("slug", "meteo")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Plantes")
+    subrecord.set("slug", "plantes")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+
+    subrecord = new Record(category)
+    subrecord.set("tag", "Lieu géographique")
+    subrecord.set("slug", "lieu")
+    subrecord.set("Parent", record.id)
+    app.save(subrecord)
+}, (app) => {
+})
