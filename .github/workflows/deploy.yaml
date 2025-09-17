@@ -35,7 +35,7 @@ jobs:
             --field run-external-id=$run_external_id
           sleep 5
           run_id=$(gh run list -R jota-one/infra -L 10 --json name,databaseId | jq --arg n "$wf_name" '.[] | select(.name == $n).databaseId')
-          gh run watch $run_id --repo jota-one/infra
+          gh run watch $run_id --repo jota-one/infra --compact
   build:
     name: Build
     runs-on: ubuntu-latest
