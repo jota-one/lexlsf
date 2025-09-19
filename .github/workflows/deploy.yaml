@@ -7,7 +7,7 @@ on:
       - feat/vps-deploy
 
 env:
-  PB_PATH: pb
+  PB_PATH: pb_public
   ARTIFACT_NAME: dist
 
 
