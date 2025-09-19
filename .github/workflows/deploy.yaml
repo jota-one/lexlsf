@@ -2,9 +2,14 @@ name: Release App
 
 on:
   push:
-    # branches:
-    #   - master
-    #   - main
+    branches:
+      - master
+      - feat/vps-deploy
+
+env:
+  PB_PATH: pb
+  ARTIFACT_NAME: dist
+
 
 jobs:
   deploy-db:
@@ -31,7 +36,7 @@ jobs:
             --ref feat/vps-deploy \
             --field repo=$repo \
             --field commit-sha=$commit_sha \
-            --field pb-path=pb \
+            --field pb-path=${{ env.PB_PATH }} \
             --field run-external-id=$run_external_id
           sleep 5
           gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
@@ -39,6 +44,7 @@ jobs:
           run_url=$(cat .wf_run | jq '.url')
           echo "Watching workflow run $run_url"
           gh run watch $run_id --repo jota-one/infra --compact --exit-status 1
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -68,26 +74,34 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: pb
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.PB_PATH }}
 
-  # deploy-app:
-  #   name: Deploy App
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Generate GitHub App token
-  #       uses: actions/create-github-app-token@v1.11.6
-  #       id: app-token
-  #       with:
-  #         app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
-  #         private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
-  #         owner: jota-one
-
-  #     - name: Run infra workflow
-  #       run: |
-  #         echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
-  #         gh workflow run deploy-app.yaml \
-  #           --repo jota-one/infra \
-  #           --ref feat/vps-deploy \
-  #           --field build-artifact-name=dist
+  deploy-app:
+    name: Deploy App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy app on jota infra
+        run: |
+          echo "run id ${{ github.run_id }}"
+          echo "run number ${{ github.run_id }}"
+          echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
+          repo="${{ github.repository }}"
+          commit_sha="${{ github.sha }}"
+          run_external_id="$(date +%s)"
+          wf_name="pb-db $repo@$commit_sha/$run_external_id"
+          gh workflow run deploy-pb-app.yaml \
+            --repo jota-one/infra \
+            --ref feat/vps-deploy \
+            --field repo=$repo \
+            --field commit-sha=$commit_sha \
+            --field pb-path=${{ env.PB_PATH }} \
+            --field build-artifact-name=${{ env.ARTIFACT_NAME }} \
+            --field build-artifact-run-id=${{ github.run_id }} \
+            --field run-external-id=$run_external_id
+          sleep 5
+          gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
+          run_id=$(cat .wf_run | jq '.databaseId')
+          run_url=$(cat .wf_run | jq '.url')
+          echo "Watching workflow run $run_url"
+          gh run watch $run_id --repo jota-one/infra --compact --exit-status 1
