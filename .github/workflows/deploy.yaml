@@ -76,8 +76,8 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            pb/**
             pb
+            !**/*
 
   deploy-app:
     name: Deploy App
