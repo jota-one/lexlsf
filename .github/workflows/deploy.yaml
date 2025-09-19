@@ -53,6 +53,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cleanup pb
+        run: rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
+
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -92,8 +95,6 @@ jobs:
 
       - name: Deploy app on jota infra
         run: |
-          echo "run id ${{ github.run_id }}"
-          echo "run number ${{ github.run_id }}"
           echo ${{ steps.app-token.outputs.token }} | gh auth login --with-token
           repo="${{ github.repository }}"
           commit_sha="${{ github.sha }}"
