@@ -203,7 +203,7 @@ migrate((app) => {
     ],
     "id": "pbc_3094607438",
     "indexes": [],
-    "listRule": null,
+    "listRule": "",
     "name": "sign",
     "system": false,
     "type": "base",
