@@ -98,7 +98,7 @@ jobs:
           repo="${{ github.repository }}"
           commit_sha="${{ github.sha }}"
           run_external_id="$(date +%s)"
-          wf_name="pb-db $repo@$commit_sha/$run_external_id"
+          wf_name="pb-app $repo@$commit_sha/$run_external_id"
           gh workflow run deploy-pb-app.yaml \
             --repo jota-one/infra \
             --ref feat/vps-deploy \
