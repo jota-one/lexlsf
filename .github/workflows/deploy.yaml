@@ -72,7 +72,12 @@ jobs:
         run: pnpm build
 
       - name: Cleanup pb
-        run: touch ${{ env.PB_PATH }}/.keep && rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
+        run: |
+          touch ${{ env.PB_PATH }}/.keep
+          rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
+          ls -al
+          ls -al ${{ env.PB_PATH }}
+
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
