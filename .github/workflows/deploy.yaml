@@ -8,7 +8,6 @@ on:
 
 env:
   PB_PATH: pb
-  PB_PUBLIC_PATH: pb_public
   ARTIFACT_NAME: dist
 
 
@@ -73,7 +72,7 @@ jobs:
         run: pnpm build
 
       - name: Cleanup pb
-        run: rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
+        run: touch ${{ env.PB_PATH }}/.keep && rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -106,7 +105,7 @@ jobs:
             --ref feat/vps-deploy \
             --field repo=$repo \
             --field commit-sha=$commit_sha \
-            --field pb-path=${{ env.PB_PUBLIC_PATH }} \
+            --field pb-path=${{ env.PB_PATH }} \
             --field build-artifact-name=${{ env.ARTIFACT_NAME }} \
             --field build-artifact-run-id=${{ github.run_id }} \
             --field run-external-id=$run_external_id
