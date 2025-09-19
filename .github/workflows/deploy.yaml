@@ -71,19 +71,13 @@ jobs:
       - name: Build app
         run: pnpm build
 
-      - name: Cleanup pb
-        run: |
-          touch ${{ env.PB_PATH }}/.keep
-          rm -rf ${{ env.PB_PATH }}/pb_migrations ${{ env.PB_PATH }}/pb_hooks
-          ls -al
-          ls -al ${{ env.PB_PATH }}
-
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.PB_PATH }}
+          path: |
+            pb/**
+            pb
 
   deploy-app:
     name: Deploy App
