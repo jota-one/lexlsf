@@ -73,8 +73,7 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          mkdir -p _artifact/${{ env.PB_PATH }}
-          cp -r ${{ env.PB_PATH }}/pb_public _artifact/${{ env.PB_PATH }}
+          mkdir _artifact && cp -r ${{ env.PB_PATH }} _artifact
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
