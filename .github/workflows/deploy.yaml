@@ -80,6 +80,7 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: _artifact
+          include-hidden-files: true
 
   deploy-app:
     name: Deploy App
