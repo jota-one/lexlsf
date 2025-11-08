@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feat/vps-deploy
 
 env:
   PB_PATH: pb
@@ -33,7 +32,6 @@ jobs:
           wf_name="pb-db $repo@$commit_sha/$run_external_id"
           gh workflow run deploy-pb-db.yaml \
             --repo jota-one/infra \
-            --ref feat/vps-deploy \
             --field repo=$repo \
             --field commit-sha=$commit_sha \
             --field pb-path=${{ env.PB_PATH }} \
@@ -104,7 +102,6 @@ jobs:
           wf_name="pb-app $repo@$commit_sha/$run_external_id"
           gh workflow run deploy-pb-app.yaml \
             --repo jota-one/infra \
-            --ref feat/vps-deploy \
             --field repo=$repo \
             --field commit-sha=$commit_sha \
             --field pb-path=${{ env.PB_PATH }} \
