@@ -22,6 +22,14 @@ export default defineConfig({
   integrations: [vue({ appEntrypoint: "/src/pages/_app" })],
   outDir: "pb/pb_public",
 
+  ...(process.env.NODE_ENV === "production"
+    ? {
+        server: {
+          host: '127.0.0.1'
+        },
+      }
+    : {}),
+
   adapter: node({
     mode: "standalone",
   }),
