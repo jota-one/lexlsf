@@ -1,110 +1,110 @@
 import { ref } from "vue";
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import config from "../../config";
+import PocketBase from "pocketbase";
 
 const translateNumericLevel = (level: number) => {
-    const levels = ['a1', 'a2', 'b1', 'b2', 'c1'];
-    return levels[level - 1] || '';
-}
+  const levels = ["a1", "a2", "b1", "b2", "c1"];
+  return levels[level - 1] || "";
+};
 
 const getNumericLevel = (level: string) => {
-    return ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(level) + 1
+  return ["a1", "a2", "b1", "b2", "c1"].indexOf(level) + 1;
 };
 
 const learningSourceOptions = [
-    { label: 'Dictionnaire', value: 'dictionary' },
-    { label: 'Enseignant', value: 'teacher' },
-    { label: 'Communauté', value: 'community' },
-    { label: 'Famille', value: 'family' },
-    { label: 'Média', value: 'media' },
-    { label: 'Recherche', value: 'research' },
-    { label: 'Autre', value: 'other' }
+  { label: "Dictionnaire", value: "dictionary" },
+  { label: "Enseignant", value: "teacher" },
+  { label: "Communauté", value: "community" },
+  { label: "Famille", value: "family" },
+  { label: "Média", value: "media" },
+  { label: "Recherche", value: "research" },
+  { label: "Autre", value: "other" },
 ];
 const primaryLanguageOptions = [
-    { label: 'LSF', value: 'LSF' },
-    { label: 'LSR', value: 'LSR' },
-    { label: 'ASL', value: 'ASL' },
-    { label: 'Autre', value: 'other' }
+  { label: "LSF", value: "LSF" },
+  { label: "LSR", value: "LSR" },
+  { label: "ASL", value: "ASL" },
+  { label: "Autre", value: "other" },
 ];
 
 const verificationStatusOptions = [
-    { label: 'À vérifier', value: 'unverified' },
-    { label: 'Officiel', value: 'verified' },
-    { label: 'Contesté', value: 'disputed' }
+  { label: "À vérifier", value: "unverified" },
+  { label: "Officiel", value: "verified" },
+  { label: "Contesté", value: "disputed" },
 ];
 
-const setFormData = (payload) => {
-    const formData = new FormData();
-    // set regular text field
-    if (payload.video && payload.video instanceof File) {
-        formData.append('video', payload.video);
-    }
-    formData.append('name', payload.name);
-    formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'));
-    formData.append('level', translateNumericLevel(payload.level));
-    payload.Category.forEach((cat) => {
-        formData.append('Category', cat);
-    })
-    formData.append('verification_status', payload.verification_status);
-    formData.append('ConfigurationRight', payload.ConfigurationRight);
-    formData.append('ConfigurationLeft', payload.ConfigurationLeft);
-    formData.append('location_right', payload.location_right);
-    formData.append('location_left', payload.location_left);
-    // formData.append('category', payload.category);
-    formData.append('learning_source', payload.learning_source);
-    formData.append('learning_source_detail', payload.learning_source_detail);
-    formData.append('primary_language', payload.primary_language);
+const setFormData = (payload: any) => {
+  const formData = new FormData();
+  // set regular text field
+  if (payload.video && payload.video instanceof File) {
+    formData.append("video", payload.video);
+  }
+  formData.append("name", payload.name);
+  formData.append("slug", payload.name.toLowerCase().replace(/\s+/g, "-"));
+  formData.append("level", translateNumericLevel(payload.level));
+  payload.Category.forEach((cat: any) => {
+    formData.append("Category", cat);
+  });
+  formData.append("verification_status", payload.verification_status);
+  formData.append("ConfigurationRight", payload.ConfigurationRight);
+  formData.append("ConfigurationLeft", payload.ConfigurationLeft);
+  // formData.append('category', payload.category);
+  formData.append("learning_source", payload.learning_source);
+  formData.append("learning_source_detail", payload.learning_source_detail);
+  formData.append("primary_language", payload.primary_language);
 
-    return formData;
-}
+  return formData;
+};
 
 export default function useSigns() {
-    const pb = new PocketBase(config.apiBaseUrl)
+  const pb = new PocketBase(config.apiBaseUrl);
 
-    const signs = ref([]);
-    const loadSigns = async () => {
-        signs.value = await pb.collection('sign').getFullList({
-            fields: 'id, name, video, slug, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
-            expand: 'Category,ConfigurationRight,ConfigurationLeft',
-            sort: '-updated',
-        })
-    }
+  const signs = ref([]);
+  const loadSigns = async () => {
+    signs.value = await pb.collection("sign").getFullList({
+      fields:
+        "id, name, video, slug, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
+      expand: "Category,ConfigurationRight,ConfigurationLeft",
+      sort: "-updated",
+    });
+  };
 
-    const loadSign = async (id: string) => {
-        return pb.collection('sign').getOne(id, {
-            fields: '*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
-            expand: 'Category,ConfigurationRight,ConfigurationLeft'
-        });
-    }
+  const loadSign = async (id: string) => {
+    return pb.collection("sign").getOne(id, {
+      fields:
+        "*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
+      expand: "Category,ConfigurationRight,ConfigurationLeft",
+    });
+  };
 
-    const addSign = async (payload) => {
-        const formData = setFormData(payload);
+  const addSign = async (payload: any) => {
+    const formData = setFormData(payload);
 
-        // upload and create new record
-        return pb.collection('sign').create(formData);
-    }
+    // upload and create new record
+    return pb.collection("sign").create(formData);
+  };
 
-    const updateSign = async (id: string, payload) => {
-        const formData = setFormData(payload);
+  const updateSign = async (id: string, payload: any) => {
+    const formData = setFormData(payload);
 
-        // upload and update record
-        return pb.collection('sign').update(id, formData);
-    }
+    // upload and update record
+    return pb.collection("sign").update(id, formData);
+  };
 
-    const deleteSign = async (id: string) => {
-        return pb.collection('sign').delete(id);
-    }
+  const deleteSign = async (id: string) => {
+    return pb.collection("sign").delete(id);
+  };
 
-    return {
-        signs,
-        loadSigns,
-        loadSign,
-        addSign,
-        getNumericLevel,
-        learningSourceOptions,
-        primaryLanguageOptions,
-        verificationStatusOptions,
-        deleteSign,
-        updateSign
-    }
+  return {
+    signs,
+    loadSigns,
+    loadSign,
+    addSign,
+    getNumericLevel,
+    learningSourceOptions,
+    primaryLanguageOptions,
+    verificationStatusOptions,
+    deleteSign,
+    updateSign,
+  };
 }
