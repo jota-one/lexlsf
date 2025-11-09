@@ -7,13 +7,13 @@ export default function useHandConfigurations() {
   const handConfigurations = ref([]);
   const loadingHandConfigurations = ref(false);
 
-  const loadHandConfigurations = async () => {
+  const loadHandConfigurations = async (sort = "-created") => {
     loadingHandConfigurations.value = true;
     handConfigurations.value = await pb
       .collection("hand_configurations")
       .getFullList({
         fields: "id,name,illustration",
-        sort: "-created",
+        sort,
       });
     loadingHandConfigurations.value = false;
   };
@@ -54,8 +54,17 @@ export default function useHandConfigurations() {
     return pb.collection("hand_configurations").delete(id);
   };
 
+  const getIllustrationUrl = (filename: string, id: string) => {
+    // Remplacez ceci par la logique réelle pour générer l'URL de l'image
+    // Par exemple, si PocketBase: `/api/files/hand_configurations/${id}/${filename}`
+    return filename
+      ? `${config.apiBaseUrl}/api/files/hand_configurations/${id}/${filename}`
+      : "";
+  };
+
   return {
     addHandConfiguration,
+    getIllustrationUrl,
     handConfigurations,
     loadHandConfiguration,
     loadingHandConfigurations,

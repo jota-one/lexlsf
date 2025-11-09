@@ -4,6 +4,7 @@
             <Tab :value="0">Informations</Tab>
             <Tab :value="1">Catégories</Tab>
             <Tab :value="2">Configurations</Tab>
+            <Tab :value="3">Emplacements</Tab>
         </TabList>
         <TabPanels>
             <TabPanel :value="0" class="space-y-4">
@@ -68,48 +69,77 @@
                     <label for="dominant_hand_config" class="font-semibold w-40">Config main droite</label>
                     <Select v-model="form.ConfigurationRight" :options="handConfigOptions" id="dominant_hand_config"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
-                        :loading="loadingHandConfigurations" required />
+                        :loading="loadingHandConfigurations" required>
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center">
+                                <div class="flex items-center">
+                                    <img v-if="slotProps.value.illustration"
+                                        :src="getIllustrationUrl(slotProps.value.illustration, slotProps.value.id)"
+                                        alt="illustration" class="w-8 h-8 object-contain rounded mr-2" />
+                                    <span>{{ slotProps.value.name }}</span>
+                                </div>
+                            </div>
+                            <span v-else>
+                                {{ slotProps.placeholder }}
+                            </span>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <img v-if="slotProps.option.illustration"
+                                    :src="getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)"
+                                    alt="illustration" class="w-8 h-8 object-contain rounded mr-2" />
+                                <span>{{ slotProps.option.label }}</span>
+                            </div>
+                        </template>
+                    </Select>
                 </div>
                 <!-- Left hand configuration -->
                 <div class="flex items-center gap-4">
                     <label for="non_dominant_hand_config" class="font-semibold w-40">Config main gauche</label>
                     <Select v-model="form.ConfigurationLeft" :options="handConfigOptions" id="non_dominant_hand_config"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
-                        :loading="loadingHandConfigurations" />
+                        :loading="loadingHandConfigurations">
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center">
+                                <div class="flex items-center">
+                                    <img v-if="slotProps.value.illustration"
+                                        :src="getIllustrationUrl(slotProps.value.illustration, slotProps.value.id)"
+                                        alt="illustration" class="w-8 h-8 object-contain rounded mr-2" />
+                                    <span>{{ slotProps.value.name }}</span>
+                                </div>
+                            </div>
+                            <span v-else>
+                                {{ slotProps.placeholder }}
+                            </span>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <img v-if="slotProps.option.illustration"
+                                    :src="getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)"
+                                    alt="illustration" class="w-8 h-8 object-contain rounded mr-2" />
+                                <span>{{ slotProps.option.label }}</span>
+                            </div>
+                        </template>
+                    </Select>
                 </div>
-                <!-- Right hand location -->
-                <div class="flex items-center gap-4">
-                    <label for="dominant_hand_location" class="font-semibold w-40">Placement main droite</label>
-                    <Select v-model="form.location_right" :options="handLocationOptions" id="dominant_hand_location"
-                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
-                </div>
-                <!-- Non-dominant hand location -->
-                <div class="flex items-center gap-4">
-                    <label for="non_dominant_hand_location" class="font-semibold w-40">Placement main
-                        gauche</label>
-                    <Select v-model="form.location_left" :options="handLocationOptions" id="non_dominant_hand_location"
-                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" />
-                </div>
-                <!-- Dominant hand movement -->
-                <div class="flex items-center gap-4">
-                    <label for="dominant_hand_movement" class="font-semibold w-40">Mouvement main droite</label>
-                    <Select v-model="form.dominant_hand_movement" :options="dominantHandMovementOptions"
-                        id="dominant_hand_movement" class="w-full" placeholder="Sélectionner" optionLabel="label"
-                        optionValue="value" :loading="loadingHandMovements" required />
-                </div>
-                <!-- Non-dominant hand movement -->
-                <div class="flex items-center gap-4">
-                    <label for="non_dominant_hand_movement" class="font-semibold w-40">Mouvement main
-                        gauche</label>
-                    <Select v-model="form.non_dominant_hand_movement" :options="nonDominantHandMovementOptions"
-                        id="non_dominant_hand_movement" class="w-full" placeholder="Sélectionner" optionLabel="label"
-                        optionValue="value" :loading="loadingHandMovements" />
-                </div>
-                <!-- Coordination des mains -->
-                <div class="flex items-center gap-4">
-                    <label for="hand_coordination" class="font-semibold w-40">Coordination des mains</label>
-                    <Select v-model="form.hand_coordination" :options="handCoordinationOptions" id="hand_coordination"
-                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
+            </TabPanel>
+            <TabPanel :value="3" class="space-y-4">
+                <div class="flex flex-col items-center gap-4">
+                    <div>
+                        <label class="font-semibold">Quelle main?</label>
+                        <div class="flex gap-4 mt-2">
+                            <input type="radio" id="rightHand" value="rightHand" v-model="activeHand" />
+                            <label for="rightHand">Main droite</label>
+                            <input type="radio" id="leftHand" value="leftHand" v-model="activeHand" />
+                            <label for="leftHand">Main gauche</label>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <FaceZonesOverlay v-model="form.placement[activeHand]" interactive
+                            :color="colorConfig[activeHand]" />
+                        <BodyZonesOverlay v-model="form.placement[activeHand]" interactive
+                            :color="colorConfig[activeHand]" />
+                    </div>
                 </div>
             </TabPanel>
         </TabPanels>
@@ -126,39 +156,28 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
 import useHandConfigurations from '../composables/useHandConfigurations';
-import useHandLocations from '../composables/useHandLocations';
-import useHandMovements from '../composables/useHandMovements';
 import useSigns from '../composables/useSigns';
 import useCategories from '../composables/useCategories';
+import FaceZonesOverlay from './FaceZonesOverlay.vue';
+import BodyZonesOverlay from './BodyZonesOverlay.vue';
 
 const form = defineModel<any>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
 const activeTab = ref(0);
+const activeHand = ref<'rightHand' | 'leftHand'>('rightHand');
 
-// Static options
-const handCoordinationOptions = [
-    { label: 'Main droite', value: 'one_handed_dominant' },
-    { label: 'Main gauche', value: 'one_handed_non_dominant' },
-    { label: 'Deux mains synchrones', value: 'two_handed_synchronous' },
-    { label: 'Deux mains alternées', value: 'two_handed_alternating' },
-    { label: 'Deux mains séquentielles', value: 'two_handed_sequential' }
-];
+const colorConfig = {
+    rightHand: '#ff000088',
+    leftHand: '#00b3ff88'
+};
 
 // --- Use composables for relations ---
 const {
     handConfigurations,
     loadingHandConfigurations,
-    loadHandConfigurations
+    loadHandConfigurations,
+    getIllustrationUrl,
 } = useHandConfigurations();
-
-const {
-    handLocationOptions,
-} = useHandLocations();
-const {
-    handMovements,
-    loadingHandMovements,
-    loadHandMovements
-} = useHandMovements();
 
 const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns();
 
@@ -169,24 +188,8 @@ const handConfigOptions = computed(() =>
     handConfigurations.value
         .map((c: any) => ({
             label: c.name,
-            value: c.id
-        }))
-);
-
-const dominantHandMovementOptions = computed(() =>
-    handMovements.value
-        .filter((m: any) => m.hand_type === 'dominant')
-        .map((m: any) => ({
-            label: `${m.hand_type} - ${m.direction || '—'}`,
-            value: m.id
-        }))
-);
-const nonDominantHandMovementOptions = computed(() =>
-    handMovements.value
-        .filter((m: any) => m.hand_type === 'non_dominant')
-        .map((m: any) => ({
-            label: `${m.hand_type} - ${m.direction || '—'}`,
-            value: m.id
+            value: c,
+            illustration: c.illustration
         }))
 );
 
@@ -211,8 +214,7 @@ watch(categories, () => {
 
 onMounted(() => {
     loadCategories();
-    loadHandConfigurations();
-    loadHandMovements();
+    loadHandConfigurations('name');
 });
 
 const levelLabel = computed(() => {
