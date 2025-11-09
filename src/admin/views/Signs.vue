@@ -1,0 +1,108 @@
+<template>
+  <div class="p-8">
+    <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+      <span class="i-fa-solid-hands"></span>
+      Signes
+    </h2>
+    <div class="card">
+      <div class="flex justify-end mb-2">
+        <Button label="Ajouter un signe" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+      </div>
+      <DataTable :value="signs" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
+        <Column field="name" header="Terme" sortable></Column>
+        <Column field="category" header="Catégorie(s)">
+          <template #body="slotProps">
+            {{ categories(slotProps.data.expand?.Category) }}
+          </template>
+        </Column>
+        <Column field="level" header="Niveau">
+          <template #body="slotProps">
+            <Rating :modelValue="getNumericLevel(slotProps.data.level)" readonly />
+          </template>
+        </Column>
+        <!-- Dernière modif -->
+        <Column field="updated" header="Dernière modif" sortable>
+          <template #body="slotProps">
+            <span>{{ formatDate(slotProps.data.updated) }}</span>
+          </template>
+        </Column>
+        <Column header="Actions" style="width: 80px;">
+          <template #body="slotProps">
+            <div class="flex gap-2">
+              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editSign(slotProps.data)">
+                <span class="i-fa-solid-pen"></span>
+              </button>
+              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+                <span class="i-fa-solid-trash"></span>
+              </button>
+            </div>
+          </template>
+        </Column>
+        <template #footer> Nombre total de signes: {{ signs ? signs.length : 0 }}. </template>
+      </DataTable>
+    </div>
+    <SignAddModal v-model="showAddModal" @saved="loadSigns" />
+    <SignEditModal v-if="editedSign?.id" v-model="showEditModal" :sign-id="editedSign?.id" @saved="loadSigns" />
+    <ConfirmModal v-model="showDeleteModal" title="Supprimer le signe ?" :message="deleteMessage"
+      @confirm="deleteSignConfirmed" />
+  </div>
+</template>
+<script setup lang="ts">
+// filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/views/Signs.vue
+import { onMounted, ref } from 'vue';
+import useSigns from '../composables/useSigns';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Rating from 'primevue/rating';
+import Button from 'primevue/button'
+import SignAddModal from '../components/SignAddModal.vue';
+import SignEditModal from '../components/SignEditModal.vue';
+import ConfirmModal from '../components/ConfirmModal.vue';
+
+const { signs, loadSigns, deleteSign, getNumericLevel } = useSigns();
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+
+const showDeleteModal = ref(false);
+const signToDelete = ref<any>(null);
+const editedSign = ref<any>(null);
+const deleteMessage = ref('');
+
+const categories = (category: any[]) => {
+  return (category || []).map(c => c.tag).join(', ')
+};
+
+const openAddModal = () => {
+  showAddModal.value = true;
+};
+
+const editSign = (sign: any) => {
+  editedSign.value = sign;
+  showEditModal.value = true;
+};
+
+const confirmDelete = (sign: any) => {
+  signToDelete.value = sign;
+  deleteMessage.value = `Voulez-vous vraiment supprimer le signe "${sign.name}" ? Cette action est irréversible.`;
+  showDeleteModal.value = true;
+};
+
+const deleteSignConfirmed = async () => {
+  if (signToDelete.value) {
+    await deleteSign(signToDelete.value.id);
+    await loadSigns();
+    showDeleteModal.value = false;
+    signToDelete.value = null;
+  }
+};
+
+const formatDate = (date: string) => {
+  if (!date) return '';
+  const d = new Date(date);
+  return d.toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' }) +
+    ' ' +
+    d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+};
+
+onMounted(loadSigns)
+</script>

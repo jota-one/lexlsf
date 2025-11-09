@@ -1,11 +1,6 @@
 ---
-import Login from '@components/Login.vue';
 import '@fontsource-variable/oswald'
 import '@styles/global.css'
-const { navBg = 'bg-transparent' } = Astro.props;
-
-const navClasses =
-  'fixed top-0 left-0 w-full h-20 backdrop-blur-md shadow-lg flex justify-between p-5 items-center z-50 ' + navBg
 ---
 
 <!doctype html>
@@ -18,92 +13,7 @@ const navClasses =
     <title>Astro Basics</title>
   </head>
   <body>
-    <!-- Navbar -->
-    <nav
-      class={navClasses}
-    >
-      <div class="mr-5">
-        <h1 class="text-xl md:text-3xl text-white font-semibold">
-          <a href="/">Lexique LSF</a>
-        </h1>
-      </div>
-
-      <div class="hidden lg:flex gap-20 justify-between items-center">
-        <ul class="flex gap-8">
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Catégories</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer">
-            Contact
-          </li>
-        </ul>
-        <form class="flex items-center">
-          <input
-            type="text"
-            placeholder="Chercher un signe..."
-            class="shadow-lg py-1 h-10 border-r-0 px-5 border border-gray-300 rounded-l-lg text-white"
-          />
-          <button class="btn btn-primary px-3 py-1.5 rounded-r-lg rounded-l-none">
-            <i class="i-fa-solid-search"></i>
-          </button>
-        </form>
-      </div>
-      <div class="hidden lg:flex gap-5">
-        <Login client:load />
-        <button
-          class="border border-white text-white px-5 py-2 font-semibold rounded-lg cursor-pointer hover:opacity-80"
-          >SignUp</button
-        >
-      </div>
-    </nav>
-
     <slot />
-
-    <!-- Footer -->
-    <footer
-      class="footer footer-center sm:footer-horizontal p-8 bg-base-200 text-base-content border-t"
-    >
-      <nav>
-        <h2 class="footer-title">Lexique LSF</h2>
-        <a class="link link-hover">Accueil</a>
-        <a class="link link-hover">Catégories</a>
-        <a class="link link-hover">À propos</a>
-      </nav>
-      <nav>
-        <h2 class="footer-title">Ressources</h2>
-        <a class="link link-hover">Contact</a>
-        <a class="link link-hover">Mentions légales</a>
-      </nav>
-      <div>
-        <h2 class="footer-title">Suivez-nous</h2>
-        <div class="flex gap-2">
-          <a class="btn btn-ghost btn-circle btn-sm" href="#"
-            ><svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                d="M24 4.56v14.91A4.56 4.56 0 0 1 19.44 24H4.56A4.56 4.56 0 0 1 0 19.47V4.56A4.56 4.56 0 0 1 4.56 0h14.91A4.56 4.56 0 0 1 24 4.56ZM7.09 19.44h3.09v-6.18H7.09Zm1.54-7.09a1.54 1.54 0 1 1 0-3.09 1.54 1.54 0 0 1 0 3.09Zm8.82 7.09h3.09v-3.09c0-1.54-1.54-3.09-3.09-3.09s-3.09 1.54-3.09 3.09v3.09h3.09Zm1.54-7.09a1.54 1.54 0 1 1 0-3.09 1.54 1.54 0 0 1 0 3.09Z"
-              ></path></svg
-            ></a
-          >
-          <a class="btn btn-ghost btn-circle btn-sm" href="#"
-            ><svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-2.719 0-4.924 2.205-4.924 4.924 0 .386.045.763.127 1.124C7.691 8.095 4.066 6.13 1.64 3.161c-.423.722-.666 1.561-.666 2.475 0 1.708.87 3.216 2.188 4.099-.807-.026-1.566-.247-2.228-.616v.062c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.317 0-.626-.03-.928-.086.627 1.956 2.444 3.377 4.6 3.417-1.68 1.318-3.809 2.105-6.102 2.105-.396 0-.787-.023-1.175-.069 2.179 1.397 4.768 2.213 7.557 2.213 9.054 0 14.002-7.496 14.002-13.986 0-.21 0-.423-.016-.633.962-.689 1.797-1.56 2.457-2.548l-.047-.02z"
-              ></path></svg
-            ></a
-          >
-        </div>
-        <span class="text-xs mt-2 block"
-          >© 2025 Lexique LSF. Tous droits réservés.</span
-        >
-      </div>
-    </footer>
   </body>
 </html>
 

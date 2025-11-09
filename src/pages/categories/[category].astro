@@ -4,6 +4,8 @@ import PocketBase from 'pocketbase'
 
 import config from '../../config'
 
+export const prerender = false
+
 export async function getStaticPaths() {
   const pb = new PocketBase(config.apiBaseUrl)
   const signs = await pb.collection('category').getFullList()
@@ -30,14 +32,8 @@ console.log(record)
     <h1 class="text-5xl mb-8 font-display text-primary">{record.tag}</h1>
     <ul class="list bg-base-100 rounded-box shadow-md">
       {
-        record.expand?.sign_via_Category.map((sign: any) => (
+        (record.expand?.sign_via_Category || []).map((sign: any) => (
           <li class="list-row">
-            <div>
-              <img
-                class="size-10 rounded-box"
-                src="https://img.daisyui.com/images/profile/demo/1@94.webp"
-              />
-            </div>
             <div>
               <div>N. m.</div>
               <div class="text-xs uppercase font-semibold opacity-60">

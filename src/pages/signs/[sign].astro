@@ -1,8 +1,11 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
+import Rating from 'primevue/rating';
 
 import config from '../../config'
+import locationImg from '../../assets/location.jpg'
+import useSigns from 'src/admin/composables/useSigns';
 
 export async function getStaticPaths() {
   const pb = new PocketBase(config.apiBaseUrl)
@@ -15,39 +18,105 @@ export async function getStaticPaths() {
 const { sign } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
-const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, video, slug, expand.Category.*',
-  expand: 'Category',
+const mainCategories = await pb.collection('category').getFullList({
+  fields: 'id, tag, slug',
+  sort: 'tag',
+  filter: 'Parent = null',
 })
-console.log(record)
+
+const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns()
+
+const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
+  fields: 'id, name, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
+  expand: 'Category,ConfigurationRight,ConfigurationLeft',
+})
+
+const hasConfiguration = record.expand?.ConfigurationRight && record.expand?.ConfigurationRight?.illustration
+const hasLeftConfiguration = record.expand?.ConfigurationLeft && record.expand?.ConfigurationLeft?.illustration
+
 const videoUrl =
   `${config.apiBaseUrl}/api/files/sign/${record.id}/${record.video}`
+
+const configurationUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${record.expand?.ConfigurationRight?.id}/${record.expand?.ConfigurationRight?.illustration}`
+const configurationLeftUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${record.expand?.ConfigurationLeft?.id}/${record.expand?.ConfigurationLeft?.illustration}`
+
+// extract categories with parent category
+const categories = mainCategories.map(mainCat => {
+  return {
+    ...mainCat,
+    subcategories: record.expand?.Category.filter(cat => cat.Parent === mainCat.id) || [],
+  }
+}).filter(cat => cat.subcategories.length > 0)
+
+
+// Définition d'un level numérique
+const level = ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(record.level) + 1
+const verificationStatus =  verificationStatusOptions.find(option => option.value === record.verification_status)?.label || 'Non spécifié'
+const learningSource = learningSourceOptions.find(option => option.value === record.learning_source)?.label || 'Non spécifié'
 ---
 
 <PageLayout>
   <div>
     <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
     <div class="grid grid-cols-12 gap-4">
-      <div class="card card-md col-span-12 md:col-span-6 shadow-sm">
+      <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
         <div class="card-body">
           <video autoplay controls>
             <source src={videoUrl} type="video/mp4" />
           </video>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              { categories.map(cat => (
+                <div class="flex items-center gap-4">
+                  <h2 class="flex-1">{ cat.tag }</h2>
+                  <ul>
+                    {
+                      cat.subcategories.map((category: any) => (
+                        <li class="py-1">
+                          <div class="badge badge-outline badge-accent hover:badge-ghost">
+                            <a href={`/categories/${category.slug}`}>{category.tag}</a>
+                          </div>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div class="flex items-center gap-4 mb-3">
+                <h2 class="flex-1">Niveau</h2>
+                <Rating client:load modelValue={level} readonly /> ({record.level.toUpperCase()})
+              </div>
+              <div class="flex items-center gap-4">
+                <h2 class="flex-1">Statut du signe</h2>
+                <span class="badge badge-outline badge-accent hover:badge-ghost">
+                  {verificationStatus}
+                </span>
+              </div>
+              <div class="flex items-center gap-4 mt-3">
+                <h2 class="flex-1">Source d'apprentissage</h2>
+                <span class="badge badge-outline badge-accent hover:badge-ghost">
+                  {learningSource}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-span-12 md:col-span-6">
-        <h2>Catégorie</h2>
-        <ul>
-          {
-            record.expand?.Category.map((category: any) => (
-              <li class="py-1">
-                <div class="badge badge-outline badge-accent hover:badge-ghost">
-                  <a href={`/categories/${category.slug}`}>{category.tag}</a>
-                </div>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="col-span-12 md:col-span-2">
+        { hasConfiguration && <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" /> }
+        { hasLeftConfiguration && <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" /> }
+        <p class="text-gray-600">
+          {record.expand?.ConfigurationRight?.name}
+          {hasLeftConfiguration && ` - ${record.expand?.ConfigurationLeft?.name}`}
+        </p>  
+      </div>
+      <div class="col-span-12 md:col-span-3">
+        <img src={locationImg.src} alt="Placements" class="w-full h-auto rounded-lg shadow-md" />
+        <p class="text-gray-600">
+          {record.location_right}
+        </p>  
       </div>
     </div>
   </div>
