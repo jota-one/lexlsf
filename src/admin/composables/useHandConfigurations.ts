@@ -24,7 +24,7 @@ export default function useHandConfigurations() {
     });
   };
 
-  const addHandConfiguration = async (payload) => {
+  const addHandConfiguration = async (payload: any) => {
     loadingHandConfigurations.value = true;
     const formData = new FormData();
 
@@ -36,7 +36,7 @@ export default function useHandConfigurations() {
     return pb.collection("hand_configurations").create(formData);
   };
 
-  const updateHandConfiguration = async (id, payload) => {
+  const updateHandConfiguration = async (id: string, payload: any) => {
     loadingHandConfigurations.value = true;
     const formData = new FormData();
 

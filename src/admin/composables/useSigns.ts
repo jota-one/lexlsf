@@ -33,7 +33,7 @@ const verificationStatusOptions = [
   { label: "Contesté", value: "disputed" },
 ];
 
-const setFormData = (payload) => {
+const setFormData = (payload: any) => {
   const formData = new FormData();
   // set regular text field
   if (payload.video && payload.video instanceof File) {
@@ -42,7 +42,7 @@ const setFormData = (payload) => {
   formData.append("name", payload.name);
   formData.append("slug", payload.name.toLowerCase().replace(/\s+/g, "-"));
   formData.append("level", translateNumericLevel(payload.level));
-  payload.Category.forEach((cat) => {
+  payload.Category.forEach((cat: any) => {
     formData.append("Category", cat);
   });
   formData.append("verification_status", payload.verification_status);
@@ -77,14 +77,14 @@ export default function useSigns() {
     });
   };
 
-  const addSign = async (payload) => {
+  const addSign = async (payload: any) => {
     const formData = setFormData(payload);
 
     // upload and create new record
     return pb.collection("sign").create(formData);
   };
 
-  const updateSign = async (id: string, payload) => {
+  const updateSign = async (id: string, payload: any) => {
     const formData = setFormData(payload);
 
     // upload and update record

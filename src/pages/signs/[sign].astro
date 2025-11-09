@@ -6,6 +6,7 @@ import Rating from 'primevue/rating';
 import config from '../../config'
 import locationImg from '../../assets/location.jpg'
 import useSigns from 'src/admin/composables/useSigns';
+import type { TCategory } from 'src/types';
 
 export async function getStaticPaths() {
   const pb = new PocketBase(config.apiBaseUrl)
@@ -18,13 +19,13 @@ export async function getStaticPaths() {
 const { sign } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
-const mainCategories = await pb.collection('category').getFullList({
+const mainCategories = await pb.collection<TCategory.TRecord>('category').getFullList({
   fields: 'id, tag, slug',
   sort: 'tag',
   filter: 'Parent = null',
 })
 
-const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns()
+const { learningSourceOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
   fields: 'id, name, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
@@ -44,7 +45,7 @@ const configurationLeftUrl = `${config.apiBaseUrl}/api/files/hand_configurations
 const categories = mainCategories.map(mainCat => {
   return {
     ...mainCat,
-    subcategories: record.expand?.Category.filter(cat => cat.Parent === mainCat.id) || [],
+    subcategories: record.expand?.Category.filter((cat: TCategory.TRecord) => cat.Parent === mainCat.id) || [],
   }
 }).filter(cat => cat.subcategories.length > 0)
 
@@ -86,7 +87,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             <div>
               <div class="flex items-center gap-4 mb-3">
                 <h2 class="flex-1">Niveau</h2>
-                <Rating client:load modelValue={level} readonly /> ({record.level.toUpperCase()})
+                <Rating client:load v-model={level} /> ({record.level.toUpperCase()})
               </div>
               <div class="flex items-center gap-4">
                 <h2 class="flex-1">Statut du signe</h2>
