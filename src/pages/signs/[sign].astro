@@ -27,7 +27,7 @@ const mainCategories = await pb.collection('category').getFullList({
 const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, video, slug, level, location_right, location_left, learning_source, verification_status, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
+  fields: 'id, name, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
   expand: 'Category,ConfigurationRight,ConfigurationLeft',
 })
 
