@@ -34,16 +34,18 @@ const form = ref({
     name: '',
     level: 1,
     verification_status: 'verified',
-    ConfigurationRight: '',
-    ConfigurationLeft: '',
-    location_right: '',
-    location_left: '',
+    ConfigurationRight: {},
+    ConfigurationLeft: {},
     dominant_hand_movement: '',
     non_dominant_hand_movement: '',
     hand_coordination: '',
     learning_source: '',
     learning_source_detail: '',
     primary_language: 'LSF',
+    placement: {
+        rightHand: [] as string[],
+        leftHand: [] as string[]
+    }
 });
 
 const save = async () => {
@@ -52,7 +54,9 @@ const save = async () => {
     // Add to form payload
     const payload = {
         ...form.value,
-        Category: selectedCategoryIds
+        Category: selectedCategoryIds,
+        ConfigurationRight: form.value.ConfigurationRight.id || undefined,
+        ConfigurationLeft: form.value.ConfigurationLeft.id || undefined
     };
     await addSign(payload);
     emit('saved');
