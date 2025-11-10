@@ -13,7 +13,7 @@ migrate((app) => {
     "u.png","v.png","volley.png","x.png"
   ];
 
-  const dir = $filepath.join($os.getwd(), 'src', 'assets', 'img', 'configurations');
+  const dir = $filepath.join($os.getwd(), 'pb_assets', 'img', 'configurations');
 
   // use real files if present
   // if (fs.existsSync(dir)) {
