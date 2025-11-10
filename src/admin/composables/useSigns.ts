@@ -46,12 +46,16 @@ const setFormData = (payload: any) => {
     formData.append("Category", cat);
   });
   formData.append("verification_status", payload.verification_status);
-  formData.append("ConfigurationRight", payload.ConfigurationRight);
-  formData.append("ConfigurationLeft", payload.ConfigurationLeft);
-  // formData.append('category', payload.category);
+  if (payload.ConfigurationRight) {
+    formData.append("ConfigurationRight", payload.ConfigurationRight);
+  }
+  if (payload.ConfigurationLeft) {
+    formData.append("ConfigurationLeft", payload.ConfigurationLeft);
+  }
   formData.append("learning_source", payload.learning_source);
   formData.append("learning_source_detail", payload.learning_source_detail);
   formData.append("primary_language", payload.primary_language);
+  formData.append("placement", JSON.stringify(payload.placement));
 
   return formData;
 };
