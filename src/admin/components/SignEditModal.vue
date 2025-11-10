@@ -37,14 +37,18 @@ const form = ref({
     name: '',
     level: 1,
     verification_status: 'verified',
-    ConfigurationRight: '',
-    ConfigurationLeft: '',
+    ConfigurationRight: {},
+    ConfigurationLeft: {},
     dominant_hand_movement: '',
     non_dominant_hand_movement: '',
     hand_coordination: '',
     learning_source: '',
     learning_source_detail: '',
     primary_language: 'LSF',
+    placement: {
+        rightHand: [] as string[],
+        leftHand: [] as string[]
+    }
 });
 
 const save = async () => {
@@ -53,7 +57,9 @@ const save = async () => {
     // Add to form payload
     const payload = {
         ...form.value,
-        Category: selectedCategoryIds
+        Category: selectedCategoryIds,
+        ConfigurationRight: form.value.ConfigurationRight.id || undefined,
+        ConfigurationLeft: form.value.ConfigurationLeft.id || undefined
     };
     await updateSign(props.signId, payload);
     emit('saved');
@@ -66,6 +72,13 @@ watch(visible, async (isVisible) => {
     }
     const sign = await loadSign(props.signId);
     console.log('sign', sign);
+
+    let placement
+    try {
+        placement = JSON.parse(sign.placement);
+    } catch (e) {
+        placement = { rightHand: [], leftHand: [] };
+    }
 
     form.value = {
         Category: sign.Category || [],
@@ -80,6 +93,7 @@ watch(visible, async (isVisible) => {
         learning_source: sign.learning_source,
         learning_source_detail: sign.learning_source_detail,
         primary_language: sign.primary_language || 'LSF',
+        placement
     };
     // Initialize selected categories
     selectedCategories.value = {};

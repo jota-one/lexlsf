@@ -16,11 +16,6 @@ const emit = defineEmits(['update:activeZones', 'change']);
 
 const model = defineModel<string[]>({ required: true });
 
-/*
-  11 elliptical zones matching the gray areas in src/assets/img/places/body.png.
-  Coordinates use a 100x160 viewBox (the generic ImageZonesOverlay should scale).
-  Tweak values later if you want tighter fit.
-*/
 const zones = [
     { id: 'left_shoulder', label: 'Epaule G', cx: 29, cy: 11, rx: 7, ry: 5, rotate: -12 },
     { id: 'right_shoulder', label: 'Epaule D', cx: 62, cy: 11, rx: 6, ry: 5, rotate: 12 },

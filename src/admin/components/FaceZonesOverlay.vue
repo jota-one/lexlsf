@@ -1,11 +1,12 @@
 <template>
-    <ImageZonesOverlay image="../../assets/img/places/head.png" :zones="zones" :activeZones="model"
-        :interactive="interactive" :color="color" @update:activeZones="model = $event"
-        @change="$emit('change', $event)" />
+    <ImageZonesOverlay :image="headSrc" :zones="zones" :activeZones="model" :interactive="interactive" :color="color"
+        @update:activeZones="model = $event" @change="$emit('change', $event)" />
 </template>
 
 <script setup lang="ts">
 import ImageZonesOverlay from './ImageZonesOverlay.vue';
+
+const headSrc = new URL('../../assets/img/places/head.png', import.meta.url).href;
 
 
 const props = defineProps({
@@ -16,11 +17,6 @@ const emit = defineEmits(['update:activeZones', 'change']);
 
 const model = defineModel<string[]>({ required: true });
 
-/*
-  Elliptical zones calibrated for src/assets/img/places/head.png.
-  Coordinates are in the component viewBox (100x120).
-  Adjust numbers if you want tighter fit.
-*/
 const zones = [
     { id: 'left_brow_area', label: 'Tempe G', cx: 32, cy: 38, rx: 3, ry: 7, rotate: 0 },
     { id: 'right_brow_area', label: 'Tempe D', cx: 70, cy: 35, rx: 3, ry: 8, rotate: 0 },
