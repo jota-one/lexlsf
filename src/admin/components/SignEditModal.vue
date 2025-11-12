@@ -4,7 +4,7 @@
         <template #footer>
             <div class="flex justify-end gap-2 pt-4">
                 <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" @click="save"></Button>
+                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
             </div>
         </template>
     </Dialog>
@@ -28,6 +28,7 @@ const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
 
 const { updateSign, loadSign, getNumericLevel } = useSigns();
+const saving = ref(false)
 
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string | null }>({});
@@ -52,6 +53,7 @@ const form = ref({
 });
 
 const save = async () => {
+    saving.value = true;
     // Collect selected category ids (one per parent)
     const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
     // Add to form payload
@@ -64,6 +66,7 @@ const save = async () => {
     await updateSign(props.signId, payload);
     emit('saved');
     visible.value = false;
+    saving.value = false;
 };
 
 watch(visible, async (isVisible) => {

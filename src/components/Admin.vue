@@ -10,6 +10,7 @@ import router from '../admin/router';
 import Sidebar from '../admin/layouts/Sidebar.vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import ToastService from 'primevue/toastservice';
 
 onBeforeMount(() => {
   const app = getCurrentInstance()?.appContext.app as App
@@ -24,5 +25,6 @@ onBeforeMount(() => {
       preset: Aura
     }
   })
+  app.use(ToastService)
 })
 </script>

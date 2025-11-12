@@ -1,0 +1,85 @@
+import { useToast } from "primevue/usetoast";
+
+type PbErrorFieldDetail = {
+  code?: string;
+  message?: string;
+  params?: Record<string, any>;
+};
+
+/**
+ * Formats and shows PocketBase-style errors using PrimeVue toast.
+ * Example error shape:
+ * {
+ *   data: { video: { code, message, params }, ... },
+ *   message: 'Failed to create record.',
+ *   status: 400
+ * }
+ */
+export default function usePbErrorToast() {
+  const toast = useToast();
+
+  function showPbError(e: any) {
+    try {
+      if (!e) return;
+
+      const errObject = e.response;
+
+      // Try to locate the PocketBase error payload in common places
+      const fieldData = errObject.data as
+        | Record<string, PbErrorFieldDetail>
+        | undefined;
+
+      console.log(fieldData);
+
+      // Top-level message (fallback to stringified error)
+      const topMessage =
+        errObject?.message ||
+        (typeof e === "string" ? e : undefined) ||
+        "Erreur serveur";
+
+      const msg: string[] = [];
+      if (fieldData) {
+        // If field errors are arrays or nested objects, normalize them
+        Object.entries(fieldData).forEach(([field, errVal]) => {
+          let detail = "";
+          if (errVal.message) {
+            detail = errVal.message;
+            if (errVal.params?.file) detail += ` (${errVal.params.file})`;
+            if (errVal.code) detail += ` [${errVal.code}]`;
+          } else {
+            // fallback to JSON
+            try {
+              detail = JSON.stringify(errVal);
+            } catch {
+              detail = String(errVal);
+            }
+          }
+
+          msg.push(`${field}: ${detail}`);
+        });
+      }
+
+      // Use formatted message (field prefix)
+      toast.add({
+        severity: "error",
+        summary: "Erreur serveur",
+        detail: `${topMessage}\n\n${msg.join("\n")}`,
+        life: 8000,
+      });
+
+      // If no field data, ensure top-level message was shown (already added above)
+    } catch (err) {
+      // If toast fails, at least try to show a generic message
+      toast.add({
+        severity: "error",
+        summary: "Erreur",
+        detail: "Une erreur est survenue",
+        life: 6000,
+      });
+      // eslint-disable-next-line no-console
+      console.error("Failed to show Pb error toast", err, e);
+    }
+  }
+
+  return { showPbError };
+}
