@@ -1,10 +1,12 @@
 <template>
     <Dialog v-model:visible="visible" modal header="Ajouter un signe" class="w-[60%]">
         <SignForm v-model="form" v-model:categories="selectedCategories" />
+        <!-- Toast container for PocketBase errors -->
+        <PbErrorToast />
         <template #footer>
             <div class="flex justify-end gap-2 pt-4">
                 <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" @click="save"></Button>
+                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
             </div>
         </template>
     </Dialog>
@@ -15,6 +17,8 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import SignForm from './SignForm.vue';
 import useSigns from '../composables/useSigns';
+import PbErrorToast from './PbErrorToast.vue';
+import usePbErrorToast from '../composables/usePbErrorToast';
 
 type Events = {
     saved: []
@@ -24,6 +28,8 @@ const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
 
 const { addSign } = useSigns();
+const saving = ref(false)
+const { showPbError } = usePbErrorToast();
 
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string | null }>({});
@@ -49,17 +55,25 @@ const form = ref({
 });
 
 const save = async () => {
+    saving.value = true;
     // Collect selected category ids (one per parent)
     const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
     // Add to form payload
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
-        ConfigurationRight: form.value.ConfigurationRight.id || undefined,
-        ConfigurationLeft: form.value.ConfigurationLeft.id || undefined
+        ConfigurationRight: (form.value.ConfigurationRight as any)?.id || undefined,
+        ConfigurationLeft: (form.value.ConfigurationLeft as any)?.id || undefined
     };
-    await addSign(payload);
-    emit('saved');
-    visible.value = false;
+    try {
+        await addSign(payload);
+        emit('saved');
+        visible.value = false;
+    } catch (err) {
+        // show formatted PocketBase error(s)
+        showPbError(err);
+    } finally {
+        saving.value = false;
+    }
 };
 </script>
