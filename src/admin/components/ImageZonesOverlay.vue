@@ -1,13 +1,24 @@
 <template>
     <div class="face-zones-overlay" ref="container">
-        <img :src="faceSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
+        <img :src="imageSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
         <svg v-if="imageLoaded" class="overlay" :viewBox="`0 0 ${VIEW_W} ${VIEW_H}`" preserveAspectRatio="xMidYMid meet"
             @click.stop>
+            <defs>
+                <linearGradient id="hand-mix" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" :stop-color="props.colorLeft" />
+                    <stop offset="100%" :stop-color="props.colorRight" />
+                </linearGradient>
+            </defs>
             <g>
                 <template v-for="zone in zones" :key="zone.id">
                     <ellipse :cx="zone.cx" :cy="zone.cy" :rx="zone.rx" :ry="zone.ry" :transform="transformFor(zone)"
                         :fill="fillFor(zone.id)" :stroke="strokeFor(zone.id)" stroke-width="1.2"
-                        :style="{ cursor: interactive ? 'pointer' : 'default' }" @click.stop="toggleZone(zone.id)" />
+                        :style="{ cursor: interactive ? 'pointer' : 'default', opacity: zoneOpacity(zone.id) }"
+                        @click.stop="toggleZone(zone.id)" />
+                    <text v-if="isSelected(zone.id)" :x="zone.cx" :y="zone.cy" text-anchor="middle"
+                        alignment-baseline="central" font-size="7" font-weight="bold" fill="#fff" pointer-events="none">
+                        {{ selectionOrder(zone.id) }}
+                    </text>
                 </template>
             </g>
         </svg>
@@ -15,6 +26,20 @@
 </template>
 
 <script setup lang="ts">
+// Helper: is zone selected by at least one hand
+function isSelected(id: string) {
+    return activeLocalRight.value.includes(id) || activeLocalLeft.value.includes(id);
+}
+
+// Helper: get order string for zone (ex: "1", "2", "1/2")
+function selectionOrder(id: string) {
+    const rightIdx = activeLocalRight.value.indexOf(id);
+    const leftIdx = activeLocalLeft.value.indexOf(id);
+    const right = rightIdx !== -1 ? (rightIdx + 1).toString() : '';
+    const left = leftIdx !== -1 ? (leftIdx + 1).toString() : '';
+    if (right && left) return `${right}/${left}`;
+    return right || left;
+}
 import { computed, ref, watch } from 'vue';
 
 const VIEW_W = 100;
@@ -23,22 +48,37 @@ const VIEW_H = 120;
 type Props = {
     image: string;
     zones: Array<{ id: string; label: string; cx: number; cy: number; rx: number; ry: number; rotate: number }>;
-    activeZones: string[];
+    activeZonesRight: string[];
+    activeZonesLeft: string[];
     interactive: boolean;
-    color: string;
+    colorRight: string;
+    colorLeft: string;
+    activeHand: 'right' | 'left';
 }
 
+
 const props = defineProps<Props>();
-const emit = defineEmits(['update:activeZones', 'change']);
+const emit = defineEmits(['update:activeZonesRight', 'update:activeZonesLeft', 'change']);
 
 const container = ref<HTMLElement | null>(null);
 const imageLoaded = ref(false);
-const activeLocal = ref<string[]>([...props.activeZones]);
+const activeLocalRight = ref<string[]>(Array.isArray(props.activeZonesRight) ? [...props.activeZonesRight] : []);
+const activeLocalLeft = ref<string[]>(Array.isArray(props.activeZonesLeft) ? [...props.activeZonesLeft] : []);
 
-const faceSrc = computed(() => new URL(props.image, import.meta.url).href)
+const imageSrc = computed(() => {
+    if (props.image.startsWith('/')) {
+        // Chemin public (Astro/public)
+        return props.image;
+    }
+    // Asset local (SPA)
+    return new URL(props.image, import.meta.url).href;
+});
 
-watch(() => props.activeZones, (v) => {
-    activeLocal.value = [...(v || [])];
+watch(() => props.activeZonesRight, (v) => {
+    activeLocalRight.value = [...(v || [])];
+});
+watch(() => props.activeZonesLeft, (v) => {
+    activeLocalLeft.value = [...(v || [])];
 });
 
 function onImageLoad() { imageLoaded.value = true; }
@@ -49,30 +89,61 @@ function transformFor(zone: any) {
     return `rotate(${zone.rotate} ${zone.cx} ${zone.cy})`;
 }
 
+
 function fillFor(id: string) {
-    const idx = activeLocal.value.indexOf(id);
-    if (idx === -1) return 'transparent';
-    return props.color;
+    const right = activeLocalRight.value.includes(id);
+    const left = activeLocalLeft.value.includes(id);
+    if (right && left) {
+        // Use SVG gradient for both hands
+        return 'url(#hand-mix)';
+    } else if (right) {
+        return props.colorRight;
+    } else if (left) {
+        return props.colorLeft;
+    }
+    return 'transparent';
 }
 function strokeFor(id: string) {
-    const idx = activeLocal.value.indexOf(id);
-    if (idx === -1) return 'rgba(255,0,0,0.28)';
-    // use the single color prop for active stroke
-    return props.color;
+    const right = activeLocalRight.value.includes(id);
+    const left = activeLocalLeft.value.includes(id);
+    if (right && left) {
+        return 'url(#hand-mix)';
+    } else if (right) {
+        return props.colorRight;
+    } else if (left) {
+        return props.colorLeft;
+    }
+    return 'rgba(255,0,0,0.28)';
 }
+function zoneOpacity(id: string) {
+    const right = activeLocalRight.value.includes(id);
+    const left = activeLocalLeft.value.includes(id);
+    if (right && left) return 0.95;
+    if (right || left) return 0.85;
+    return 0.6;
+}
+
 
 function toggleZone(id: string) {
     if (!props.interactive) return;
-    const pos = activeLocal.value.indexOf(id);
-    if (pos !== -1) {
-        activeLocal.value.splice(pos, 1);
-    } else {
-        // allow unlimited selections — just add
-        activeLocal.value.push(id);
+    if (props.activeHand === 'right') {
+        const rightSelected = activeLocalRight.value.includes(id);
+        if (rightSelected) {
+            activeLocalRight.value = activeLocalRight.value.filter(z => z !== id);
+        } else {
+            activeLocalRight.value = [...activeLocalRight.value, id];
+        }
+        emit('update:activeZonesRight', activeLocalRight.value);
+    } else if (props.activeHand === 'left') {
+        const leftSelected = activeLocalLeft.value.includes(id);
+        if (leftSelected) {
+            activeLocalLeft.value = activeLocalLeft.value.filter(z => z !== id);
+        } else {
+            activeLocalLeft.value = [...activeLocalLeft.value, id];
+        }
+        emit('update:activeZonesLeft', activeLocalLeft.value);
     }
-    activeLocal.value = [...activeLocal.value];
-    emit('update:activeZones', activeLocal.value);
-    emit('change', activeLocal.value);
+    emit('change', { right: activeLocalRight.value, left: activeLocalLeft.value });
 }
 </script>
 

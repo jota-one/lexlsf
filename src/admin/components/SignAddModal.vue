@@ -19,6 +19,7 @@ import SignForm from './SignForm.vue';
 import useSigns from '../composables/useSigns';
 import PbErrorToast from './PbErrorToast.vue';
 import usePbErrorToast from '../composables/usePbErrorToast';
+import type { TSign } from '../../types';
 
 type Events = {
     saved: []
@@ -34,23 +35,21 @@ const { showPbError } = usePbErrorToast();
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string | null }>({});
 
-const form = ref({
-    video: null as File | null,
+const form = ref<TSign.TForm>({
+    video: null,
     Category: [],
     name: '',
+    definition: '',
     level: 1,
     verification_status: 'verified',
     ConfigurationRight: {},
     ConfigurationLeft: {},
-    dominant_hand_movement: '',
-    non_dominant_hand_movement: '',
-    hand_coordination: '',
     learning_source: '',
     learning_source_detail: '',
     primary_language: 'LSF',
     placement: {
-        rightHand: [] as string[],
-        leftHand: [] as string[]
+        right: [] as string[],
+        left: [] as string[]
     }
 });
 
@@ -62,8 +61,6 @@ const save = async () => {
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
-        ConfigurationRight: (form.value.ConfigurationRight as any)?.id || undefined,
-        ConfigurationLeft: (form.value.ConfigurationLeft as any)?.id || undefined
     };
     try {
         await addSign(payload);

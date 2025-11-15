@@ -1,20 +1,34 @@
 <template>
-    <ImageZonesOverlay :image="bodySrc" :zones="zones" :activeZones="model" :interactive="interactive" :color="color"
-        @update:activeZones="model = $event" @change="$emit('change', $event)" />
+    <ImageZonesOverlay :active-hand="activeHand" :image="bodySrc" :zones="zones" :activeZonesRight="rightZones"
+        :activeZonesLeft="leftZones" :interactive="interactive" :colorRight="colorConfig.right"
+        :colorLeft="colorConfig.left" @update:activeZonesRight="modelRightHand = $event"
+        @update:activeZonesLeft="modelLeftHand = $event"
+        @change="$emit('change', { right: rightZones, left: leftZones })" />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import type { Ui } from '../../types';
 import ImageZonesOverlay from './ImageZonesOverlay.vue';
 
-const bodySrc = new URL('../../assets/img/places/body.png', import.meta.url).href;
+type Props = {
+    activeHand: 'right' | 'left';
+    interactive: boolean;
+    colorConfig: Ui.ColorConfig;
+    right?: string[];
+    left?: string[];
+}
 
-const props = defineProps({
-    interactive: { type: Boolean, default: true },
-    color: { type: String, default: () => '#ff4d4d88' }
-});
-const emit = defineEmits(['update:activeZones', 'change']);
+const props = defineProps<Props>();
+const emit = defineEmits(['update:activeZonesRight', 'update:activeZonesLeft', 'change']);
 
-const model = defineModel<string[]>({ required: true });
+const modelRightHand = defineModel<string[]>('right');
+const modelLeftHand = defineModel<string[]>('left');
+
+const rightZones = computed(() => modelRightHand.value ?? props.right ?? []);
+const leftZones = computed(() => modelLeftHand.value ?? props.left ?? []);
+
+const bodySrc = '/img/places/body.png';
 
 const zones = [
     { id: 'left_shoulder', label: 'Epaule G', cx: 29, cy: 11, rx: 7, ry: 5, rotate: -12 },

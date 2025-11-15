@@ -18,6 +18,10 @@
                     <label for="name" class="font-semibold w-40">Terme</label>
                     <InputText v-model="form.name" id="name" class="w-full" required />
                 </div>
+                <div class="flex items-center gap-4">
+                    <label for="name" class="font-semibold w-40">Définition</label>
+                    <Textarea v-model="form.definition" class="w-full" rows="5" cols="30" />
+                </div>
                 <!-- Statut de vérification -->
                 <div class="flex items-center gap-4">
                     <label for="verification_status" class="font-semibold w-40">Statut</label>
@@ -128,17 +132,17 @@
                     <div>
                         <label class="font-semibold">Quelle main?</label>
                         <div class="flex gap-4 mt-2">
-                            <input type="radio" id="rightHand" value="rightHand" v-model="activeHand" />
+                            <input type="radio" id="rightHand" value="right" v-model="activeHand" />
                             <label for="rightHand">Main droite</label>
-                            <input type="radio" id="leftHand" value="leftHand" v-model="activeHand" />
+                            <input type="radio" id="leftHand" value="left" v-model="activeHand" />
                             <label for="leftHand">Main gauche</label>
                         </div>
                     </div>
                     <div class="flex">
-                        <FaceZonesOverlay v-model="form.placement[activeHand]" interactive
-                            :color="colorConfig[activeHand]" />
-                        <BodyZonesOverlay v-model="form.placement[activeHand]" interactive
-                            :color="colorConfig[activeHand]" />
+                        <FaceZonesOverlay :active-hand="activeHand" v-model:right="form.placement.right"
+                            v-model:left="form.placement.left" interactive :color-config="colorConfig" />
+                        <BodyZonesOverlay :active-hand="activeHand" v-model:right="form.placement.right"
+                            v-model:left="form.placement.left" interactive :color-config="colorConfig" />
                     </div>
                 </div>
             </TabPanel>
@@ -152,6 +156,7 @@ import Select from 'primevue/select';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
+import Textarea from 'primevue/textarea';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
@@ -160,15 +165,16 @@ import useSigns from '../composables/useSigns';
 import useCategories from '../composables/useCategories';
 import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
+import type { Ui } from '../../types';
 
 const form = defineModel<any>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
 const activeTab = ref(0);
-const activeHand = ref<'rightHand' | 'leftHand'>('rightHand');
+const activeHand = ref<'right' | 'left'>('right');
 
-const colorConfig = {
-    rightHand: '#ff000088',
-    leftHand: '#00b3ff88'
+const colorConfig: Ui.ColorConfig = {
+    right: '#ff000088',
+    left: '#00b3ff88'
 };
 
 // --- Use composables for relations ---

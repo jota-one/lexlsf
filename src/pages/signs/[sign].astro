@@ -5,7 +5,9 @@ import Rating from 'primevue/rating';
 
 import config from '../../config'
 import useSigns from 'src/admin/composables/useSigns';
+import FaceZonesOverlay from 'src/admin/components/FaceZonesOverlay.vue';
 import type { TCategory } from 'src/types';
+import BodyZonesOverlay from 'src/admin/components/BodyZonesOverlay.vue';
 
 export const prerender = false
 
@@ -29,16 +31,9 @@ const mainCategories = await pb.collection<TCategory.TRecord>('category').getFul
 const { learningSourceOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
+  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
   expand: 'Category,ConfigurationRight,ConfigurationLeft',
 })
-
-// let placement
-// try {
-//     placement = JSON.parse(record.placement);
-// } catch (e) {
-//     placement = { rightHand: [], leftHand: [] };    
-// }
 
 const hasConfiguration = record.expand?.ConfigurationRight && record.expand?.ConfigurationRight?.illustration
 const hasLeftConfiguration = record.expand?.ConfigurationLeft && record.expand?.ConfigurationLeft?.illustration
@@ -57,16 +52,25 @@ const categories = mainCategories.map(mainCat => {
   }
 }).filter(cat => cat.subcategories.length > 0)
 
+const colors = {
+  right: '#ff000088',
+    left: '#00b3ff88'
+}
+
 
 // Définition d'un level numérique
 const level = ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(record.level) + 1
 const verificationStatus =  verificationStatusOptions.find(option => option.value === record.verification_status)?.label || 'Non spécifié'
 const learningSource = learningSourceOptions.find(option => option.value === record.learning_source)?.label || 'Non spécifié'
+
 ---
 
 <PageLayout>
   <div>
     <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
+    <p>
+      {record.definition && <span class="italic">Déf. </span>}{record.definition}
+    </p>
     <div class="grid grid-cols-12 gap-4">
       <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
         <div class="card-body">
@@ -114,15 +118,37 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
         </div>
       </div>
       <div class="col-span-12 md:col-span-2">
-        { hasConfiguration && <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" /> }
-        { hasLeftConfiguration && <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" /> }
-        <p class="text-gray-600">
-          {record.expand?.ConfigurationRight?.name}
-          {hasLeftConfiguration && ` - ${record.expand?.ConfigurationLeft?.name}`}
-        </p>  
+        { hasConfiguration && <div class="mb-4">
+          <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" />
+          <div class="text-gray-600 text-center mt-2">
+            Main droite
+          </div>
+        </div> }
+        { hasLeftConfiguration && <div>
+          <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" />
+          <div class="text-gray-600 text-center mt-2">
+            Main gauche
+          </div>
+        </div> }
       </div>
       <div class="col-span-12 md:col-span-3">
-        <pre>{JSON.stringify(record.placement)}</pre>
+        <FaceZonesOverlay
+          client:only
+          right={record.placement.right}
+          left={record.placement.left}
+          colorConfig={colors}
+          activeHand="right"
+          interactive={false}
+        />
+        <div class="h-4"></div>
+        <BodyZonesOverlay
+          client:only
+          right={record.placement.right}
+          left={record.placement.left}
+          colorConfig={colors}
+          activeHand="right"
+          interactive={false}
+        />
       </div>
     </div>
   </div>
