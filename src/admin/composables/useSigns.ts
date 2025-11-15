@@ -48,11 +48,11 @@ const setFormData = (payload: TSign.TForm) => {
     formData.append("Category", cat);
   });
   formData.append("verification_status", payload.verification_status);
-  if (payload.ConfigurationRight) {
-    formData.append("ConfigurationRight", payload.ConfigurationRight);
+  if (payload.ConfigurationRight?.id) {
+    formData.append("ConfigurationRight", payload.ConfigurationRight.id);
   }
-  if (payload.ConfigurationLeft) {
-    formData.append("ConfigurationLeft", payload.ConfigurationLeft);
+  if (payload.ConfigurationLeft?.id) {
+    formData.append("ConfigurationLeft", payload.ConfigurationLeft.id);
   }
   formData.append("learning_source", payload.learning_source);
   formData.append("learning_source_detail", payload.learning_source_detail);

@@ -61,8 +61,6 @@ const save = async () => {
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
-        ConfigurationRight: (form.value.ConfigurationRight as any)?.id || undefined,
-        ConfigurationLeft: (form.value.ConfigurationLeft as any)?.id || undefined
     };
     try {
         await addSign(payload);

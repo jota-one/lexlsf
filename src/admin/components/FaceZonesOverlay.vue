@@ -1,12 +1,13 @@
 <template>
-    <ImageZonesOverlay :active-hand="activeHand" :image="headSrc" :zones="zones" :activeZonesRight="modelRightHand"
-        :activeZonesLeft="modelLeftHand" :interactive="interactive" :colorRight="colorConfig.right"
+    <ImageZonesOverlay :active-hand="activeHand" :image="headSrc" :zones="zones" :activeZonesRight="rightZones"
+        :activeZonesLeft="leftZones" :interactive="interactive" :colorRight="colorConfig.right"
         :colorLeft="colorConfig.left" @update:activeZonesRight="modelRightHand = $event"
         @update:activeZonesLeft="modelLeftHand = $event"
-        @change="$emit('change', { right: modelRightHand, left: modelLeftHand })" />
+        @change="$emit('change', { right: rightZones, left: leftZones })" />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { Ui } from '../../types';
 import ImageZonesOverlay from './ImageZonesOverlay.vue';
 
@@ -14,15 +15,21 @@ type Props = {
     activeHand: 'right' | 'left';
     interactive: boolean;
     colorConfig: Ui.ColorConfig;
+    right?: string[];
+    left?: string[];
 }
 
-const headSrc = new URL('../../assets/img/places/head.png', import.meta.url).href;
-
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits(['update:activeZonesRight', 'update:activeZonesLeft', 'change']);
 
-const modelRightHand = defineModel<string[]>('right', { required: true });
-const modelLeftHand = defineModel<string[]>('left', { required: true });
+const modelRightHand = defineModel<string[]>('right');
+const modelLeftHand = defineModel<string[]>('left');
+
+const rightZones = computed(() => modelRightHand.value ?? props.right ?? []);
+const leftZones = computed(() => modelLeftHand.value ?? props.left ?? []);
+
+// Utilise le chemin public pour compatibilité Astro et SPA
+const headSrc = '/img/places/head.png';
 
 const zones = [
     { id: 'left_brow_area', label: 'Tempe G', cx: 32, cy: 38, rx: 3, ry: 7, rotate: 0 },

@@ -59,8 +59,6 @@ const save = async () => {
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
-        ConfigurationRight: form.value.ConfigurationRight.id || undefined,
-        ConfigurationLeft: form.value.ConfigurationLeft.id || undefined
     };
     await updateSign(props.signId, payload);
     emit('saved');

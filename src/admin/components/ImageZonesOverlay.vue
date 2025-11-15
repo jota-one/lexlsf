@@ -1,6 +1,6 @@
 <template>
     <div class="face-zones-overlay" ref="container">
-        <img :src="faceSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
+        <img :src="imageSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
         <svg v-if="imageLoaded" class="overlay" :viewBox="`0 0 ${VIEW_W} ${VIEW_H}`" preserveAspectRatio="xMidYMid meet"
             @click.stop>
             <defs>
@@ -65,7 +65,14 @@ const imageLoaded = ref(false);
 const activeLocalRight = ref<string[]>(Array.isArray(props.activeZonesRight) ? [...props.activeZonesRight] : []);
 const activeLocalLeft = ref<string[]>(Array.isArray(props.activeZonesLeft) ? [...props.activeZonesLeft] : []);
 
-const faceSrc = computed(() => new URL(props.image, import.meta.url).href)
+const imageSrc = computed(() => {
+    if (props.image.startsWith('/')) {
+        // Chemin public (Astro/public)
+        return props.image;
+    }
+    // Asset local (SPA)
+    return new URL(props.image, import.meta.url).href;
+});
 
 watch(() => props.activeZonesRight, (v) => {
     activeLocalRight.value = [...(v || [])];
