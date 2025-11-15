@@ -11,6 +11,7 @@ import Sidebar from '../admin/layouts/Sidebar.vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 
 onBeforeMount(() => {
   const app = getCurrentInstance()?.appContext.app as App
@@ -26,5 +27,6 @@ onBeforeMount(() => {
     }
   })
   app.use(ToastService)
+  app.directive('tooltip', Tooltip);
 })
 </script>

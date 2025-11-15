@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import config from "../../config";
 import PocketBase from "pocketbase";
+import type { TSign } from "../../types";
 
 const translateNumericLevel = (level: number) => {
   const levels = ["a1", "a2", "b1", "b2", "c1"];
@@ -63,9 +64,9 @@ const setFormData = (payload: any) => {
 export default function useSigns() {
   const pb = new PocketBase(config.apiBaseUrl);
 
-  const signs = ref([]);
+  const signs = ref<TSign.TRecord[]>([]);
   const loadSigns = async () => {
-    signs.value = await pb.collection("sign").getFullList({
+    signs.value = await pb.collection<TSign.TRecord>("sign").getFullList({
       fields:
         "id, name, video, slug, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
       expand: "Category,ConfigurationRight,ConfigurationLeft",
@@ -74,7 +75,7 @@ export default function useSigns() {
   };
 
   const loadSign = async (id: string) => {
-    return pb.collection("sign").getOne(id, {
+    return pb.collection<TSign.TRecord>("sign").getOne(id, {
       fields:
         "*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
       expand: "Category,ConfigurationRight,ConfigurationLeft",

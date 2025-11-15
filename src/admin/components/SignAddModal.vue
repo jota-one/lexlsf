@@ -49,8 +49,8 @@ const form = ref({
     learning_source_detail: '',
     primary_language: 'LSF',
     placement: {
-        rightHand: [] as string[],
-        leftHand: [] as string[]
+        right: [] as string[],
+        left: [] as string[]
     }
 });
 

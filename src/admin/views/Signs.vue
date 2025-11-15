@@ -9,6 +9,15 @@
         <Button label="Ajouter un signe" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="signs" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
+        <Column style="width: 40px;" :header="''">
+          <template #body="slotProps">
+            <template v-if="getSignProblems(slotProps.data).length">
+              <button class="btn btn-xs btn-ghost" v-tooltip="getSignProblems(slotProps.data).join('\n')">
+                <span class="i-fa6-solid-triangle-exclamation text-warning text-lg cursor-pointer"></span>
+              </button>
+            </template>
+          </template>
+        </Column>
         <Column field="name" header="Terme" sortable></Column>
         <Column field="category" header="Catégorie(s)">
           <template #body="slotProps">
@@ -48,7 +57,6 @@
   </div>
 </template>
 <script setup lang="ts">
-// filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/views/Signs.vue
 import { onMounted, ref } from 'vue';
 import useSigns from '../composables/useSigns';
 import DataTable from 'primevue/datatable';
@@ -58,6 +66,18 @@ import Button from 'primevue/button'
 import SignAddModal from '../components/SignAddModal.vue';
 import SignEditModal from '../components/SignEditModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
+import type { TSign } from '../../types';
+
+// Retourne la liste des problèmes pour un signe
+function getSignProblems(sign: TSign.TRecord): string[] {
+  const problems: string[] = [];
+  // Absence de fichier vidéo
+  if (!sign.video) {
+    problems.push('Absence de fichier vidéo');
+  }
+  // Prévoir d’autres checks ici
+  return problems;
+}
 
 const { signs, loadSigns, deleteSign, getNumericLevel } = useSigns();
 const showAddModal = ref(false);

@@ -15,6 +15,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import SignForm from './SignForm.vue';
 import useSigns from '../composables/useSigns';
+import type { TSign } from '../../types';
 
 type Props = {
     signId: string
@@ -33,7 +34,7 @@ const saving = ref(false)
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string | null }>({});
 
-const form = ref({
+const form = ref<TSign.TForm>({
     Category: [],
     name: '',
     level: 1,
@@ -47,8 +48,8 @@ const form = ref({
     learning_source_detail: '',
     primary_language: 'LSF',
     placement: {
-        rightHand: [] as string[],
-        leftHand: [] as string[]
+        right: [] as string[],
+        left: [] as string[]
     }
 });
 
@@ -74,34 +75,26 @@ watch(visible, async (isVisible) => {
         return;
     }
     const sign = await loadSign(props.signId);
-    console.log('sign', sign);
-
-    let placement
-    try {
-        placement = JSON.parse(sign.placement);
-    } catch (e) {
-        placement = { rightHand: [], leftHand: [] };
-    }
 
     form.value = {
         Category: sign.Category || [],
         name: sign.name,
         level: getNumericLevel(sign.level),
         verification_status: sign.verification_status,
-        ConfigurationRight: sign.ConfigurationRight || '',
-        ConfigurationLeft: sign.ConfigurationLeft || '',
+        ConfigurationRight: sign.expand?.ConfigurationRight || {},
+        ConfigurationLeft: sign.expand?.ConfigurationLeft || {},
         dominant_hand_movement: sign.dominant_hand_movement,
         non_dominant_hand_movement: sign.non_dominant_hand_movement,
         hand_coordination: sign.hand_coordination,
         learning_source: sign.learning_source,
         learning_source_detail: sign.learning_source_detail,
         primary_language: sign.primary_language || 'LSF',
-        placement
+        placement: sign.placement
     };
     // Initialize selected categories
     selectedCategories.value = {};
     (sign.expand?.Category || []).forEach(cat => {
-        selectedCategories.value[cat.Parent] = cat.id;
+        selectedCategories.value[cat.Parent!] = cat.id;
     });
 }, { immediate: true });
 </script>
