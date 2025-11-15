@@ -225,5 +225,13 @@ const levelLabel = computed(() => {
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     form.value.video = target.files && target.files.length > 0 ? target.files[0] : null;
+
+    if (form.value.video) {
+        // use file name (without extension) as value for form.name if it's empty
+        if (!form.value.name) {
+            const fileName = form.value.video.name;
+            form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+        }
+    }
 };
 </script>
