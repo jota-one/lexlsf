@@ -18,6 +18,10 @@
                     <label for="name" class="font-semibold w-40">Terme</label>
                     <InputText v-model="form.name" id="name" class="w-full" required />
                 </div>
+                <div class="flex items-center gap-4">
+                    <label for="name" class="font-semibold w-40">Définition</label>
+                    <Textarea v-model="form.definition" class="w-full" rows="5" cols="30" />
+                </div>
                 <!-- Statut de vérification -->
                 <div class="flex items-center gap-4">
                     <label for="verification_status" class="font-semibold w-40">Statut</label>
@@ -152,6 +156,7 @@ import Select from 'primevue/select';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
+import Textarea from 'primevue/textarea';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';

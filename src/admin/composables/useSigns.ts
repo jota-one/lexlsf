@@ -34,16 +34,17 @@ const verificationStatusOptions = [
   { label: "Contesté", value: "disputed" },
 ];
 
-const setFormData = (payload: any) => {
+const setFormData = (payload: TSign.TForm) => {
   const formData = new FormData();
   // set regular text field
   if (payload.video && payload.video instanceof File) {
     formData.append("video", payload.video);
   }
   formData.append("name", payload.name);
+  formData.append("definition", payload.definition);
   formData.append("slug", payload.name.toLowerCase().replace(/\s+/g, "-"));
   formData.append("level", translateNumericLevel(payload.level));
-  payload.Category.forEach((cat: any) => {
+  (payload.Category || []).forEach((cat) => {
     formData.append("Category", cat);
   });
   formData.append("verification_status", payload.verification_status);
@@ -68,7 +69,7 @@ export default function useSigns() {
   const loadSigns = async () => {
     signs.value = await pb.collection<TSign.TRecord>("sign").getFullList({
       fields:
-        "id, name, video, slug, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
+        "id, name, video, slug, definition, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*",
       expand: "Category,ConfigurationRight,ConfigurationLeft",
       sort: "-updated",
     });
