@@ -25,9 +25,14 @@
                 <!-- Statut de vérification -->
                 <div class="flex items-center gap-4">
                     <label for="verification_status" class="font-semibold w-40">Statut</label>
-                    <Select v-model="form.verification_status" :options="verificationStatusOptions"
-                        id="verification_status" class="w-full" placeholder="Sélectionner" optionLabel="label"
-                        optionValue="value" required />
+                    <template v-for="(child, index) in verificationStatusOptions" :key="index">
+                        <input type="radio" v-model="form.verification_status" :id="`status-${index}`"
+                            :value="child.value" class="sr-only" />
+                        <label :for="`status-${index}`" class="badge badge-sm cursor-pointer"
+                            :class="form.verification_status === child.value ? 'badge-primary' : ''">
+                            {{ child.label }}
+                        </label>
+                    </template>
                 </div>
                 <!-- Niveau -->
                 <div class="flex items-center gap-4">
@@ -37,32 +42,50 @@
                 <!-- Source d'apprentissage -->
                 <div class="flex items-center gap-4">
                     <label for="learning_source" class="font-semibold w-40">Source d'apprentissage</label>
-                    <Select v-model="form.learning_source" :options="learningSourceOptions" id="learning_source"
-                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
+                    <template v-for="(child, index) in learningSourceOptions" :key="index">
+                        <input type="radio" v-model="form.learning_source" :id="`learn-${index}`" :value="child.value"
+                            class="sr-only" />
+                        <label :for="`learn-${index}`" class="badge badge-sm cursor-pointer"
+                            :class="form.learning_source === child.value ? 'badge-primary' : ''">
+                            {{ child.label }}
+                        </label>
+                    </template>
                 </div>
                 <div class="flex items-center gap-4">
-                    <label for="learning_source_detail" class="font-semibold w-40">Personne en
-                        particulier</label>
+                    <label for="learning_source_detail" class="font-semibold w-40">Précision</label>
                     <InputText v-model="form.learning_source_detail" id="learning_source_detail" class="w-full"
                         required />
                 </div>
                 <!-- Langue principale -->
                 <div class="flex items-center gap-4">
                     <label for="primary_language" class="font-semibold w-40">Langue principale</label>
-                    <Select v-model="form.primary_language" :options="primaryLanguageOptions" id="primary_language"
-                        class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value" required />
+                    <template v-for="(child, index) in primaryLanguageOptions" :key="index">
+                        <input type="radio" v-model="form.primary_language" :id="`lang-${index}`" :value="child.value"
+                            class="sr-only" />
+                        <label :for="`lang-${index}`" class="badge badge-sm cursor-pointer whitespace-nowrap"
+                            :class="form.primary_language === child.value ? 'badge-primary' : ''">
+                            {{ child.label }}
+                        </label>
+                    </template>
                 </div>
             </TabPanel>
             <TabPanel :value="1" class="space-y-4">
                 <div class="flex flex-col gap-4 w-full">
                     <template v-for="parent in parentCategories" :key="parent.id">
                         <div>
-                            <span class="font-semibold">{{ parent.tag }}</span>
-                            <Select v-model="selectedCategories[parent.id]"
-                                :options="[{ tag: 'Sélectionner une catégorie', id: null }, ...childCategoryOptions(parent)]"
-                                :placeholder="'Sélectionner une catégorie...'" optionLabel="tag" optionValue="id"
-                                class="w-full mt-1" :showClear="true"
-                                :disabled="childCategoryOptions(parent).length === 0" />
+                            <span class="font-semibold mb-2 block">{{ parent.tag }}</span>
+                            <div class="flex flex-wrap gap-2">
+                                <template v-for="child in childCategoryOptions(parent)" :key="child.id">
+                                    <input type="radio" v-model="selectedCategories[parent.id]"
+                                        :id="`cat-${parent.id}-${child.id}`" :name="`cat-group-${parent.id}`"
+                                        :value="child.id" class="sr-only" />
+                                    <label :for="`cat-${parent.id}-${child.id}`"
+                                        class="badge badge-sm mr-1 cursor-pointer"
+                                        :class="selectedCategories[parent.id] === child.id ? 'badge-primary' : ''">
+                                        {{ child.tag }}
+                                    </label>
+                                </template>
+                            </div>
                         </div>
                     </template>
                 </div>
@@ -160,6 +183,8 @@ import Textarea from 'primevue/textarea';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
+import RadioButtonGroup from 'primevue/radiobuttongroup';
+import RadioButton from 'primevue/radiobutton';
 import useHandConfigurations from '../composables/useHandConfigurations';
 import useSigns from '../composables/useSigns';
 import useCategories from '../composables/useCategories';

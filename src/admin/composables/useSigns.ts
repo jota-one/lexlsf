@@ -16,15 +16,16 @@ const learningSourceOptions = [
   { label: "Dictionnaire", value: "dictionary" },
   { label: "Enseignant", value: "teacher" },
   { label: "Communauté", value: "community" },
-  { label: "Famille", value: "family" },
   { label: "Média", value: "media" },
-  { label: "Recherche", value: "research" },
   { label: "Autre", value: "other" },
 ];
 const primaryLanguageOptions = [
   { label: "LSF", value: "LSF" },
   { label: "LSR", value: "LSR" },
   { label: "ASL", value: "ASL" },
+  { label: "LS Internationale", value: "LS Internationale" },
+  { label: "BSL", value: "BSL" },
+  { label: "ISL", value: "ISL" },
   { label: "Autre", value: "other" },
 ];
 
