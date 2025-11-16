@@ -30,7 +30,7 @@
                 <td>
                   <span v-if="cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length">
                     <span v-for="child in cat.expand.category_via_Parent" :key="child.id"
-                      class="badge badge-sm badge-outline mr-1">
+                      class="badge badge-sm badge-outline mr-1 mb-1">
                       <span class="cursor-pointer" tabindex="0" role="button" @click="togglePopover(child.id, $event)">
                         {{ child.tag }}
                       </span>
