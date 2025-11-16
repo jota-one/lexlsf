@@ -13,43 +13,28 @@ await loadCategories()
 <PageLayout>
   <div>
     <h1 class="text-5xl mb-8 font-display text-primary">Toutes les catégories</h1>
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12 md:col-span-6">
+    <div>
+        <div class="col-span-12 md:col-span-8 grid grid-cols-2 gap-4">
             {
-                categories.value.map(cat => (
-                    <h2 class="text-2xl mb-4 font-display text-primary">
-                        {cat.tag}
-                        <ul class="list bg-base-100 rounded-box shadow-md mt-2">
-                            {
-                                (cat.expand?.category_via_Parent || []).map((subcategory) => (
-                                <li class="list-row">
-                                    <div class="flex flex-col justify-center">
-                                        <div class="text-xs uppercase font-semibold opacity-60">
-                                            {subcategory.tag}
-                                        </div>
-                                    </div>
-                                    <a href={`/categories/${subcategory.slug}`} class="btn btn-square btn-ghost">
-                                    <i class="i-fa-solid-play-circle text-2xl"></i>
-                                    </a>
-                                </li>
-                                ))
-                            }
-                        </ul>
-                    </h2>
-                ))
+            categories.value.map(cat => (
+              <div class="card bg-base-300 shadow-sm cursor-pointer hover:shadow-md transition-shadow hover:bg-primary">
+                <div class="card-body items-center justify-center">
+                  <h2 class="card-title">{cat.tag}</h2>
+                </div>
+              </div>
+              <div class="grid gap-4">
+                {
+                    (cat.expand?.category_via_Parent || []).map((subcategory) => (
+                    <div class="card bg-base-300 shadow-sm cursor-pointer hover:shadow-md transition-shadow hover:bg-primary" onClick={`location.href='/categories/${subcategory.slug}'`}>
+                        <div class="card-body items-center justify-center">
+                            <h2 class="card-title">{subcategory.tag}</h2>
+                        </div>
+                    </div>
+                    ))
+                }
+                </div>
+              ))
             }
-        </div>
-        <div class="card card-md col-span-12 md:col-span-6 shadow-sm">
-            <div class="card-body">
-                <img
-                src={image.src}
-                alt="À propos de moi"
-                class="max-w-sm rounded-lg shadow-2xl"
-            />
-                <p>
-                    Explorez les différentes catégories de signes disponibles dans le lexique.
-                </p>
-            </div>
         </div>
     </div>
   </div>
