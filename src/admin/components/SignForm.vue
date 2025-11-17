@@ -4,7 +4,8 @@
             <Tab :value="0">Informations</Tab>
             <Tab :value="1">Catégories</Tab>
             <Tab :value="2">Configurations</Tab>
-            <Tab :value="3">Emplacements</Tab>
+            <Tab :value="3">Mouvements</Tab>
+            <Tab :value="4">Emplacements</Tab>
         </TabList>
         <TabPanels>
             <TabPanel :value="0" class="space-y-4">
@@ -96,7 +97,7 @@
                     <label for="dominant_hand_config" class="font-semibold w-40">Config main droite</label>
                     <Select v-model="form.ConfigurationRight" :options="handConfigOptions" id="dominant_hand_config"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
-                        :loading="loadingHandConfigurations" required>
+                        :loading="loadingHandConfigurations" required show-clear>
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center">
                                 <div class="flex items-center">
@@ -125,7 +126,7 @@
                     <label for="non_dominant_hand_config" class="font-semibold w-40">Config main gauche</label>
                     <Select v-model="form.ConfigurationLeft" :options="handConfigOptions" id="non_dominant_hand_config"
                         class="w-full" placeholder="Sélectionner" optionLabel="label" optionValue="value"
-                        :loading="loadingHandConfigurations">
+                        :loading="loadingHandConfigurations" show-clear>
                         <template #value="slotProps">
                             <div v-if="slotProps.value" class="flex items-center">
                                 <div class="flex items-center">
@@ -151,8 +152,18 @@
                 </div>
             </TabPanel>
             <TabPanel :value="3" class="space-y-4">
+                <div class="">
+                    <h3 class="text-xl mb-4 border-b">Main droite</h3>
+                    <HandMovementForm v-model="form" />
+                </div>
+                <div class="" v-if="form.ConfigurationLeft?.id">
+                    <h3 class="text-xl mb-4 border-b">Main gauche</h3>
+                    <HandMovementForm v-model="form" />
+                </div>
+            </TabPanel>
+            <TabPanel :value="4" class="space-y-4">
                 <div class="flex flex-col items-center gap-4">
-                    <div>
+                    <div v-if="form.ConfigurationLeft?.id">
                         <label class="font-semibold">Quelle main?</label>
                         <div class="flex gap-4 mt-2">
                             <input type="radio" id="rightHand" value="right" v-model="activeHand" />
@@ -183,14 +194,13 @@ import Textarea from 'primevue/textarea';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
-import RadioButtonGroup from 'primevue/radiobuttongroup';
-import RadioButton from 'primevue/radiobutton';
 import useHandConfigurations from '../composables/useHandConfigurations';
 import useSigns from '../composables/useSigns';
 import useCategories from '../composables/useCategories';
 import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
 import type { Ui } from '../../types';
+import HandMovementForm from './HandMovementForm.vue';
 
 const form = defineModel<any>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
@@ -242,6 +252,17 @@ watch(categories, () => {
         }
     });
 });
+
+watch(() => form.value.ConfigurationLeft?.id, (value) => {
+    console.log('config left changed!!', value);
+    console.log('placements', form.value.placement);
+
+
+    if (!value && activeHand.value !== 'right') {
+        activeHand.value = 'right'
+        form.value.placement.left = []
+    }
+})
 
 onMounted(() => {
     loadCategories();
