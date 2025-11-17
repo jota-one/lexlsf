@@ -8,8 +8,6 @@
 import { onBeforeMount, getCurrentInstance, type App } from 'vue';
 import router from '../admin/router';
 import Sidebar from '../admin/layouts/Sidebar.vue';
-import PrimeVue from 'primevue/config';
-import Aura from '@primevue/themes/aura';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
 
@@ -21,11 +19,6 @@ onBeforeMount(() => {
     }
   })
   app.use(router)
-  app.use(PrimeVue, {
-    theme: {
-      preset: Aura
-    }
-  })
   app.use(ToastService)
   app.directive('tooltip', Tooltip);
 })
