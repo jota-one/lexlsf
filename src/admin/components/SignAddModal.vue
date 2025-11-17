@@ -12,7 +12,7 @@
     </Dialog>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import SignForm from './SignForm.vue';
@@ -35,23 +35,7 @@ const { showPbError } = usePbErrorToast();
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string | null }>({});
 
-const form = ref<TSign.TForm>({
-    video: null,
-    Category: [],
-    name: '',
-    definition: '',
-    level: 1,
-    verification_status: 'verified',
-    ConfigurationRight: {},
-    ConfigurationLeft: {},
-    learning_source: '',
-    learning_source_detail: '',
-    primary_language: 'LSF',
-    placement: {
-        right: [] as string[],
-        left: [] as string[]
-    }
-});
+const form = ref<TSign.TForm>();
 
 const save = async () => {
     saving.value = true;
@@ -73,4 +57,28 @@ const save = async () => {
         saving.value = false;
     }
 };
+
+watch(visible, (newVal) => {
+    if (newVal) {
+        // Reset form when modal is opened
+        form.value = {
+            video: null,
+            Category: [],
+            name: '',
+            definition: '',
+            level: 1,
+            verification_status: 'verified',
+            ConfigurationRight: {},
+            ConfigurationLeft: {},
+            learning_source: '',
+            learning_source_detail: '',
+            primary_language: 'LSF',
+            placement: {
+                right: [] as string[],
+                left: [] as string[]
+            }
+        };
+        selectedCategories.value = {};
+    }
+}, { immediate: true });
 </script>
