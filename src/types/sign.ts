@@ -5,6 +5,20 @@ export type TPlacement = {
   left: string[];
 };
 
+export type TMovement = {
+  type?: string;
+  orientation?: string;
+  amplitude?: string;
+  speed?: string;
+  precision?: string;
+  repetitions?: string;
+};
+
+export type TMovements = {
+  right: TMovement;
+  left: TMovement;
+};
+
 export type TRecord = {
   id: string;
   name: string;
@@ -20,6 +34,7 @@ export type TRecord = {
   learning_source_detail: string;
   primary_language: string;
   placement: TPlacement;
+  movements: TMovements;
   expand: {
     Category?: TCategory.TRecord[];
     ConfigurationRight?: {
