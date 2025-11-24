@@ -48,7 +48,8 @@ const form = ref<TSign.TForm>({
     placement: {
         right: [] as string[],
         left: [] as string[]
-    }
+    },
+    movements: { right: {}, left: {} }
 });
 
 const save = async () => {
@@ -83,7 +84,8 @@ watch(visible, async (isVisible) => {
         learning_source: sign.learning_source,
         learning_source_detail: sign.learning_source_detail,
         primary_language: sign.primary_language || 'LSF',
-        placement: sign.placement
+        placement: sign.placement,
+        movements: sign.movements || { right: {}, left: {} },
     };
     // Initialize selected categories
     selectedCategories.value = {};

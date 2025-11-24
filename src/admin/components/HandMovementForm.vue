@@ -2,13 +2,17 @@
     <div class="space-y-4">
         <div class="flex items-center gap-4">
             <label for="orientation" class="font-semibold w-40">Orientation</label>
-            <Select v-model="form.orientation" :options="directionOptions" id="orientation" class="w-full"
-                placeholder="Sélectionner" optionLabel="label" optionValue="value" />
-        </div>
-        <div class="flex items-center gap-4">
-            <label for="direction" class="font-semibold w-40">Direction</label>
-            <Select v-model="form.direction" :options="directionOptions" id="direction" class="w-full"
-                placeholder="Sélectionner" optionLabel="label" optionValue="value" />
+            <template v-for="(child, index) in orientationOptions" :key="index">
+                <input type="radio" v-model="form.orientation" :id="`orientation-${uniqueId}-${index}`" :value="child.value"
+                    class="sr-only" />
+                <label :for="`orientation-${uniqueId}-${index}`" class="cursor-pointer flex flex-col items-center">
+                    <img :src="`/img/orientations/${child.value}.jpg`" :alt="child.label"
+                        class="w-12 h-12 object-contain mb-1"
+                        :class="form.orientation === child.value ? 'border-2 border-primary' : 'border border-base-300'"
+                        style="border-radius: 0.5rem;" />
+                    <span class="text-xs">{{ child.label }}</span>
+                </label>
+            </template>
         </div>
         <div class="flex items-center gap-4">
             <label for="amplitude" class="font-semibold w-40">Amplitude</label>
@@ -21,7 +25,7 @@
                 optionLabel="label" optionValue="value" />
         </div>
         <div class="flex items-center gap-4">
-            <label for="precision" class="font-semibold w-40">Précision</label>
+            <label for="precision" class="font-semibold w-40">Explications complémentaires</label>
             <Textarea v-model="form.precision" id="precision" class="w-full" required />
         </div>
         <div class="flex items-center gap-4">
@@ -34,16 +38,17 @@
 import Textarea from 'primevue/textarea';
 import InputNumber from 'primevue/inputnumber';
 import Select from 'primevue/select';
+import { getCurrentInstance } from 'vue';
 
 const form = defineModel<any>({ required: true });
 
-const directionOptions = [
-    { label: 'Horizontal', value: 'horizontal' },
-    { label: 'Vertical', value: 'vertical' },
-    { label: 'Circulaire', value: 'circular' },
-    { label: 'Zigzag', value: 'zigzag' },
-    { label: 'Arc', value: 'arc' },
-    { label: 'Diagonale', value: 'diagonal' }
+const instance = getCurrentInstance();
+const uniqueId = instance ? instance.uid : Math.random().toString(36).slice(2, 10);
+
+const orientationOptions = [
+    { label: 'Haut dos', value: 'top' },
+    { label: 'Haut 3/4', value: 'top-45deg' },
+    { label: 'Haut paume', value: 'top-front' },
 ];
 
 const amplitudeOptions = [

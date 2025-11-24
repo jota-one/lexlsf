@@ -154,11 +154,11 @@
             <TabPanel :value="3" class="space-y-4">
                 <div class="">
                     <h3 class="text-xl mb-4 border-b">Main droite</h3>
-                    <HandMovementForm v-model="form" />
+                    <HandMovementForm v-model="form.movements.right" key="mov-right" />
                 </div>
                 <div class="" v-if="form.ConfigurationLeft?.id">
                     <h3 class="text-xl mb-4 border-b">Main gauche</h3>
-                    <HandMovementForm v-model="form" />
+                    <HandMovementForm v-model="form.movements.left" key="mov-left" />
                 </div>
             </TabPanel>
             <TabPanel :value="4" class="space-y-4">
@@ -199,10 +199,10 @@ import useSigns from '../composables/useSigns';
 import useCategories from '../composables/useCategories';
 import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
-import type { Ui } from '../../types';
+import type { TSign, Ui } from '../../types';
 import HandMovementForm from './HandMovementForm.vue';
 
-const form = defineModel<any>({ required: true });
+const form = defineModel<TSign.TForm>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
 const activeTab = ref(0);
 const activeHand = ref<'right' | 'left'>('right');

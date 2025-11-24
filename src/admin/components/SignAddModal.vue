@@ -76,6 +76,10 @@ watch(visible, (newVal) => {
             placement: {
                 right: [] as string[],
                 left: [] as string[]
+            },
+            movements: {
+                right: {},
+                left: {}
             }
         };
         selectedCategories.value = {};
