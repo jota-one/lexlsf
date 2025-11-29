@@ -3,8 +3,8 @@
         <div class="flex items-center gap-4">
             <label for="orientation" class="font-semibold w-40">Orientation</label>
             <template v-for="(child, index) in orientationOptions" :key="index">
-                <input type="radio" v-model="form.orientation" :id="`orientation-${uniqueId}-${index}`" :value="child.value"
-                    class="sr-only" />
+                <input type="radio" v-model="form.orientation" :id="`orientation-${uniqueId}-${index}`"
+                    :value="child.value" class="sr-only" />
                 <label :for="`orientation-${uniqueId}-${index}`" class="cursor-pointer flex flex-col items-center">
                     <img :src="`/img/orientations/${child.value}.jpg`" :alt="child.label"
                         class="w-12 h-12 object-contain mb-1"

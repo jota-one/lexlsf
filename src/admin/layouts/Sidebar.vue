@@ -28,6 +28,12 @@
             Configurations
           </RouterLink>
         </li>
+        <li>
+          <RouterLink to="/persons" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa-solid-user-friends text-xl"></span>
+            Personnes
+          </RouterLink>
+        </li>
       </ul>
     </aside>
     <div class="drawer-content p-4">
