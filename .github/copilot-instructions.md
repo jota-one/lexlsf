@@ -35,6 +35,7 @@ This file collects the minimal, actionable knowledge an AI coding agent needs to
   `${config.apiBaseUrl}/api/files/<collection>/<id>/<filename>`
   ` (see `src/admin/views/HandConfigurations.vue`).
 - UI: PrimeVue components are used across `src/admin` (DataTable, Button, Dialog). Keep markup consistent with existing views.
+- Local UI style docs: consult `lexlsf/.vscode/daisyui.md` and `lexlsf/.vscode/primevue.md` first for daisyUI and PrimeVue conventions — these files are intentionally kept in the repository so agents can reference them across sessions.
 
 6) PocketBase / DB work
 - Migrations live in `pb/pb_migrations/` — review JS migration files to understand schema changes.

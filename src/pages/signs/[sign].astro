@@ -87,7 +87,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                       cat.subcategories.map((category: any) => (
                         <li class="py-1">
                           <div class="badge badge-outline badge-accent hover:badge-ghost">
-                            <a href={`/categories/${category.slug}`}>{category.tag}</a>
+                            <a href={`/categories/${cat.slug}/${category.slug}`}>{category.tag}</a>
                           </div>
                         </li>
                       ))

@@ -1,10 +1,13 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro'
 import Login from '@components/Login.vue'
+import Search from '@components/Search.vue';
+const isHome = Astro.url.pathname === '/';
 const { navBg = 'bg-transparent' } = Astro.props;
 
 const navClasses =
   'fixed top-0 left-0 w-full h-20 backdrop-blur-md shadow-lg flex justify-between p-5 items-center z-50 ' + navBg
+const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
 ---
 
 <BaseLayout>
@@ -12,30 +15,18 @@ const navClasses =
     <nav
       class={navClasses}
     >
-      <div class="mr-5">
+      <div class={logoContainerClasses}>
         <h1 class="text-xl md:text-3xl text-white font-semibold">
           <a href="/">Lexique LSF</a>
         </h1>
       </div>
-
-      <div class="hidden lg:flex gap-20 justify-between items-center">
+        {!isHome && <Search client:load />}
+      <div class="hidden lg:flex gap-20 justify-between items-center mr-5">
         <ul class="flex gap-8">
+          <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
+          <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
           <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Catégories</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer">
-            Contact
-          </li>
         </ul>
-        <form class="flex items-center">
-          <input
-            type="text"
-            placeholder="Chercher un signe..."
-            class="shadow-lg py-1 h-10 border-r-0 px-5 border border-gray-300 rounded-l-lg text-white"
-          />
-          <button class="btn btn-primary px-3 py-1.5 rounded-r-lg rounded-l-none">
-            <i class="i-fa-solid-search"></i>
-          </button>
-        </form>
       </div>
       <div class="hidden lg:flex gap-5">
         <Login client:load />
@@ -45,17 +36,19 @@ const navClasses =
         >
       </div>
     </nav>
-
-    <slot />
-
+    <div class="flex-1">
+      <slot />
+    </div>
     <!-- Footer -->
     <footer
-      class="footer sm:footer-horizontal p-8 bg-primary text-base-content border-t"
+      class="p-8 bg-primary border-t"
     >
+    <div class="footer container sm:footer-horizontal text-base-content m-auto">
       <nav>
         <h2 class="footer-title">Lexique LSF</h2>
         <a class="link link-hover" href="/">Accueil</a>
-        <a class="link link-hover" href="/categories">Catégories</a>
+        <a class="link link-hover" href="/categories">Lexique</a>
+        <a class="link link-hover" href="/culture">Culture</a>
         <a class="link link-hover" href="/about">À propos</a>
       </nav>
       <nav>
@@ -92,6 +85,7 @@ const navClasses =
         <span class="text-xs mt-2 block"
           >© 2025 Lexique LSF. Tous droits réservés.</span
         >
+      </div>
       </div>
     </footer>
 </BaseLayout>

@@ -35,9 +35,12 @@
                         {{ child.tag }}
                       </span>
                       <Popover :ref="setPopoverRef(child.id)" dismissable placement="bottom-start">
-                        <div class="p-2">
-                          <button class="btn btn-xs btn-error w-full" @click="confirmDeleteChild(child)">
-                            Supprimer
+                        <div class="p-2 flex gap-2">
+                          <button class="btn btn-xs btn-ghost" title="Modifier" @click="openEditModalChild(child)">
+                            <span class="i-fa-solid-pen"></span>
+                          </button>
+                          <button class="btn btn-xs btn-error" @click="confirmDeleteChild(child)">
+                            <span class="i-fa-solid-trash"></span>
                           </button>
                         </div>
                       </Popover>
@@ -64,7 +67,8 @@
         </table>
       </div>
     </div>
-    <CategoryFormModal v-model="showAddModal" :parent-id="selectedParentId" @saved="loadCategories" />
+    <CategoryFormModal v-model="showAddModal" :parent-id="selectedParentId" :category-to-edit="categoryToEdit"
+      @saved="loadCategories" />
     <ConfirmModal v-model="showDeleteModal" title="Supprimer la catégorie ?" :message="deleteMessage"
       @confirm="deleteCategoryConfirmed" />
   </div>
@@ -81,6 +85,7 @@ import Popover from 'primevue/popover';
 const { categories, loadingCategories, loadCategories, deleteCategory } = useCategories();
 const showAddModal = ref(false);
 const selectedParentId = ref<string | null>(null);
+const categoryToEdit = ref<any>(null);
 
 const popoverRefs = ref<{ [id: string]: any }>({});
 const showDeleteModal = ref(false);
@@ -97,12 +102,22 @@ function setPopoverRef(id: string) {
 
 const openAddModal = () => {
   selectedParentId.value = null;
+  categoryToEdit.value = null;
   showAddModal.value = true;
 };
 
 const openAddModalWithParent = (parentId: string) => {
   selectedParentId.value = parentId;
+  categoryToEdit.value = null;
   showAddModal.value = true;
+};
+
+const openEditModalChild = (category: any) => {
+  categoryToEdit.value = category;
+  selectedParentId.value = null;
+  showAddModal.value = true;
+  // Hide all popovers
+  Object.values(popoverRefs.value).forEach(refPopover => refPopover?.hide && refPopover.hide());
 };
 
 const togglePopover = (id: string, event: Event) => {
