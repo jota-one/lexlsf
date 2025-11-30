@@ -3,6 +3,8 @@ import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
 import config from '../../config'
 
+export const prerender = false
+
 export async function getStaticPaths() {
   const pb = new PocketBase(config.apiBaseUrl)
   const persons = await pb.collection('person').getFullList()
