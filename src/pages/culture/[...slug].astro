@@ -1,0 +1,15 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+
+import useCategories from 'src/admin/composables/useCategories'
+import CultureApp from '@components/culture/app.vue'
+
+export const prerender = false
+
+const { categories, loadCategories } = useCategories()
+await loadCategories('person')
+---
+
+<PageLayout>
+    <CultureApp categories={categories.value} client:only />
+</PageLayout>

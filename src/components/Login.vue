@@ -5,6 +5,6 @@
 
 <script setup lang="ts">
 const openLoginModal = () => {
-    console.log('Login button clicked');
+    window.location.href = '/admin';
 }
 </script>

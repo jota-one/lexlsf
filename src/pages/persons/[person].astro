@@ -1,0 +1,28 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PocketBase from 'pocketbase'
+import config from '../../config'
+
+export async function getStaticPaths() {
+  const pb = new PocketBase(config.apiBaseUrl)
+  const persons = await pb.collection('person').getFullList()
+  return persons.map(person => ({
+    params: { person: person.slug },
+  }))
+}
+
+const { person } = Astro.params
+
+const pb = new PocketBase(config.apiBaseUrl)
+const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
+  fields: 'id, name, illustration, slug, expand.Category.*',
+  expand: 'Category,Sign',
+})
+---
+<PageLayout>
+    <h1>{ record.name }</h1>
+    <picture>
+        <source srcset={`${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}?thumb=400x400`} media="(max-width: 600px)">
+        <img src={`${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}`} alt={record.name} />
+    </picture>
+</PageLayout>
