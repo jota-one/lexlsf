@@ -1,6 +1,6 @@
 <template>
     <Dialog v-model:visible="visible" modal header="Ajouter une personne" class="w-[60%]">
-        <PersonForm v-model="form" v-model:categories="selectedCategories" />
+        <PersonForm ref="personForm" v-model="form" v-model:categories="selectedCategories" />
         <!-- Toast container for PocketBase errors -->
         <PbErrorToast />
         <template #footer>
@@ -28,6 +28,7 @@ type Events = {
 const emit = defineEmits<Events>();
 
 const visible = defineModel<boolean>({ required: true });
+const personForm = ref<InstanceType<typeof PersonForm>>();
 
 const { addPerson } = usePersons();
 const saving = ref(false)
@@ -42,12 +43,17 @@ const form = ref<TPerson.TForm>({
     description: '',
     Sign: undefined,
     Category: [],
+    Videos: [],
 });
 
 const save = async () => {
     saving.value = true;
+
+    // Sync highlights order before saving
+    personForm.value?.syncListsBeforeSave();
+
     // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
+    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean) as string[];
     // Add to form payload
     const payload = {
         ...form.value,
@@ -74,6 +80,7 @@ watch(visible, (newVal) => {
             description: '',
             Sign: undefined,
             Category: [],
+            Videos: [],
         };
         selectedCategories.value = {};
     }

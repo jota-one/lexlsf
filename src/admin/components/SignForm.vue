@@ -29,7 +29,7 @@
                     <template v-for="(child, index) in verificationStatusOptions" :key="index">
                         <input type="radio" v-model="form.verification_status" :id="`status-${index}`"
                             :value="child.value" class="sr-only" />
-                        <label :for="`status-${index}`" class="badge badge-sm cursor-pointer"
+                        <label :for="`status-${index}`" class="badge badge-md cursor-pointer"
                             :class="form.verification_status === child.value ? 'badge-primary' : ''">
                             {{ child.label }}
                         </label>
@@ -46,7 +46,7 @@
                     <template v-for="(child, index) in learningSourceOptions" :key="index">
                         <input type="radio" v-model="form.learning_source" :id="`learn-${index}`" :value="child.value"
                             class="sr-only" />
-                        <label :for="`learn-${index}`" class="badge badge-sm cursor-pointer"
+                        <label :for="`learn-${index}`" class="badge badge-md cursor-pointer"
                             :class="form.learning_source === child.value ? 'badge-primary' : ''">
                             {{ child.label }}
                         </label>
@@ -63,7 +63,7 @@
                     <template v-for="(child, index) in primaryLanguageOptions" :key="index">
                         <input type="radio" v-model="form.primary_language" :id="`lang-${index}`" :value="child.value"
                             class="sr-only" />
-                        <label :for="`lang-${index}`" class="badge badge-sm cursor-pointer whitespace-nowrap"
+                        <label :for="`lang-${index}`" class="badge badge-md cursor-pointer whitespace-nowrap"
                             :class="form.primary_language === child.value ? 'badge-primary' : ''">
                             {{ child.label }}
                         </label>
@@ -73,19 +73,19 @@
             <TabPanel :value="1" class="space-y-4">
                 <div class="flex flex-col gap-4 w-full">
                     <template v-for="parent in parentCategories" :key="parent.id">
-                        <div>
-                            <span class="font-semibold mb-2 block">{{ parent.tag }}</span>
+                        <div class="flex items-center gap-4">
+                            <label class="font-semibold mb-2 w-50 break-words">{{ parent.tag }}</label>
                             <div class="flex flex-wrap gap-2">
-                                <template v-for="child in childCategoryOptions(parent)" :key="child.id">
+                                <div v-for="child in childCategoryOptions(parent)" :key="child.id">
                                     <input type="radio" v-model="selectedCategories[parent.id]"
                                         :id="`cat-${parent.id}-${child.id}`" :name="`cat-group-${parent.id}`"
                                         :value="child.id" class="sr-only" />
                                     <label :for="`cat-${parent.id}-${child.id}`"
-                                        class="badge badge-sm mr-1 cursor-pointer"
+                                        class="badge badge-md mr-1 cursor-pointer"
                                         :class="selectedCategories[parent.id] === child.id ? 'badge-primary' : ''">
                                         {{ child.tag }}
                                     </label>
-                                </template>
+                                </div>
                             </div>
                         </div>
                     </template>

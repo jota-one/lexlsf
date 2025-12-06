@@ -1,3 +1,9 @@
+export type TBioEntry = {
+  id?: string;
+  title: string;
+  description: string;
+};
+
 export type TRecord = {
   id: string;
   name: string;
@@ -6,6 +12,8 @@ export type TRecord = {
   description: string;
   Sign?: string;
   Category: string[];
+  Videos: string[];
+  highlights?: TBioEntry[];
   created: string;
   updated: string;
 };
@@ -18,4 +26,5 @@ export type TForm = Omit<
   illustration?: File | null;
   description?: string;
   Sign?: string;
+  highlights?: TBioEntry[];
 };

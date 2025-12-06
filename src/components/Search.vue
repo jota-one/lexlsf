@@ -3,9 +3,15 @@
         <AutoComplete v-model="selectedSign" :suggestions="suggestions" @complete="onSearch" @item-select="onSelect"
             option-label="name" class="flex-1" fluid :loading="loading" :size="mode === 'hero' ? 'large' : 'small'">
             <template #option="slotProps">
-                <div>
-                    <div class="font-medium">{{ slotProps.option.name }}</div>
-                    <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
+                <div class="flex items-start gap-2">
+                    <span class="badge badge-sm mt-1"
+                        :class="slotProps.option.type === 'sign' ? 'badge-primary' : 'badge-accent'">
+                        {{ slotProps.option.type === 'sign' ? 'Signe' : 'Culture' }}
+                    </span>
+                    <div class="flex-1">
+                        <div class="font-medium">{{ slotProps.option.name }}</div>
+                        <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
+                    </div>
                 </div>
             </template>
         </AutoComplete>
@@ -44,13 +50,28 @@ const onSearch = async (event: any) => {
     loading.value = true;
     try {
         const filter = `name~"${query}"`;
-        const res = await pb.collection('sign').getList(1, 10, {
+
+        // Recherche dans les signes
+        const signsPromise = pb.collection('sign').getList(1, 10, {
             filter,
             fields: 'id,name,definition,slug',
             sort: 'name',
         });
 
-        suggestions.value = res.items || [];
+        // Recherche dans les personnes (culture)
+        const culturePromise = pb.collection('person').getList(1, 10, {
+            filter,
+            fields: 'id,name,definition,slug',
+            sort: 'name',
+        });
+
+        const [signsRes, cultureRes] = await Promise.all([signsPromise, culturePromise]);
+
+        // Combiner les résultats avec un type
+        const signs = (signsRes.items || []).map((item: any) => ({ ...item, type: 'sign' }));
+        const culture = (cultureRes.items || []).map((item: any) => ({ ...item, type: 'culture' }));
+
+        suggestions.value = [...signs, ...culture].sort((a: any, b: any) => a.name.localeCompare(b.name));
     } catch (err) {
         console.error('Search error', err);
         suggestions.value = [];
@@ -62,7 +83,8 @@ const onSearch = async (event: any) => {
 const onSelect = (event: any) => {
     const selected = event.value;
     if (selected && selected.slug) {
-        window.location.href = `/signs/${selected.slug}`;
+        const basePath = selected.type === 'sign' ? '/signs' : '/persons';
+        window.location.href = `${basePath}/${selected.slug}`;
     }
 };
 </script>
