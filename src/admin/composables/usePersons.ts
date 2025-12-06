@@ -20,6 +20,9 @@ const setFormData = (payload: TPerson.TForm) => {
   (payload.Category || []).forEach((cat) => {
     formData.append("Category", cat);
   });
+  if (payload.highlights) {
+    formData.append("highlights", JSON.stringify(payload.highlights));
+  }
 
   return formData;
 };

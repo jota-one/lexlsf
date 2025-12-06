@@ -46,7 +46,7 @@ const form = ref<TPerson.TForm>({
 const save = async () => {
     saving.value = true;
     // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
+    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean) as string[];
     // Add to form payload
     const payload = {
         ...form.value,
@@ -70,6 +70,7 @@ watch(visible, async (isVisible) => {
         description: person.description || '',
         Sign: person.Sign || undefined,
         Category: person.Category || [],
+        highlights: person.highlights || [],
     };
     // Initialize selected categories
     selectedCategories.value = {};

@@ -17,14 +17,105 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  fields: 'id, name, illustration, slug, expand.Category.*',
-  expand: 'Category,Sign',
+  fields: 'id, name, illustration, slug, description, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*',
+  expand: 'Category,Category.Parent,Sign',
 })
+
+const imageUrl = record.illustration 
+  ? `${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}`
+  : null
+
+const imageThumbUrl = record.illustration
+  ? `${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}?thumb=600x600`
+  : null
+
+// Fonction pour construire l'URL complète d'une catégorie
+const getCategoryUrl = (cat: any) => {
+  if (cat.expand?.Parent) {
+    return `/culture/${cat.expand.Parent.slug}/${cat.slug}`
+  }
+  return `/culture/${cat.slug}`
+}
 ---
+
 <PageLayout>
-    <h1>{ record.name }</h1>
-    <picture>
-        <source srcset={`${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}?thumb=400x400`} media="(max-width: 600px)">
-        <img src={`${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}`} alt={record.name} />
-    </picture>
+  <div class="max-w-5xl mx-auto">
+    <!-- En-tête avec hero -->
+    <div class="hero bg-base-200 rounded-box mb-8">
+      <div class="hero-content flex-col lg:flex-row gap-8 py-12">
+        {imageUrl && (
+          <picture class="flex-shrink-0">
+            <source srcset={imageThumbUrl} media="(max-width: 600px)" />
+            <img 
+              src={imageUrl} 
+              alt={record.name}
+              class="max-w-sm w-full rounded-lg shadow-2xl object-cover aspect-square"
+            />
+          </picture>
+        )}
+        <div class="flex-1">
+          <h1 class="text-5xl font-bold mb-4">{record.name}</h1>
+          
+          {record.description && (
+            <p class="text-lg text-base-content/80 mb-6">
+              {record.description}
+            </p>
+          )}
+
+          {record.expand?.Category && record.expand.Category.length > 0 && (
+            <div class="flex flex-wrap gap-2 mb-4">
+              {record.expand.Category.map((cat: any) => (
+                <a href={getCategoryUrl(cat)} class="badge badge-primary badge-lg hover:badge-primary-focus transition-colors">
+                  {cat.tag}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {record.expand?.Sign && (
+            <div class="alert alert-info mt-4">
+              <span class="i-fa-solid-hand text-lg"></span>
+              <span>Signe associé : <a href={`/signs/${record.expand.Sign.slug}`} class="link link-hover font-bold">{record.expand.Sign.name}</a></span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Section biographie -->
+    {record.highlights && record.highlights.length > 0 && (
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-3xl mb-6">
+            <span class="i-fa-solid-timeline"></span>
+            Biographie
+          </h2>
+          
+          <div class="timeline timeline-vertical timeline-snap-icon">
+            {record.highlights.map((highlight: any, index: number) => (
+              <li>
+                <div class="timeline-middle">
+                  <span class="i-fa-solid-circle text-primary"></span>
+                </div>
+                <div class={`timeline-${index % 2 === 0 ? 'start' : 'end'} mb-10`}>
+                  <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
+                  <div class="text-lg font-black">{highlight.title}</div>
+                  <p class="mt-2 text-base-content/80">{highlight.description}</p>
+                </div>
+                <hr class="bg-primary" />
+              </li>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Bouton retour -->
+    <div class="mt-8 flex justify-center">
+      <a href="/culture" class="btn btn-neutral">
+        <span class="i-fa-solid-arrow-left"></span>
+        Retour à la liste
+      </a>
+    </div>
+  </div>
 </PageLayout>

@@ -3,6 +3,7 @@
         <TabList>
             <Tab :value="0">Informations</Tab>
             <Tab :value="1">Catégories</Tab>
+            <Tab :value="2">Bio</Tab>
         </TabList>
         <TabPanels>
             <TabPanel :value="0" class="space-y-4">
@@ -54,6 +55,85 @@
                     </template>
                 </div>
             </TabPanel>
+
+            <TabPanel :value="2" class="space-y-4">
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-lg">Entrées biographiques</h3>
+                    </div>
+                    <div v-if="form.highlights && form.highlights.length === 0"
+                        class="text-center text-base-content/50 py-8">
+                        Aucune entrée biographique. Cliquez sur "Ajouter une entrée" pour commencer.
+                    </div>
+
+                    <div v-for="(entry, index) in form.highlights" :key="index" class="card card-border">
+
+                        <!-- Mode édition -->
+                        <div v-if="editingBioIndex === index" class="space-y-3">
+                            <div class="flex justify-between items-start gap-4">
+                                <div class="flex-1 space-y-3">
+                                    <!-- Titre -->
+                                    <div>
+                                        <label :for="`bio-title-${index}`" class="label text-sm font-semibold">
+                                            Titre
+                                        </label>
+                                        <InputText v-model="entry.title" :id="`bio-title-${index}`" class="w-full"
+                                            placeholder="Ex: 1990-2000, Jeunesse, Formation..." />
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div>
+                                        <label :for="`bio-desc-${index}`" class="label text-sm font-semibold">
+                                            Description
+                                        </label>
+                                        <textarea v-model="entry.description" :id="`bio-desc-${index}`"
+                                            class="textarea textarea-bordered w-full" rows="3"
+                                            placeholder="Description de cette période ou événement..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-2">
+                                    <!-- Bouton valider -->
+                                    <button type="button" @click="validateBioEntry()"
+                                        class="btn btn-square btn-sm btn-success btn-outline"
+                                        title="Valider cette entrée">
+                                        <span class="i-fa-solid-check"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mode lecture compacte -->
+                        <div v-else class="flex justify-between items-start gap-4">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-base mb-1">{{ entry.title || '(Sans titre)' }}</h4>
+                                <p class="text-sm text-base-content/70">{{ entry.description || '(Sans description)' }}
+                                </p>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <!-- Bouton éditer -->
+                                <button type="button" @click="editBioEntry(index)"
+                                    class="btn btn-square btn-sm btn-outline" title="Éditer cette entrée">
+                                    <span class="i-fa-solid-pen"></span>
+                                </button>
+
+                                <!-- Bouton supprimer -->
+                                <button type="button" @click="removeBioEntry(index)"
+                                    class="btn btn-square btn-sm btn-error btn-outline" title="Supprimer cette entrée">
+                                    <span class="i-fa-solid-times"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center mb-4">
+                        <button type="button" @click="addBioEntry" class="btn btn-primary btn-sm">
+                            <span class="i-fa-solid-plus"></span>
+                            Ajouter une entrée
+                        </button>
+                    </div>
+                </div>
+            </TabPanel>
         </TabPanels>
     </Tabs>
 </template>
@@ -74,6 +154,7 @@ import type { TPerson } from '../../types';
 const form = defineModel<TPerson.TForm>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
 const activeTab = ref(0);
+const editingBioIndex = ref<number | null>(null);
 
 const { signs, loadSigns } = useSigns();
 const signOptions = computed(() =>
@@ -117,5 +198,40 @@ const onFileChange = (event: Event) => {
             form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
         }
     }
+};
+
+// Initialize highlights if not present
+if (!form.value.highlights) {
+    form.value.highlights = [];
+}
+
+const addBioEntry = () => {
+    if (!form.value.highlights) {
+        form.value.highlights = [];
+    }
+    const newIndex = form.value.highlights.length;
+    form.value.highlights.push({ title: '', description: '' });
+    editingBioIndex.value = newIndex; // Mettre la nouvelle entrée en mode édition
+};
+
+const removeBioEntry = (index: number) => {
+    if (form.value.highlights) {
+        form.value.highlights.splice(index, 1);
+        // Si on supprime l'entrée en cours d'édition, on désactive le mode édition
+        if (editingBioIndex.value === index) {
+            editingBioIndex.value = null;
+        } else if (editingBioIndex.value !== null && editingBioIndex.value > index) {
+            // Ajuster l'index si on supprime une entrée avant celle en édition
+            editingBioIndex.value--;
+        }
+    }
+};
+
+const editBioEntry = (index: number) => {
+    editingBioIndex.value = index;
+};
+
+const validateBioEntry = () => {
+    editingBioIndex.value = null;
 };
 </script>
