@@ -20,6 +20,9 @@ const setFormData = (payload: TPerson.TForm) => {
   (payload.Category || []).forEach((cat) => {
     formData.append("Category", cat);
   });
+  (payload.Videos || []).forEach((video) => {
+    formData.append("Videos", video);
+  });
   if (payload.highlights) {
     formData.append("highlights", JSON.stringify(payload.highlights));
   }
@@ -33,8 +36,8 @@ export default function usePersons() {
   const persons = ref<TPerson.TRecord[]>([]);
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>("person").getFullList({
-      fields: "id, name, illustration, slug, updated, expand.Category.*, expand.Sign.*",
-      expand: "Category,Sign",
+      fields: "id, name, illustration, slug, updated, expand.Category.*, expand.Sign.*, expand.Videos.*",
+      expand: "Category,Sign,Videos",
       sort: "-updated",
     });
   };
@@ -42,7 +45,7 @@ export default function usePersons() {
   const loadPerson = async (id: string) => {
     return pb.collection<TPerson.TRecord & { expand?: any }>("person").getOne(id, {
       fields: "*",
-      expand: "Category,Sign",
+      expand: "Category,Sign,Videos",
     });
   };
 

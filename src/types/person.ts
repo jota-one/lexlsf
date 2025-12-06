@@ -1,4 +1,5 @@
 export type TBioEntry = {
+  id?: string;
   title: string;
   description: string;
 };
@@ -11,6 +12,7 @@ export type TRecord = {
   description: string;
   Sign?: string;
   Category: string[];
+  Videos: string[];
   highlights?: TBioEntry[];
   created: string;
   updated: string;

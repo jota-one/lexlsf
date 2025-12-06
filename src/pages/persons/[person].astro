@@ -17,8 +17,8 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  fields: 'id, name, illustration, slug, description, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*',
-  expand: 'Category,Category.Parent,Sign',
+  fields: 'id, name, illustration, slug, description, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
+  expand: 'Category,Category.Parent,Sign,Videos',
 })
 
 const imageUrl = record.illustration 
@@ -35,6 +35,13 @@ const getCategoryUrl = (cat: any) => {
     return `/culture/${cat.expand.Parent.slug}/${cat.slug}`
   }
   return `/culture/${cat.slug}`
+}
+
+// Fonction pour extraire l'ID YouTube d'une URL
+const getYouTubeId = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? match[2] : null
 }
 ---
 
@@ -106,6 +113,42 @@ const getCategoryUrl = (cat: any) => {
               </li>
             ))}
           </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Section vidéos -->
+    {record.expand?.Videos && record.expand.Videos.length > 0 && (
+      <div class="card bg-base-100 shadow-xl mt-8">
+        <div class="card-body">
+          <h2 class="card-title text-3xl mb-6">
+            <span class="i-fa-solid-play"></span>
+            Vidéos
+          </h2>
+          
+          <div class="carousel carousel-center w-full gap-4 rounded-box bg-base-200 p-4" id="videos-carousel">
+            {record.expand.Videos.map((video: any, index: number) => {
+              const youtubeId = getYouTubeId(video.url)
+              return youtubeId ? (
+                <div class="carousel-item w-full sm:w-96 flex-shrink-0" data-carousel-index={index}>
+                  <div class="w-full aspect-video">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${youtubeId}`}
+                      title={video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                      class="rounded-lg"
+                    />
+                  </div>
+                </div>
+              ) : null
+            })}
+          </div>
+        </div>
+      </div>
+    )}
         </div>
       </div>
     )}
