@@ -1,29 +1,34 @@
 <template>
-    <div class="w-full">
-        <!-- Catégorie parente active en pleine largeur -->
-        <div v-if="activeParent" class="mb-6">
-            <div class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 h-16 w-full"
-                @click="toggleParent(activeParent)">
-                <div class="card-body items-center justify-center p-0">
-                    <h2 class="card-title text-xl md:text-2xl">{{ parent?.tag }}</h2>
-                </div>
-            </div>
+  <div class="w-full">
+    <!-- Catégorie parente active en pleine largeur -->
+    <div v-if="activeParent" class="mb-6">
+      <div
+        class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 h-16 w-full"
+        @click="toggleParent(activeParent)"
+      >
+        <div class="card-body items-center justify-center p-0">
+          <h2 class="card-title text-xl md:text-2xl">{{ parent?.tag }}</h2>
         </div>
-
-        <!-- Grille des catégories parentes -->
-        <div v-if="!activeParent" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            <div v-for="cat in parentCategories" :key="cat.id"
-                class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:bg-primary aspect-square"
-                @click="toggleParent(cat.slug)">
-                <div class="card-body items-center justify-center p-4">
-                    <h2 class="card-title text-xl md:text-2xl text-center">{{ cat.tag }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Grille des sous-catégories -->
-        <router-view :categories="categories"></router-view>
+      </div>
     </div>
+
+    <!-- Grille des catégories parentes -->
+    <div v-if="!activeParent" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div
+        v-for="cat in parentCategories"
+        :key="cat.id"
+        class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:bg-primary aspect-square"
+        @click="toggleParent(cat.slug)"
+      >
+        <div class="card-body items-center justify-center p-4">
+          <h2 class="card-title text-xl md:text-2xl text-center">{{ cat.tag }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grille des sous-catégories -->
+    <router-view :categories="categories"></router-view>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,13 +1,18 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Modifier un signe" class="w-[60%]">
-        <SignForm v-model="form" v-model:categories="selectedCategories" />
-        <template #footer>
-            <div class="flex justify-end gap-2 pt-4">
-                <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
-            </div>
-        </template>
-    </Dialog>
+  <Dialog v-model:visible="visible" modal header="Modifier un signe" class="w-[60%]">
+    <SignForm v-model="form" v-model:categories="selectedCategories" />
+    <template #footer>
+      <div class="flex justify-end gap-2 pt-4">
+        <Button
+          type="button"
+          label="Annuler"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue';

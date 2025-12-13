@@ -1,11 +1,16 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Ajouter une configuration de main" class="w-[60%]">
-        <HandConfigurationForm v-model="form" />
-        <div class="flex justify-end gap-2 pt-4">
-            <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-            <Button type="button" label="Enregistrer" @click="save"></Button>
-        </div>
-    </Dialog>
+  <Dialog
+    v-model:visible="visible"
+    modal
+    header="Ajouter une configuration de main"
+    class="w-[60%]"
+  >
+    <HandConfigurationForm v-model="form" />
+    <div class="flex justify-end gap-2 pt-4">
+      <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
+      <Button type="button" label="Enregistrer" @click="save"></Button>
+    </div>
+  </Dialog>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue';

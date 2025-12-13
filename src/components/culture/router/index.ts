@@ -1,20 +1,20 @@
-import { createRouter, createWebHistory } from "vue-router";
-import CategoriesGrid from "@components/categories/CategoriesGrid.vue";
-import Category from "@components/categories/Category.vue";
-import Persons from "@components/culture/Persons.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import CategoriesGrid from '@components/categories/CategoriesGrid.vue'
+import Category from '@components/categories/Category.vue'
+import Persons from '@components/culture/Persons.vue'
 
 const routes = [
   {
-    path: "",
+    path: '',
     component: CategoriesGrid,
     children: [
       {
-        path: ":category",
+        path: ':category',
         component: Category,
         props: true,
         children: [
           {
-            path: ":subcategory",
+            path: ':subcategory',
             component: Persons,
             props: true,
           },
@@ -22,9 +22,9 @@ const routes = [
       },
     ],
   },
-];
+]
 
 export default createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL + "culture"),
+  history: createWebHistory(import.meta.env.BASE_URL + 'culture'),
   routes,
-});
+})

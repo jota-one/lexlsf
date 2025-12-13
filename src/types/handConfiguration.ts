@@ -1,5 +1,5 @@
 export type TRecord = {
-  id: string;
-  name: string;
-  illustration: string;
-};
+  id: string
+  name: string
+  illustration: string
+}

@@ -1,28 +1,50 @@
 <template>
-    <div class="face-zones-overlay" ref="container">
-        <img :src="imageSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
-        <svg v-if="imageLoaded" class="overlay" :viewBox="`0 0 ${VIEW_W} ${VIEW_H}`" preserveAspectRatio="xMidYMid meet"
-            @click.stop>
-            <defs>
-                <linearGradient id="hand-mix" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" :stop-color="props.colorLeft" />
-                    <stop offset="100%" :stop-color="props.colorRight" />
-                </linearGradient>
-            </defs>
-            <g>
-                <template v-for="zone in zones" :key="zone.id">
-                    <ellipse :cx="zone.cx" :cy="zone.cy" :rx="zone.rx" :ry="zone.ry" :transform="transformFor(zone)"
-                        :fill="fillFor(zone.id)" :stroke="strokeFor(zone.id)" stroke-width="1.2"
-                        :style="{ cursor: interactive ? 'pointer' : 'default', opacity: zoneOpacity(zone.id) }"
-                        @click.stop="toggleZone(zone.id)" />
-                    <text v-if="isSelected(zone.id)" :x="zone.cx" :y="zone.cy" text-anchor="middle"
-                        alignment-baseline="central" font-size="7" font-weight="bold" fill="#fff" pointer-events="none">
-                        {{ selectionOrder(zone.id) }}
-                    </text>
-                </template>
-            </g>
-        </svg>
-    </div>
+  <div class="face-zones-overlay" ref="container">
+    <img :src="imageSrc" class="face-image" alt="face diagram" @load="onImageLoad" />
+    <svg
+      v-if="imageLoaded"
+      class="overlay"
+      :viewBox="`0 0 ${VIEW_W} ${VIEW_H}`"
+      preserveAspectRatio="xMidYMid meet"
+      @click.stop
+    >
+      <defs>
+        <linearGradient id="hand-mix" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" :stop-color="props.colorLeft" />
+          <stop offset="100%" :stop-color="props.colorRight" />
+        </linearGradient>
+      </defs>
+      <g>
+        <template v-for="zone in zones" :key="zone.id">
+          <ellipse
+            :cx="zone.cx"
+            :cy="zone.cy"
+            :rx="zone.rx"
+            :ry="zone.ry"
+            :transform="transformFor(zone)"
+            :fill="fillFor(zone.id)"
+            :stroke="strokeFor(zone.id)"
+            stroke-width="1.2"
+            :style="{ cursor: interactive ? 'pointer' : 'default', opacity: zoneOpacity(zone.id) }"
+            @click.stop="toggleZone(zone.id)"
+          />
+          <text
+            v-if="isSelected(zone.id)"
+            :x="zone.cx"
+            :y="zone.cy"
+            text-anchor="middle"
+            alignment-baseline="central"
+            font-size="7"
+            font-weight="bold"
+            fill="#fff"
+            pointer-events="none"
+          >
+            {{ selectionOrder(zone.id) }}
+          </text>
+        </template>
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script setup lang="ts">

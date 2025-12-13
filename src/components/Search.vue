@@ -1,22 +1,37 @@
 <template>
-    <FloatLabel variant="in" class="flex items-center flex-1 pr-4 gap-2" :class="{ 'w-3/4 m-auto': mode === 'hero' }">
-        <AutoComplete v-model="selectedSign" :suggestions="suggestions" @complete="onSearch" @item-select="onSelect"
-            option-label="name" class="flex-1" fluid :loading="loading" :size="mode === 'hero' ? 'large' : 'small'">
-            <template #option="slotProps">
-                <div class="flex items-start gap-2">
-                    <span class="badge badge-sm mt-1"
-                        :class="slotProps.option.type === 'sign' ? 'badge-primary' : 'badge-accent'">
-                        {{ slotProps.option.type === 'sign' ? 'Signe' : 'Culture' }}
-                    </span>
-                    <div class="flex-1">
-                        <div class="font-medium">{{ slotProps.option.name }}</div>
-                        <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
-                    </div>
-                </div>
-            </template>
-        </AutoComplete>
-        <label>Chercher quelque-chose...</label>
-    </FloatLabel>
+  <FloatLabel
+    variant="in"
+    class="flex items-center flex-1 pr-4 gap-2"
+    :class="{ 'w-3/4 m-auto': mode === 'hero' }"
+  >
+    <AutoComplete
+      v-model="selectedSign"
+      :suggestions="suggestions"
+      @complete="onSearch"
+      @item-select="onSelect"
+      option-label="name"
+      class="flex-1"
+      fluid
+      :loading="loading"
+      :size="mode === 'hero' ? 'large' : 'small'"
+    >
+      <template #option="slotProps">
+        <div class="flex items-start gap-2">
+          <span
+            class="badge badge-sm mt-1"
+            :class="slotProps.option.type === 'sign' ? 'badge-primary' : 'badge-accent'"
+          >
+            {{ slotProps.option.type === 'sign' ? 'Signe' : 'Culture' }}
+          </span>
+          <div class="flex-1">
+            <div class="font-medium">{{ slotProps.option.name }}</div>
+            <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
+          </div>
+        </div>
+      </template>
+    </AutoComplete>
+    <label>Chercher quelque-chose...</label>
+  </FloatLabel>
 </template>
 
 <script setup lang="ts">

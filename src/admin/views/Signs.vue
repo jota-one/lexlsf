@@ -6,14 +6,24 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter un signe" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+        <Button
+          label="Ajouter un signe"
+          icon="i-fa-solid-plus"
+          size="small"
+          @click="openAddModal"
+        />
       </div>
       <DataTable :value="signs" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
         <Column style="width: 40px;" :header="''">
           <template #body="slotProps">
             <template v-if="getSignProblems(slotProps.data).length">
-              <button class="btn btn-xs btn-ghost" v-tooltip="getSignProblems(slotProps.data).join('\n')">
-                <span class="i-fa6-solid-triangle-exclamation text-warning text-lg cursor-pointer"></span>
+              <button
+                class="btn btn-xs btn-ghost"
+                v-tooltip="getSignProblems(slotProps.data).join('\n')"
+              >
+                <span
+                  class="i-fa6-solid-triangle-exclamation text-warning text-lg cursor-pointer"
+                ></span>
               </button>
             </template>
           </template>
@@ -38,10 +48,18 @@
         <Column header="Actions" style="width: 80px;">
           <template #body="slotProps">
             <div class="flex gap-2">
-              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editSign(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editSign(slotProps.data)"
+              >
                 <span class="i-fa-solid-pen"></span>
               </button>
-              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Supprimer"
+                @click="confirmDelete(slotProps.data)"
+              >
                 <span class="i-fa-solid-trash"></span>
               </button>
             </div>
@@ -51,9 +69,18 @@
       </DataTable>
     </div>
     <SignAddModal v-model="showAddModal" @saved="loadSigns" />
-    <SignEditModal v-if="editedSign?.id" v-model="showEditModal" :sign-id="editedSign?.id" @saved="loadSigns" />
-    <ConfirmModal v-model="showDeleteModal" title="Supprimer le signe ?" :message="deleteMessage"
-      @confirm="deleteSignConfirmed" />
+    <SignEditModal
+      v-if="editedSign?.id"
+      v-model="showEditModal"
+      :sign-id="editedSign?.id"
+      @saved="loadSigns"
+    />
+    <ConfirmModal
+      v-model="showDeleteModal"
+      title="Supprimer le signe ?"
+      :message="deleteMessage"
+      @confirm="deleteSignConfirmed"
+    />
   </div>
 </template>
 <script setup lang="ts">

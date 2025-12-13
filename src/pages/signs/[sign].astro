@@ -4,10 +4,10 @@ import PocketBase from 'pocketbase'
 import Rating from 'primevue/rating';
 
 import config from '../../config'
-import useSigns from 'src/admin/composables/useSigns';
-import FaceZonesOverlay from 'src/admin/components/FaceZonesOverlay.vue';
-import type { TCategory } from 'src/types';
-import BodyZonesOverlay from 'src/admin/components/BodyZonesOverlay.vue';
+import useSigns from '@admin/composables/useSigns';
+import FaceZonesOverlay from '@admin/components/FaceZonesOverlay.vue';
+import type { TCategory } from '@types';
+import BodyZonesOverlay from '@admin/components/BodyZonesOverlay.vue';
 
 export const prerender = false
 
@@ -67,10 +67,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
 
 <PageLayout>
   <div>
+    <div class="mb-8"> 
     <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
     <p>
       {record.definition && <span class="italic">Déf. </span>}{record.definition}
-    </p>
+    </p> 
+    </div>
     <div class="grid grid-cols-12 gap-4">
       <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
         <div class="card-body">

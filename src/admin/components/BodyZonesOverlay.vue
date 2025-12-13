@@ -1,9 +1,17 @@
 <template>
-    <ImageZonesOverlay :active-hand="activeHand" :image="bodySrc" :zones="zones" :activeZonesRight="rightZones"
-        :activeZonesLeft="leftZones" :interactive="interactive" :colorRight="colorConfig.right"
-        :colorLeft="colorConfig.left" @update:activeZonesRight="modelRightHand = $event"
-        @update:activeZonesLeft="modelLeftHand = $event"
-        @change="$emit('change', { right: rightZones, left: leftZones })" />
+  <ImageZonesOverlay
+    :active-hand="activeHand"
+    :image="bodySrc"
+    :zones="zones"
+    :activeZonesRight="rightZones"
+    :activeZonesLeft="leftZones"
+    :interactive="interactive"
+    :colorRight="colorConfig.right"
+    :colorLeft="colorConfig.left"
+    @update:activeZonesRight="modelRightHand = $event"
+    @update:activeZonesLeft="modelLeftHand = $event"
+    @change="$emit('change', { right: rightZones, left: leftZones })"
+  />
 </template>
 
 <script setup lang="ts">

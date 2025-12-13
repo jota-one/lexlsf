@@ -1,15 +1,20 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Ajouter une personne" class="w-[60%]">
-        <PersonForm ref="personForm" v-model="form" v-model:categories="selectedCategories" />
-        <!-- Toast container for PocketBase errors -->
-        <PbErrorToast />
-        <template #footer>
-            <div class="flex justify-end gap-2 pt-4">
-                <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
-            </div>
-        </template>
-    </Dialog>
+  <Dialog v-model:visible="visible" modal header="Ajouter une personne" class="w-[60%]">
+    <PersonForm ref="personForm" v-model="form" v-model:categories="selectedCategories" />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
+    <template #footer>
+      <div class="flex justify-end gap-2 pt-4">
+        <Button
+          type="button"
+          label="Annuler"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
