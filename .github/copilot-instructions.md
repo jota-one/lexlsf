@@ -42,6 +42,7 @@ This file collects the minimal, actionable knowledge an AI coding agent needs to
 ` (see `src/admin/views/HandConfigurations.vue`).
 - UI: PrimeVue components are used across `src/admin` (DataTable, Button, Dialog). Keep markup consistent with existing views.
 - Local UI style docs: consult `lexlsf/.vscode/daisyui.md` and `lexlsf/.vscode/primevue.md` first for daisyUI and PrimeVue conventions — these files are intentionally kept in the repository so agents can reference them across sessions.
+- PocketBase docs: consult `lexlsf/.vscode/pocketbase.md` for PocketBase patterns, especially for working with relations and back-relations.
 
 6. PocketBase / DB work
 
