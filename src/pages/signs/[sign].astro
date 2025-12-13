@@ -128,38 +128,64 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           </div>
         </div>
       </div>
-      <div class="col-span-12 md:col-span-2">
-        { hasConfiguration && <div class="mb-4">
-          <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" />
-          <div class="text-gray-600 text-center mt-2">
-            Main droite
+      <div class="col-span-12 md:col-span-5">
+        <div class={`card shadow-sm h-full`}>
+          <div class={`card-body gap-6 grid grid-cols-2 ${hasLeftConfiguration ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
+            { hasLeftConfiguration && (
+              <div class="flex flex-col items-center gap-3">
+                <div class="text-gray-700 font-semibold">Main gauche</div>
+                <div class="flex items-center justify-center h-40 w-full">
+                  <img
+                    src={configurationLeftUrl}
+                    alt="Configuration Main Gauche"
+                    class="max-h-36 w-auto object-contain rounded-lg shadow"
+                  />
+                </div>
+                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                  Mouvement main gauche (bientôt disponible)
+                </div>
+              </div>
+            )}
+            { hasConfiguration && (
+              <div class="flex flex-col items-center gap-3">
+                <div class="text-gray-700 font-semibold">Main droite</div>
+                <div class="flex items-center justify-center h-40 w-full">
+                  <img
+                    src={configurationUrl}
+                    alt="Configuration Main Droite"
+                    class="max-h-36 w-auto object-contain rounded-lg shadow"
+                  />
+                </div>
+                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                  Mouvement main droite (bientôt disponible)
+                </div>
+              </div>
+            )}
+            <div class="col-span-2 text-center">
+              <h3 class="text-lg font-semibold mb-4">Emplacements</h3>
+              <div class="flex justify-center">
+                <FaceZonesOverlay
+                  client:only
+                  right={record.placement.right}
+                  left={record.placement.left}
+                  colorConfig={colors}
+                  activeHand="right"
+                  interactive={false}
+                />
+              </div>
+              <div class="flex justify-center pl-5">
+                <BodyZonesOverlay
+                  client:only
+                  right={record.placement.right}
+                  left={record.placement.left}
+                  colorConfig={colors}
+                  activeHand="right"
+                  interactive={false}
+                />
+              </div>
+            </div>
           </div>
-        </div> }
-        { hasLeftConfiguration && <div>
-          <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" />
-          <div class="text-gray-600 text-center mt-2">
-            Main gauche
-          </div>
-        </div> }
-      </div>
-      <div class="col-span-12 md:col-span-3">
-        <FaceZonesOverlay
-          client:only
-          right={record.placement.right}
-          left={record.placement.left}
-          colorConfig={colors}
-          activeHand="right"
-          interactive={false}
-        />
-        <div class="h-4"></div>
-        <BodyZonesOverlay
-          client:only
-          right={record.placement.right}
-          left={record.placement.left}
-          colorConfig={colors}
-          activeHand="right"
-          interactive={false}
-        />
+        </div>
       </div>
     </div>
   </div>
