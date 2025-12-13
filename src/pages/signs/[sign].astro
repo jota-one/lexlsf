@@ -31,9 +31,12 @@ const mainCategories = await pb.collection<TCategory.TRecord>('category').getFul
 const { learningSourceOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
-  expand: 'Category,ConfigurationRight,ConfigurationLeft',
+  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.person_via_Sign.*',
+  expand: 'Category,ConfigurationRight,ConfigurationLeft,person_via_Sign',
 })
+
+// La personne associée est maintenant disponible via record.expand?.person_via_Sign[0]
+const personRecord = record.expand?.person_via_Sign?.[0] || null
 
 const hasConfiguration = record.expand?.ConfigurationRight && record.expand?.ConfigurationRight?.illustration
 const hasLeftConfiguration = record.expand?.ConfigurationLeft && record.expand?.ConfigurationLeft?.illustration
@@ -67,11 +70,11 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
 
 <PageLayout>
   <div>
-    <div class="mb-8"> 
-    <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
-    <p>
-      {record.definition && <span class="italic">Déf. </span>}{record.definition}
-    </p> 
+    <div class="px-6 mb-4"> 
+      <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
+      <p>
+        {record.definition && <span class="italic">Déf. </span>}{record.definition}
+      </p>
     </div>
     <div class="grid grid-cols-12 gap-4">
       <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
@@ -97,6 +100,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                   </ul>
                 </div>
               ))}
+              {personRecord && (
+                <div class="alert alert-info mt-4">
+                  <span class="i-fa-solid-user text-lg"></span>
+                  <span>Personne associée : <a href={`/persons/${personRecord.slug}`} class="link link-hover font-bold">{personRecord.name}</a></span>
+                </div>
+              )}
             </div>
             <div>
               <div class="flex items-center gap-4 mb-3">
