@@ -61,16 +61,17 @@
               <div class="flex flex-wrap gap-2">
                 <template v-for="child in childCategoryOptions(parent)" :key="child.id">
                   <input
-                    type="radio"
-                    v-model="selectedCategories[parent.id]"
+                    type="checkbox"
                     :id="`person-cat-${parent.id}-${child.id}`"
                     :value="child.id"
+                    :checked="selectedCategories[parent.id]?.includes(child.id)"
+                    @change="toggleCategory(parent.id, child.id)"
                     class="sr-only"
                   />
                   <label
                     :for="`person-cat-${parent.id}-${child.id}`"
                     class="badge badge-sm cursor-pointer"
-                    :class="selectedCategories[parent.id] === child.id ? 'badge-primary' : ''"
+                    :class="selectedCategories[parent.id]?.includes(child.id) ? 'badge-primary' : ''"
                   >
                     {{ child.tag }}
                   </label>
@@ -424,10 +425,28 @@ const childCategoryOptions = (parent: any) => {
 watch(categories, () => {
     parentCategories.value.forEach(parent => {
         if (!(parent.id in selectedCategories.value)) {
-            selectedCategories.value[parent.id] = null;
+            selectedCategories.value[parent.id] = [];
+        } else if (!Array.isArray(selectedCategories.value[parent.id])) {
+            // Convert old single-value format to array
+            const value = selectedCategories.value[parent.id];
+            selectedCategories.value[parent.id] = value ? [value] : [];
         }
     });
 });
+
+const toggleCategory = (parentId: string, childId: string) => {
+    // Ensure it's an array
+    if (!Array.isArray(selectedCategories.value[parentId])) {
+        selectedCategories.value[parentId] = [];
+    }
+    const categories = selectedCategories.value[parentId] as string[];
+    const index = categories.indexOf(childId);
+    if (index > -1) {
+        categories.splice(index, 1);
+    } else {
+        categories.push(childId);
+    }
+};
 
 onMounted(() => {
     loadCategories('person');

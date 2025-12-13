@@ -44,7 +44,7 @@ const { updatePerson, loadPerson } = usePersons();
 const saving = ref(false)
 
 // Store selected category for each parent
-const selectedCategories = ref<{ [parentId: string]: string | null }>({});
+const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 const initialVideos = ref<TVideo.TRecord[]>([]);
 
 const form = ref<TPerson.TForm>({
@@ -62,8 +62,14 @@ const save = async () => {
     // Sync lists order before saving
     personForm.value?.syncListsBeforeSave();
 
-    // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean) as string[];
+    // Collect all selected category ids (flatten arrays from each parent)
+    const selectedCategoryIds: string[] = [];
+    Object.values(selectedCategories.value).forEach(categoryList => {
+        if (Array.isArray(categoryList)) {
+            selectedCategoryIds.push(...categoryList);
+        }
+    });
+    
     // Add to form payload
     const payload = {
         ...form.value,
@@ -101,7 +107,11 @@ watch(visible, async (isVisible) => {
     selectedCategories.value = {};
     if (person.expand?.Category) {
         person.expand.Category.forEach((cat: any) => {
-            selectedCategories.value[cat.Parent!] = cat.id;
+            const parentId = cat.Parent!;
+            if (!selectedCategories.value[parentId]) {
+                selectedCategories.value[parentId] = [];
+            }
+            selectedCategories.value[parentId].push(cat.id);
         });
     }
 }, { immediate: true });

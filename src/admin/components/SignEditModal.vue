@@ -37,7 +37,7 @@ const { updateSign, loadSign, getNumericLevel } = useSigns();
 const saving = ref(false)
 
 // Store selected category for each parent
-const selectedCategories = ref<{ [parentId: string]: string | null }>({});
+const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
 const form = ref<TSign.TForm>({
     Category: [],
@@ -59,8 +59,13 @@ const form = ref<TSign.TForm>({
 
 const save = async () => {
     saving.value = true;
-    // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
+    // Collect all selected category ids (flatten arrays from each parent)
+    const selectedCategoryIds: string[] = [];
+    Object.values(selectedCategories.value).forEach(categoryList => {
+        if (Array.isArray(categoryList)) {
+            selectedCategoryIds.push(...categoryList);
+        }
+    });
     // Add to form payload
     const payload = {
         ...form.value,
@@ -95,7 +100,11 @@ watch(visible, async (isVisible) => {
     // Initialize selected categories
     selectedCategories.value = {};
     (sign.expand?.Category || []).forEach(cat => {
-        selectedCategories.value[cat.Parent!] = cat.id;
+        const parentId = cat.Parent!;
+        if (!selectedCategories.value[parentId]) {
+            selectedCategories.value[parentId] = [];
+        }
+        selectedCategories.value[parentId].push(cat.id);
     });
 }, { immediate: true });
 </script>

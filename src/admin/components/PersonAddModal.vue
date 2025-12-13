@@ -40,7 +40,7 @@ const saving = ref(false)
 const { showPbError } = usePbErrorToast();
 
 // Store selected category for each parent
-const selectedCategories = ref<{ [parentId: string]: string | null }>({});
+const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
 const form = ref<TPerson.TForm>({
     name: '',
@@ -57,8 +57,14 @@ const save = async () => {
     // Sync highlights order before saving
     personForm.value?.syncListsBeforeSave();
 
-    // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean) as string[];
+    // Collect all selected category ids (flatten arrays from each parent)
+    const selectedCategoryIds: string[] = [];
+    Object.values(selectedCategories.value).forEach(categoryList => {
+        if (Array.isArray(categoryList)) {
+            selectedCategoryIds.push(...categoryList);
+        }
+    });
+    
     // Add to form payload
     const payload = {
         ...form.value,
