@@ -6,7 +6,7 @@ const isHome = Astro.url.pathname === '/';
 const { navBg = 'bg-transparent' } = Astro.props;
 
 const navClasses =
-  'fixed top-0 left-0 w-full h-20 backdrop-blur-md shadow-lg flex justify-between p-5 items-center z-50 ' + navBg
+  'fixed top-0 left-0 w-full h-20 backdrop-blur-md shadow-lg p-5 z-50 ' + navBg
 const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
 ---
 
@@ -15,25 +15,27 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
     <nav
       class={navClasses}
     >
-      <div class={logoContainerClasses}>
-        <h1 class="text-xl md:text-3xl text-white font-semibold">
-          <a href="/">Lexique LSF</a>
-        </h1>
-      </div>
-        {!isHome && <Search client:load />}
-      <div class="hidden lg:flex gap-20 justify-between items-center mr-5">
-        <ul class="flex gap-8">
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
-          <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
-        </ul>
-      </div>
-      <div class="hidden lg:flex gap-5">
-        <Login client:load />
-        <button
-          class="border border-white text-white px-5 py-2 font-semibold rounded-lg cursor-pointer hover:opacity-80"
-          >SignUp</button
-        >
+      <div class="container flex justify-between items-center mx-auto">
+        <div class={logoContainerClasses}>
+          <h1 class="text-xl md:text-3xl text-white font-semibold">
+            <a href="/">Lexique LSF</a>
+          </h1>
+        </div>
+          {!isHome && <Search client:load />}
+        <div class="hidden lg:flex gap-20 justify-between items-center mr-5">
+          <ul class="flex gap-8">
+            <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
+            <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
+            <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
+          </ul>
+        </div>
+        <div class="hidden lg:flex gap-5">
+          <Login client:load />
+          <button
+            class="border border-white text-white px-5 py-2 font-semibold rounded-lg cursor-pointer hover:opacity-80"
+            >SignUp</button
+          >
+        </div>
       </div>
     </nav>
     <div class="flex-1">
