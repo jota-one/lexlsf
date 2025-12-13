@@ -54,6 +54,11 @@ const form = ref<TPerson.TForm>({
     Sign: undefined,
     Category: [],
     Videos: [],
+    deaf: false,
+    birthdate: undefined,
+    birthplace: '',
+    deafFamily: false,
+    family: '',
 });
 
 const save = async () => {
@@ -95,6 +100,11 @@ watch(visible, async (isVisible) => {
         Category: person.Category || [],
         Videos: person.Videos || [],
         highlights: person.highlights || [],
+        deaf: !!person.deaf,
+        birthdate: person.birthdate || undefined,
+        birthplace: person.birthplace || '',
+        deafFamily: !!person.deafFamily,
+        family: person.family || '',
     };
 
     if (person.expand?.Videos) {

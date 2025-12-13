@@ -2,15 +2,16 @@
   <Tabs v-model:value="activeTab" class="w-full">
     <TabList>
       <Tab :value="0">Informations</Tab>
-      <Tab :value="1">Catégories</Tab>
-      <Tab :value="2">Bio</Tab>
-      <Tab :value="3">Vidéos</Tab>
+      <Tab :value="1">Description</Tab>
+      <Tab :value="2">Catégories</Tab>
+      <Tab :value="3">Bio</Tab>
+      <Tab :value="4">Vidéos</Tab>
     </TabList>
     <TabPanels>
       <TabPanel :value="0" class="space-y-4">
         <!-- Illustration -->
         <div class="flex items-center gap-4">
-          <label for="illustration" class="font-semibold w-40">Illustration</label>
+          <label for="illustration" class="font-semibold w-60">Illustration</label>
           <input
             type="file"
             id="illustration"
@@ -21,25 +22,85 @@
 
         <!-- Nom -->
         <div class="flex items-center gap-4">
-          <label for="name" class="font-semibold w-40">Nom</label>
+          <label for="name" class="font-semibold w-60">Nom</label>
           <InputText v-model="form.name" id="name" class="w-full" required />
         </div>
 
-        <!-- Description -->
-        <div class="flex items-start gap-4">
-          <label for="description" class="font-semibold w-40 pt-2">Description</label>
-          <textarea
-            v-model="form.description"
-            id="description"
-            class="textarea textarea-bordered w-full"
-            rows="4"
-            placeholder="Description de la personne"
-          ></textarea>
+        <!-- Sourds/entendant -->
+        <div class="flex items-center gap-4">
+          <label for="deaf" class="font-semibold w-60">Sourds/entendant</label>
+          <div class="flex items-center gap-3">
+            <button type="button"
+                    class="text-sm transition-colors"
+                    :class="form.deaf ? 'text-base-content/50' : 'text-base-content font-semibold'"
+                    @click="form.deaf = false"
+                    aria-label="Choisir Entendant(e)">
+              Entendant(e)
+            </button>
+            <ToggleSwitch v-model="form.deaf" inputId="deaf" />
+            <button type="button"
+                    class="text-sm transition-colors"
+                    :class="form.deaf ? 'text-base-content font-semibold' : 'text-base-content/50'"
+                    @click="form.deaf = true"
+                    aria-label="Choisir Sourd(e)">
+              Sourd(e)
+            </button>
+          </div>
         </div>
 
+        <!-- Date de naissance -->
+        <div class="flex items-center gap-4">
+          <label for="birthdate" class="font-semibold w-60">Date de naissance</label>
+          <DatePicker
+            v-model="birthdateModel"
+            inputId="birthdate"
+            dateFormat="dd.mm.yy"
+            class="w-full max-w-xs"
+          />
+        </div>
+
+        <!-- Lieu de naissance -->
+        <div class="flex items-center gap-4">
+          <label for="birthplace" class="font-semibold w-60">Lieu de naissance</label>
+          <InputText v-model="form.birthplace" id="birthplace" class="w-full" />
+        </div>
+
+        <!-- Famille sourde/entendante -->
+        <div class="flex items-center gap-4">
+          <label for="deafFamily" class="font-semibold w-60">Famille</label>
+          <div class="flex items-center gap-3">
+            <button type="button"
+                    class="text-sm transition-colors"
+                    :class="form.deafFamily ? 'text-base-content/50' : 'text-base-content font-semibold'"
+                    @click="form.deafFamily = false"
+                    aria-label="Choisir Famille entendante">
+              Famille entendante
+            </button>
+            <ToggleSwitch v-model="form.deafFamily" inputId="deafFamily" />
+            <button type="button"
+                    class="text-sm transition-colors"
+                    :class="form.deafFamily ? 'text-base-content font-semibold' : 'text-base-content/50'"
+                    @click="form.deafFamily = true"
+                    aria-label="Choisir Famille sourde">
+              Famille sourde
+            </button>
+          </div>
+        </div>
+
+        <!-- Précision sur la famille -->
+        <div class="flex items-start gap-4">
+          <label for="family" class="font-semibold w-60 pt-2">Précision sur la famille</label>
+          <textarea
+            v-model="form.family"
+            id="family"
+            class="textarea textarea-bordered w-full"
+            rows="3"
+            placeholder="Précisions supplémentaires sur la composition familiale..."
+          ></textarea>
+        </div>
         <!-- Signe associé -->
         <div class="flex items-center gap-4">
-          <label for="sign" class="font-semibold w-40">Signe associé</label>
+          <label for="sign" class="font-semibold w-60">Signe associé</label>
           <Select
             v-model="form.Sign"
             :options="signOptions"
@@ -54,6 +115,20 @@
       </TabPanel>
 
       <TabPanel :value="1" class="space-y-4">
+        <!-- Description -->
+        <div class="flex items-start gap-4">
+          <label for="description" class="font-semibold w-60 pt-2">Description</label>
+          <textarea
+            v-model="form.description"
+            id="description"
+            class="textarea textarea-bordered w-full"
+            rows="4"
+            placeholder="Description de la personne"
+          ></textarea>
+        </div>
+      </TabPanel>
+
+      <TabPanel :value="2" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <template v-for="parent in parentCategories" :key="parent.id">
             <div>
@@ -82,7 +157,7 @@
         </div>
       </TabPanel>
 
-      <TabPanel :value="2" class="space-y-4">
+      <TabPanel :value="3" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-lg">Entrées biographiques</h3>
@@ -194,7 +269,7 @@
         </div>
       </TabPanel>
 
-      <TabPanel :value="3" class="space-y-4">
+      <TabPanel :value="4" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-lg">Vidéos</h3>
@@ -329,11 +404,13 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
+import DatePicker from 'primevue/datepicker';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import ToggleSwitch from 'primevue/toggleswitch';
 import useCategories from '../composables/useCategories';
 import useSigns from '../composables/useSigns';
 import useVideos from '../composables/useVideos';
@@ -348,13 +425,16 @@ const props = defineProps<{
 }>();
 
 const form = defineModel<TPerson.TForm>({ required: true });
-const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
+const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
 const activeTab = ref(0);
 const editingBioIndex = ref<number | null>(null);
 const editingVideoIndex = ref<number | null>(null);
 const newVideoMode = ref(false);
 const newVideo = ref<TVideo.TForm>({ title: '', url: '' });
 const editingVideo = ref<TVideo.TForm>({ title: '', url: '' });
+
+// Calendar model for birthdate (Date)
+const birthdateModel = ref<Date | null>(null);
 
 const { signs, loadSigns } = useSigns();
 const { addVideo, updateVideo, findVideoByUrl } = useVideos();
@@ -424,13 +504,9 @@ const childCategoryOptions = (parent: any) => {
 // When categories are loaded, initialize selectedCategories
 watch(categories, () => {
     parentCategories.value.forEach(parent => {
-        if (!(parent.id in selectedCategories.value)) {
-            selectedCategories.value[parent.id] = [];
-        } else if (!Array.isArray(selectedCategories.value[parent.id])) {
-            // Convert old single-value format to array
-            const value = selectedCategories.value[parent.id];
-            selectedCategories.value[parent.id] = value ? [value] : [];
-        }
+    if (!(parent.id in selectedCategories.value)) {
+      selectedCategories.value[parent.id] = [];
+    }
     });
 });
 
@@ -451,7 +527,62 @@ const toggleCategory = (parentId: string, childId: string) => {
 onMounted(() => {
     loadCategories('person');
     loadSigns();
+  // initialize birthdateModel from form.birthdate
+  // Supported inputs:
+  // - Full ISO string from DB: e.g. "1950-05-07 00:00:00.000Z" or "1950-05-07T00:00:00.000Z"
+  // - ISO date: "YYYY-MM-DD"
+  // - French: "DD.MM.YYYY"
+  if (form.value.birthdate) {
+    const s = form.value.birthdate.trim();
+    // Try native Date parsing for ISO-like strings
+    const parsedMs = Date.parse(s.replace(' ', 'T'));
+    if (!Number.isNaN(parsedMs)) {
+      birthdateModel.value = new Date(parsedMs);
+    } else {
+      const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+      if (iso) {
+        birthdateModel.value = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+      } else {
+        const fr = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
+        if (fr) {
+          birthdateModel.value = new Date(Number(fr[3]), Number(fr[2]) - 1, Number(fr[1]));
+        }
+      }
+    }
+    // Normalize time to local midnight for consistent Calendar display
+    if (birthdateModel.value instanceof Date) {
+      birthdateModel.value.setHours(0, 0, 0, 0);
+    }
+  }
 });
+
+// Keep DatePicker model in sync when form.birthdate changes (e.g., reopening modal)
+watch(() => form.value.birthdate, (newVal) => {
+  if (!newVal) {
+    birthdateModel.value = null;
+    return;
+  }
+  const s = newVal.trim();
+  const parsedMs = Date.parse(s.replace(' ', 'T'));
+  if (!Number.isNaN(parsedMs)) {
+    birthdateModel.value = new Date(parsedMs);
+  } else {
+    const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (iso) {
+      birthdateModel.value = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+    } else {
+      const fr = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
+      if (fr) {
+        birthdateModel.value = new Date(Number(fr[3]), Number(fr[2]) - 1, Number(fr[1]));
+      } else {
+        birthdateModel.value = null;
+      }
+    }
+  }
+  if (birthdateModel.value instanceof Date) {
+    birthdateModel.value.setHours(0, 0, 0, 0);
+  }
+}, { immediate: true });
 
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -598,6 +729,15 @@ const syncListsBeforeSave = () => {
     const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
     form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
     form.value.Videos = getVideoIds();
+  // sync birthdate string from Calendar model using ISO for backend
+  if (birthdateModel.value instanceof Date) {
+    const y = birthdateModel.value.getFullYear();
+    const m = String(birthdateModel.value.getMonth() + 1).padStart(2, '0');
+    const d = String(birthdateModel.value.getDate()).padStart(2, '0');
+    form.value.birthdate = `${y}-${m}-${d}`;
+  } else if (!birthdateModel.value) {
+    form.value.birthdate = undefined as any;
+  }
 };
 
 defineExpose({ syncListsBeforeSave });

@@ -17,6 +17,22 @@ const setFormData = (payload: TPerson.TForm) => {
   if (payload.Sign) {
     formData.append('Sign', payload.Sign)
   }
+  // new simple fields
+  if (typeof payload.deaf !== 'undefined') {
+    formData.append('deaf', String(Boolean(payload.deaf)))
+  }
+  if (payload.birthdate) {
+    formData.append('birthdate', payload.birthdate)
+  }
+  if (payload.birthplace) {
+    formData.append('birthplace', payload.birthplace)
+  }
+  if (typeof payload.deafFamily !== 'undefined') {
+    formData.append('deafFamily', String(Boolean(payload.deafFamily)))
+  }
+  if (payload.family) {
+    formData.append('family', payload.family)
+  }
   ;(payload.Category || []).forEach(cat => {
     formData.append('Category', cat)
   })
@@ -37,7 +53,7 @@ export default function usePersons() {
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
       fields:
-        'id, name, illustration, slug, updated, expand.Category.*, expand.Sign.*, expand.Videos.*',
+        'id, name, illustration, slug, updated, deaf, birthdate, birthplace, deafFamily, family, expand.Category.*, expand.Sign.*, expand.Videos.*',
       expand: 'Category,Sign,Videos',
       sort: '-updated',
     })

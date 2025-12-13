@@ -16,6 +16,11 @@ export type TRecord = {
   highlights?: TBioEntry[]
   created: string
   updated: string
+  deaf?: boolean
+  birthdate?: string
+  birthplace?: string
+  deafFamily?: boolean
+  family?: string
 }
 
 export type TForm = Omit<
@@ -25,6 +30,11 @@ export type TForm = Omit<
   id?: string
   illustration?: File | null
   description?: string
+  deaf?: boolean
+  birthdate?: string
+  birthplace?: string
+  deafFamily?: boolean
+  family?: string
   Sign?: string
   highlights?: TBioEntry[]
 }
