@@ -89,33 +89,49 @@ const getYouTubeId = (url: string) => {
       </div>
     </div>
 
-    <!-- Section biographie -->
-    {record.highlights && record.highlights.length > 0 && (
-      <div class="card bg-base-100 shadow-xl">
+    <!-- Grille principale : biographie + infos détaillées -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Section biographie (1/3) -->
+      {record.highlights && record.highlights.length > 0 && (
+        <div class="card bg-base-100 shadow-xl lg:col-span-1">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+              <span class="i-fa-solid-scroll"></span>
+              Biographie
+            </h2>
+            
+            <div class="timeline timeline-vertical timeline-snap-icon timeline-compact">
+              {record.highlights.map((highlight: any) => (
+                <li>
+                  <div class="timeline-middle">
+                    <span class="i-fa-solid-circle text-primary"></span>
+                  </div>
+                  <div class="timeline-start mb-10">
+                    <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
+                    <p class="mt-2 text-base-content/80">{highlight.description}</p>
+                  </div>
+                  <hr class="bg-primary" />
+                </li>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- Carte infos détaillées (2/3) -->
+      <div class="card bg-base-100 shadow-xl lg:col-span-2">
         <div class="card-body">
-          <h2 class="card-title text-3xl mb-6">
-            <span class="i-fa-solid-timeline"></span>
-            Biographie
+          <h2 class="card-title text-2xl mb-4">
+            <span class="i-fa-solid-info-circle"></span>
+            Informations détaillées
           </h2>
           
-          <div class="timeline timeline-vertical timeline-snap-icon">
-            {record.highlights.map((highlight: any, index: number) => (
-              <li>
-                <div class="timeline-middle">
-                  <span class="i-fa-solid-circle text-primary"></span>
-                </div>
-                <div class={`timeline-${index % 2 === 0 ? 'start' : 'end'} mb-10`}>
-                  <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
-                  <div class="text-lg font-black">{highlight.title}</div>
-                  <p class="mt-2 text-base-content/80">{highlight.description}</p>
-                </div>
-                <hr class="bg-primary" />
-              </li>
-            ))}
+          <div class="text-base-content/70">
+            <p>Contenu à venir...</p>
           </div>
         </div>
       </div>
-    )}
+    </div>
 
     <!-- Section vidéos -->
     {record.expand?.Videos && record.expand.Videos.length > 0 && (
@@ -149,16 +165,7 @@ const getYouTubeId = (url: string) => {
         </div>
       </div>
     )}
-        </div>
       </div>
-    )}
-
-    <!-- Bouton retour -->
-    <div class="mt-8 flex justify-center">
-      <a href="/culture" class="btn btn-neutral">
-        <span class="i-fa-solid-arrow-left"></span>
-        Retour à la liste
-      </a>
     </div>
   </div>
 </PageLayout>
