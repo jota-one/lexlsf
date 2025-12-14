@@ -17,7 +17,7 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  fields: 'id, name, illustration, slug, description, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
+  fields: 'id, name, illustration, slug, description, deaf, birthdate, birthplace, deafFamily, family, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
   expand: 'Category,Category.Parent,Sign,Videos',
 })
 
@@ -62,12 +62,51 @@ const getYouTubeId = (url: string) => {
         )}
         <div class="flex-1">
           <h1 class="text-5xl font-bold mb-4">{record.name}</h1>
-          
-          {record.description && (
-            <p class="text-lg text-base-content/80 mb-6">
-              {record.description}
-            </p>
-          )}
+
+          {/* Infos rapides à droite de l'image */}
+          <div class="space-y-3 mb-6">
+            {typeof record.deaf !== 'undefined' && (
+              <div class="flex items-center gap-2">
+                <span class="status status-sm status-info"></span>
+                <span class="text-sm">{record.deaf ? 'Sourd(e)' : 'Entendant(e)'}</span>
+              </div>
+            )}
+
+            {(record.birthdate || record.birthplace) && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-baby text-base"></span>
+                <div class="text-sm">
+                  <span class="font-semibold">Naissance:</span>
+                  {record.birthdate && (
+                    <span> {(() => {
+                      const d = new Date(String(record.birthdate).replace(' ', 'T'))
+                      const dd = String(d.getDate()).padStart(2, '0')
+                      const mm = String(d.getMonth() + 1).padStart(2, '0')
+                      const yyyy = d.getFullYear()
+                      return `${dd}.${mm}.${yyyy}`
+                    })()}</span>
+                  )}
+                  {record.birthplace && (
+                    <span> - {record.birthplace}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {(typeof record.deafFamily !== 'undefined' || record.family) && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-users text-base"></span>
+                <div class="text-sm">
+                  {typeof record.deafFamily !== 'undefined' && (
+                    <div class="font-semibold">{record.deafFamily ? 'Famille sourde' : 'Famille entendante'}</div>
+                  )}
+                  {record.family && (
+                    <div class="opacity-80">{record.family}</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {record.expand?.Category && record.expand.Category.length > 0 && (
             <div class="flex flex-wrap gap-2 mb-4">
@@ -126,8 +165,17 @@ const getYouTubeId = (url: string) => {
             Informations détaillées
           </h2>
           
-          <div class="text-base-content/70">
-            <p>Contenu à venir...</p>
+          <div class="space-y-4">
+            {record.description && (
+              <div>
+                <h3 class="text-xl font-semibold mb-2">Présentation</h3>
+                <p class="text-base text-base-content/80">{record.description}</p>
+              </div>
+            )}
+            {/* Placeholders pour infos futures */}
+            <div class="text-base-content/70">
+              <p>Contenu à venir...</p>
+            </div>
           </div>
         </div>
       </div>
