@@ -7,7 +7,12 @@
     <p>Gestion des catégories.</p>
     <div class="card mt-4">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter une catégorie" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+        <Button
+          label="Ajouter une catégorie"
+          icon="i-fa-solid-plus"
+          size="small"
+          @click="openAddModal"
+        />
       </div>
       <div v-if="loadingCategories" class="flex justify-center py-8">
         <span class="loading loading-spinner loading-lg"></span>
@@ -28,15 +33,29 @@
                 <td>{{ cat.tag }}</td>
                 <td>{{ cat.slug }}</td>
                 <td>
-                  <span v-if="cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length">
-                    <span v-for="child in cat.expand.category_via_Parent" :key="child.id"
-                      class="badge badge-sm badge-outline mr-1 mb-1">
-                      <span class="cursor-pointer" tabindex="0" role="button" @click="togglePopover(child.id, $event)">
+                  <span
+                    v-if="cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length"
+                  >
+                    <span
+                      v-for="child in cat.expand.category_via_Parent"
+                      :key="child.id"
+                      class="badge badge-sm badge-outline mr-1 mb-1"
+                    >
+                      <span
+                        class="cursor-pointer"
+                        tabindex="0"
+                        role="button"
+                        @click="togglePopover(child.id, $event)"
+                      >
                         {{ child.tag }}
                       </span>
                       <Popover :ref="setPopoverRef(child.id)" dismissable placement="bottom-start">
                         <div class="p-2 flex gap-2">
-                          <button class="btn btn-xs btn-ghost" title="Modifier" @click="openEditModalChild(child)">
+                          <button
+                            class="btn btn-xs btn-ghost"
+                            title="Modifier"
+                            @click="openEditModalChild(child)"
+                          >
                             <span class="i-fa-solid-pen"></span>
                           </button>
                           <button class="btn btn-xs btn-error" @click="confirmDeleteChild(child)">
@@ -50,13 +69,19 @@
                 </td>
                 <td>
                   <div class="flex gap-2">
-                    <button class="btn btn-xs btn-ghost" title="Ajouter une sous-catégorie"
-                      @click="openAddModalWithParent(cat.id)">
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      title="Ajouter une sous-catégorie"
+                      @click="openAddModalWithParent(cat.id)"
+                    >
                       <span class="i-fa-solid-plus"></span>
                     </button>
-                    <button class="btn btn-xs btn-ghost" title="Supprimer la catégorie"
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      title="Supprimer la catégorie"
                       :disabled="!!(cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length)"
-                      @click="confirmDeleteParent(cat)">
+                      @click="confirmDeleteParent(cat)"
+                    >
                       <span class="i-fa-solid-trash"></span>
                     </button>
                   </div>
@@ -67,10 +92,18 @@
         </table>
       </div>
     </div>
-    <CategoryFormModal v-model="showAddModal" :parent-id="selectedParentId" :category-to-edit="categoryToEdit"
-      @saved="loadCategories" />
-    <ConfirmModal v-model="showDeleteModal" title="Supprimer la catégorie ?" :message="deleteMessage"
-      @confirm="deleteCategoryConfirmed" />
+    <CategoryFormModal
+      v-model="showAddModal"
+      :parent-id="selectedParentId"
+      :category-to-edit="categoryToEdit"
+      @saved="loadCategories"
+    />
+    <ConfirmModal
+      v-model="showDeleteModal"
+      title="Supprimer la catégorie ?"
+      :message="deleteMessage"
+      @confirm="deleteCategoryConfirmed"
+    />
   </div>
 </template>
 <script setup lang="ts">

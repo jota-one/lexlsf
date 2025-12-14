@@ -4,10 +4,10 @@ import PocketBase from 'pocketbase'
 import Rating from 'primevue/rating';
 
 import config from '../../config'
-import useSigns from 'src/admin/composables/useSigns';
-import FaceZonesOverlay from 'src/admin/components/FaceZonesOverlay.vue';
-import type { TCategory } from 'src/types';
-import BodyZonesOverlay from 'src/admin/components/BodyZonesOverlay.vue';
+import useSigns from '@admin/composables/useSigns';
+import FaceZonesOverlay from '@admin/components/FaceZonesOverlay.vue';
+import type { TCategory } from '@types';
+import BodyZonesOverlay from '@admin/components/BodyZonesOverlay.vue';
 
 export const prerender = false
 
@@ -31,9 +31,12 @@ const mainCategories = await pb.collection<TCategory.TRecord>('category').getFul
 const { learningSourceOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*,',
-  expand: 'Category,ConfigurationRight,ConfigurationLeft',
+  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.person_via_Sign.*',
+  expand: 'Category,ConfigurationRight,ConfigurationLeft,person_via_Sign',
 })
+
+// La personne associée est maintenant disponible via record.expand?.person_via_Sign[0]
+const personRecord = record.expand?.person_via_Sign?.[0] || null
 
 const hasConfiguration = record.expand?.ConfigurationRight && record.expand?.ConfigurationRight?.illustration
 const hasLeftConfiguration = record.expand?.ConfigurationLeft && record.expand?.ConfigurationLeft?.illustration
@@ -67,10 +70,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
 
 <PageLayout>
   <div>
-    <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
-    <p>
-      {record.definition && <span class="italic">Déf. </span>}{record.definition}
-    </p>
+    <div class="px-6 mb-4"> 
+      <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
+      <p>
+        {record.definition && <span class="italic">Déf. </span>}{record.definition}
+      </p>
+    </div>
     <div class="grid grid-cols-12 gap-4">
       <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
         <div class="card-body">
@@ -80,13 +85,13 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           <div class="grid grid-cols-2 gap-4 mt-4">
             <div>
               { categories.map(cat => (
-                <div class="flex items-center gap-4">
-                  <h2 class="flex-1">{ cat.tag }</h2>
+                <div class="flex items-center gap-4 pb-2 mb-2">
+                  <h2 class="flex-1 self-start">{ cat.tag }</h2>
                   <ul>
                     {
                       cat.subcategories.map((category: any) => (
-                        <li class="py-1">
-                          <div class="badge badge-outline badge-accent hover:badge-ghost">
+                        <li class="py-1 flex justify-end">
+                          <div class="badge badge-outline badge-accent hover:badge-ghost justify-end">
                             <a href={`/categories/${cat.slug}/${category.slug}`}>{category.tag}</a>
                           </div>
                         </li>
@@ -95,6 +100,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                   </ul>
                 </div>
               ))}
+              {personRecord && (
+                <div class="alert alert-info mt-4">
+                  <span class="i-fa-solid-user text-lg"></span>
+                  <span>Personne associée : <a href={`/persons/${personRecord.slug}`} class="link link-hover font-bold">{personRecord.name}</a></span>
+                </div>
+              )}
             </div>
             <div>
               <div class="flex items-center gap-4 mb-3">
@@ -117,38 +128,64 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           </div>
         </div>
       </div>
-      <div class="col-span-12 md:col-span-2">
-        { hasConfiguration && <div class="mb-4">
-          <img src={configurationUrl} alt="Configuration Main Droite" class="w-full h-auto rounded-lg shadow-md" />
-          <div class="text-gray-600 text-center mt-2">
-            Main droite
+      <div class="col-span-12 md:col-span-5">
+        <div class={`card shadow-sm h-full`}>
+          <div class={`card-body gap-6 grid grid-cols-2 ${hasLeftConfiguration ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
+            { hasLeftConfiguration && (
+              <div class="flex flex-col items-center gap-3">
+                <div class="text-gray-700 font-semibold">Main gauche</div>
+                <div class="flex items-center justify-center h-40 w-full">
+                  <img
+                    src={configurationLeftUrl}
+                    alt="Configuration Main Gauche"
+                    class="max-h-36 w-auto object-contain rounded-lg shadow"
+                  />
+                </div>
+                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                  Mouvement main gauche (bientôt disponible)
+                </div>
+              </div>
+            )}
+            { hasConfiguration && (
+              <div class="flex flex-col items-center gap-3">
+                <div class="text-gray-700 font-semibold">Main droite</div>
+                <div class="flex items-center justify-center h-40 w-full">
+                  <img
+                    src={configurationUrl}
+                    alt="Configuration Main Droite"
+                    class="max-h-36 w-auto object-contain rounded-lg shadow"
+                  />
+                </div>
+                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                  Mouvement main droite (bientôt disponible)
+                </div>
+              </div>
+            )}
+            <div class="col-span-2 text-center">
+              <h3 class="text-lg font-semibold mb-4">Emplacements</h3>
+              <div class="flex justify-center">
+                <FaceZonesOverlay
+                  client:only
+                  right={record.placement.right}
+                  left={record.placement.left}
+                  colorConfig={colors}
+                  activeHand="right"
+                  interactive={false}
+                />
+              </div>
+              <div class="flex justify-center pl-5">
+                <BodyZonesOverlay
+                  client:only
+                  right={record.placement.right}
+                  left={record.placement.left}
+                  colorConfig={colors}
+                  activeHand="right"
+                  interactive={false}
+                />
+              </div>
+            </div>
           </div>
-        </div> }
-        { hasLeftConfiguration && <div>
-          <img src={configurationLeftUrl} alt="Configuration Main Gauche" class="w-full h-auto rounded-lg shadow-md" />
-          <div class="text-gray-600 text-center mt-2">
-            Main gauche
-          </div>
-        </div> }
-      </div>
-      <div class="col-span-12 md:col-span-3">
-        <FaceZonesOverlay
-          client:only
-          right={record.placement.right}
-          left={record.placement.left}
-          colorConfig={colors}
-          activeHand="right"
-          interactive={false}
-        />
-        <div class="h-4"></div>
-        <BodyZonesOverlay
-          client:only
-          right={record.placement.right}
-          left={record.placement.left}
-          colorConfig={colors}
-          activeHand="right"
-          interactive={false}
-        />
+        </div>
       </div>
     </div>
   </div>

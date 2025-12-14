@@ -23,7 +23,11 @@
           </RouterLink>
         </li>
         <li>
-          <RouterLink to="/hand-configurations" class="flex items-center gap-3" active-class="menu-active">
+          <RouterLink
+            to="/hand-configurations"
+            class="flex items-center gap-3"
+            active-class="menu-active"
+          >
             <span class="i-fa6-solid-hand text-xl"></span>
             Configurations
           </RouterLink>

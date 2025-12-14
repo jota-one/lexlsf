@@ -17,7 +17,7 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  fields: 'id, name, illustration, slug, description, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
+  fields: 'id, name, illustration, slug, description, deaf, birthdate, birthplace, deafFamily, family, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
   expand: 'Category,Category.Parent,Sign,Videos',
 })
 
@@ -62,12 +62,51 @@ const getYouTubeId = (url: string) => {
         )}
         <div class="flex-1">
           <h1 class="text-5xl font-bold mb-4">{record.name}</h1>
-          
-          {record.description && (
-            <p class="text-lg text-base-content/80 mb-6">
-              {record.description}
-            </p>
-          )}
+
+          {/* Infos rapides à droite de l'image */}
+          <div class="space-y-3 mb-6">
+            {typeof record.deaf !== 'undefined' && (
+              <div class="flex items-center gap-2">
+                <span class="status status-sm status-info"></span>
+                <span class="text-sm">{record.deaf ? 'Sourd(e)' : 'Entendant(e)'}</span>
+              </div>
+            )}
+
+            {(record.birthdate || record.birthplace) && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-baby text-base"></span>
+                <div class="text-sm">
+                  <span class="font-semibold">Naissance:</span>
+                  {record.birthdate && (
+                    <span> {(() => {
+                      const d = new Date(String(record.birthdate).replace(' ', 'T'))
+                      const dd = String(d.getDate()).padStart(2, '0')
+                      const mm = String(d.getMonth() + 1).padStart(2, '0')
+                      const yyyy = d.getFullYear()
+                      return `${dd}.${mm}.${yyyy}`
+                    })()}</span>
+                  )}
+                  {record.birthplace && (
+                    <span> - {record.birthplace}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {(typeof record.deafFamily !== 'undefined' || record.family) && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-users text-base"></span>
+                <div class="text-sm">
+                  {typeof record.deafFamily !== 'undefined' && (
+                    <div class="font-semibold">{record.deafFamily ? 'Famille sourde' : 'Famille entendante'}</div>
+                  )}
+                  {record.family && (
+                    <div class="opacity-80">{record.family}</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {record.expand?.Category && record.expand.Category.length > 0 && (
             <div class="flex flex-wrap gap-2 mb-4">
@@ -89,33 +128,58 @@ const getYouTubeId = (url: string) => {
       </div>
     </div>
 
-    <!-- Section biographie -->
-    {record.highlights && record.highlights.length > 0 && (
-      <div class="card bg-base-100 shadow-xl">
+    <!-- Grille principale : biographie + infos détaillées -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Section biographie (1/3) -->
+      {record.highlights && record.highlights.length > 0 && (
+        <div class="card bg-base-100 shadow-xl lg:col-span-1">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+              <span class="i-fa-solid-scroll"></span>
+              Biographie
+            </h2>
+            
+            <div class="timeline timeline-vertical timeline-snap-icon timeline-compact">
+              {record.highlights.map((highlight: any) => (
+                <li>
+                  <div class="timeline-middle">
+                    <span class="i-fa-solid-circle text-primary"></span>
+                  </div>
+                  <div class="timeline-start mb-10">
+                    <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
+                    <p class="mt-2 text-base-content/80">{highlight.description}</p>
+                  </div>
+                  <hr class="bg-primary" />
+                </li>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- Carte infos détaillées (2/3) -->
+      <div class="card bg-base-100 shadow-xl lg:col-span-2">
         <div class="card-body">
-          <h2 class="card-title text-3xl mb-6">
-            <span class="i-fa-solid-timeline"></span>
-            Biographie
+          <h2 class="card-title text-2xl mb-4">
+            <span class="i-fa-solid-info-circle"></span>
+            Informations détaillées
           </h2>
           
-          <div class="timeline timeline-vertical timeline-snap-icon">
-            {record.highlights.map((highlight: any, index: number) => (
-              <li>
-                <div class="timeline-middle">
-                  <span class="i-fa-solid-circle text-primary"></span>
-                </div>
-                <div class={`timeline-${index % 2 === 0 ? 'start' : 'end'} mb-10`}>
-                  <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
-                  <div class="text-lg font-black">{highlight.title}</div>
-                  <p class="mt-2 text-base-content/80">{highlight.description}</p>
-                </div>
-                <hr class="bg-primary" />
-              </li>
-            ))}
+          <div class="space-y-4">
+            {record.description && (
+              <div>
+                <h3 class="text-xl font-semibold mb-2">Présentation</h3>
+                <p class="text-base text-base-content/80">{record.description}</p>
+              </div>
+            )}
+            {/* Placeholders pour infos futures */}
+            <div class="text-base-content/70">
+              <p>Contenu à venir...</p>
+            </div>
           </div>
         </div>
       </div>
-    )}
+    </div>
 
     <!-- Section vidéos -->
     {record.expand?.Videos && record.expand.Videos.length > 0 && (
@@ -149,16 +213,7 @@ const getYouTubeId = (url: string) => {
         </div>
       </div>
     )}
-        </div>
       </div>
-    )}
-
-    <!-- Bouton retour -->
-    <div class="mt-8 flex justify-center">
-      <a href="/culture" class="btn btn-neutral">
-        <span class="i-fa-solid-arrow-left"></span>
-        Retour à la liste
-      </a>
     </div>
   </div>
 </PageLayout>

@@ -1,31 +1,36 @@
 <template>
-    <transition name="fade">
-        <div v-if="category" class="mt-6 w-full">
-            <!-- Sous-catégorie active en pleine largeur -->
-            <div v-if="activeSubcategory" class="mb-6">
-                <div class="card bg-base-200 shadow-sm cursor-pointer transition-all duration-300 h-16 w-full"
-                    @click="toggleSubcategory(activeSubcategory)">
-                    <div class="card-body items-center justify-center p-0">
-                        <h2 class="card-title text-lg md:text-xl">{{ subcategoryRecord?.tag }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grille des sous-catégories -->
-            <div v-if="!activeSubcategory" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div v-for="subcat in subCategories" :key="subcat.id"
-                    class="card bg-base-200 shadow-sm cursor-pointer hover:shadow-md hover:bg-primary transition-all aspect-square"
-                    @click="toggleSubcategory(subcat.slug)">
-                    <div class="card-body items-center justify-center p-4">
-                        <h2 class="card-title text-lg md:text-xl text-center">{{ subcat.tag }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grille des signes -->
-            <router-view :categories="subCategories"></router-view>
+  <transition name="fade">
+    <div v-if="category" class="mt-6 w-full">
+      <!-- Sous-catégorie active en pleine largeur -->
+      <div v-if="activeSubcategory" class="mb-6">
+        <div
+          class="card bg-base-200 shadow-sm cursor-pointer transition-all duration-300 h-16 w-full"
+          @click="toggleSubcategory(activeSubcategory)"
+        >
+          <div class="card-body items-center justify-center p-0">
+            <h2 class="card-title text-lg md:text-xl">{{ subcategoryRecord?.tag }}</h2>
+          </div>
         </div>
-    </transition>
+      </div>
+
+      <!-- Grille des sous-catégories -->
+      <div v-if="!activeSubcategory" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div
+          v-for="subcat in subCategories"
+          :key="subcat.id"
+          class="card bg-base-200 shadow-sm cursor-pointer hover:shadow-md hover:bg-primary transition-all aspect-square"
+          @click="toggleSubcategory(subcat.slug)"
+        >
+          <div class="card-body items-center justify-center p-4">
+            <h2 class="card-title text-lg md:text-xl text-center">{{ subcat.tag }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grille des signes -->
+      <router-view :categories="subCategories"></router-view>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">

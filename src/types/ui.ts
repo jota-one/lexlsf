@@ -1,4 +1,4 @@
 export type ColorConfig = {
-  right: string;
-  left: string;
-};
+  right: string
+  left: string
+}

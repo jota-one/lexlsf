@@ -1,5 +1,5 @@
-import { shallowRef, useTemplateRef } from "vue";
-import { useSortable } from "@vueuse/integrations/useSortable";
+import { shallowRef, useTemplateRef } from 'vue'
+import { useSortable } from '@vueuse/integrations/useSortable'
 
 /**
  * useSortableList - Composable réutilisable pour gérer le drag & drop avec sortablejs
@@ -41,9 +41,9 @@ import { useSortable } from "@vueuse/integrations/useSortable";
  * @returns Objet contenant items, container et méthodes utilitaires
  */
 interface SortableListOptions<T> {
-  animation?: number;
-  handle?: string;
-  onUpdate?: (items: T[]) => void;
+  animation?: number
+  handle?: string
+  onUpdate?: (items: T[]) => void
 }
 
 export function useSortableList<T extends { id: string }>(
@@ -51,40 +51,40 @@ export function useSortableList<T extends { id: string }>(
   initialItems?: T[],
   options: SortableListOptions<T> = {},
 ) {
-  const { animation = 200, handle = ".handle" } = options;
+  const { animation = 200, handle = '.handle' } = options
 
-  const items = shallowRef<T[]>(initialItems || []);
-  const container = useTemplateRef<HTMLDivElement>(refName);
+  const items = shallowRef<T[]>(initialItems || [])
+  const container = useTemplateRef<HTMLDivElement>(refName)
 
   // Initialiser useSortable
   useSortable(container, items, {
     animation,
     handle,
-  });
+  })
 
   const setItems = (newItems: T[]) => {
-    console.log("setItems", newItems);
+    console.log('setItems', newItems)
 
-    items.value = [...newItems];
-  };
+    items.value = [...newItems]
+  }
 
   const addItem = (item: T) => {
-    items.value = [...items.value, item];
-  };
+    items.value = [...items.value, item]
+  }
 
   const removeItem = (index: number) => {
-    items.value.splice(index, 1);
-  };
+    items.value.splice(index, 1)
+  }
 
   const updateItem = (index: number, updatedItem: T) => {
-    items.value[index] = updatedItem;
+    items.value[index] = updatedItem
     // Forcer le re-render
-    items.value = [...items.value];
-  };
+    items.value = [...items.value]
+  }
 
-  const getItems = () => items.value;
+  const getItems = () => items.value
 
-  const getItemIds = () => items.value.map((item) => item.id);
+  const getItemIds = () => items.value.map(item => item.id)
 
   return {
     items,
@@ -95,5 +95,5 @@ export function useSortableList<T extends { id: string }>(
     updateItem,
     getItems,
     getItemIds,
-  };
+  }
 }

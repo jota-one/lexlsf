@@ -1,15 +1,20 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Ajouter un signe" class="w-[60%]">
-        <SignForm v-model="form" v-model:categories="selectedCategories" />
-        <!-- Toast container for PocketBase errors -->
-        <PbErrorToast />
-        <template #footer>
-            <div class="flex justify-end gap-2 pt-4">
-                <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
-            </div>
-        </template>
-    </Dialog>
+  <Dialog v-model:visible="visible" modal header="Ajouter un signe" class="w-[60%]">
+    <SignForm v-model="form" v-model:categories="selectedCategories" />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
+    <template #footer>
+      <div class="flex justify-end gap-2 pt-4">
+        <Button
+          type="button"
+          label="Annuler"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue';
@@ -33,14 +38,19 @@ const saving = ref(false)
 const { showPbError } = usePbErrorToast();
 
 // Store selected category for each parent
-const selectedCategories = ref<{ [parentId: string]: string | null }>({});
+const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
 const form = ref<TSign.TForm>();
 
 const save = async () => {
     saving.value = true;
-    // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean);
+    // Collect all selected category ids (flatten arrays from each parent)
+    const selectedCategoryIds: string[] = [];
+    Object.values(selectedCategories.value).forEach(categoryList => {
+        if (Array.isArray(categoryList)) {
+            selectedCategoryIds.push(...categoryList);
+        }
+    });
     // Add to form payload
     const payload = {
         ...form.value,

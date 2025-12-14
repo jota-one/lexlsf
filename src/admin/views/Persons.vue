@@ -6,22 +6,36 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter une personne" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+        <Button
+          label="Ajouter une personne"
+          icon="i-fa-solid-plus"
+          size="small"
+          @click="openAddModal"
+        />
       </div>
       <DataTable :value="persons" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
         <Column style="width: 40px;" :header="''">
           <template #body="slotProps">
             <template v-if="getPersonProblems(slotProps.data).length">
-              <button class="btn btn-xs btn-ghost" v-tooltip="getPersonProblems(slotProps.data).join('\n')">
-                <span class="i-fa6-solid-triangle-exclamation text-warning text-lg cursor-pointer"></span>
+              <button
+                class="btn btn-xs btn-ghost"
+                v-tooltip="getPersonProblems(slotProps.data).join('\n')"
+              >
+                <span
+                  class="i-fa6-solid-triangle-exclamation text-warning text-lg cursor-pointer"
+                ></span>
               </button>
             </template>
           </template>
         </Column>
         <Column style="width: 60px;" :header="''">
           <template #body="slotProps">
-            <img v-if="slotProps.data.illustration" :src="getIllustrationUrl(slotProps.data)" :alt="slotProps.data.name"
-              class="w-12 h-12 object-cover rounded" />
+            <img
+              v-if="slotProps.data.illustration"
+              :src="getIllustrationUrl(slotProps.data)"
+              :alt="slotProps.data.name"
+              class="w-12 h-12 object-cover rounded"
+            />
           </template>
         </Column>
         <Column field="name" header="Nom" sortable></Column>
@@ -39,10 +53,18 @@
         <Column header="Actions" style="width: 80px;">
           <template #body="slotProps">
             <div class="flex gap-2">
-              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editPerson(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editPerson(slotProps.data)"
+              >
                 <span class="i-fa-solid-pen"></span>
               </button>
-              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Supprimer"
+                @click="confirmDelete(slotProps.data)"
+              >
                 <span class="i-fa-solid-trash"></span>
               </button>
             </div>
@@ -52,9 +74,18 @@
       </DataTable>
     </div>
     <PersonAddModal v-model="showAddModal" @saved="loadPersons" />
-    <PersonEditModal v-if="editedPerson?.id" v-model="showEditModal" :sign-id="editedPerson?.id" @saved="loadPersons" />
-    <ConfirmModal v-model="showDeleteModal" title="Supprimer la personne ?" :message="deleteMessage"
-      @confirm="deletePersonConfirmed" />
+    <PersonEditModal
+      v-if="editedPerson?.id"
+      v-model="showEditModal"
+      :sign-id="editedPerson?.id"
+      @saved="loadPersons"
+    />
+    <ConfirmModal
+      v-model="showDeleteModal"
+      title="Supprimer la personne ?"
+      :message="deleteMessage"
+      @confirm="deletePersonConfirmed"
+    />
   </div>
 </template>
 <script setup lang="ts">

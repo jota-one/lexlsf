@@ -1,14 +1,23 @@
 <template>
-    <Dialog v-model:visible="visible" modal header="Modifier une personne" class="w-[60%]">
-        <PersonForm ref="personForm" v-model="form" v-model:categories="selectedCategories"
-            :initial-videos="initialVideos" />
-        <template #footer>
-            <div class="flex justify-end gap-2 pt-4">
-                <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-                <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
-            </div>
-        </template>
-    </Dialog>
+  <Dialog v-model:visible="visible" modal header="Modifier une personne" class="w-[60%]">
+    <PersonForm
+      ref="personForm"
+      v-model="form"
+      v-model:categories="selectedCategories"
+      :initial-videos="initialVideos"
+    />
+    <template #footer>
+      <div class="flex justify-end gap-2 pt-4">
+        <Button
+          type="button"
+          label="Annuler"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button type="button" label="Enregistrer" :loading="saving" @click="save"></Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -35,7 +44,7 @@ const { updatePerson, loadPerson } = usePersons();
 const saving = ref(false)
 
 // Store selected category for each parent
-const selectedCategories = ref<{ [parentId: string]: string | null }>({});
+const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 const initialVideos = ref<TVideo.TRecord[]>([]);
 
 const form = ref<TPerson.TForm>({
@@ -45,6 +54,11 @@ const form = ref<TPerson.TForm>({
     Sign: undefined,
     Category: [],
     Videos: [],
+    deaf: false,
+    birthdate: undefined,
+    birthplace: '',
+    deafFamily: false,
+    family: '',
 });
 
 const save = async () => {
@@ -53,8 +67,14 @@ const save = async () => {
     // Sync lists order before saving
     personForm.value?.syncListsBeforeSave();
 
-    // Collect selected category ids (one per parent)
-    const selectedCategoryIds = Object.values(selectedCategories.value).filter(Boolean) as string[];
+    // Collect all selected category ids (flatten arrays from each parent)
+    const selectedCategoryIds: string[] = [];
+    Object.values(selectedCategories.value).forEach(categoryList => {
+        if (Array.isArray(categoryList)) {
+            selectedCategoryIds.push(...categoryList);
+        }
+    });
+    
     // Add to form payload
     const payload = {
         ...form.value,
@@ -80,6 +100,11 @@ watch(visible, async (isVisible) => {
         Category: person.Category || [],
         Videos: person.Videos || [],
         highlights: person.highlights || [],
+        deaf: !!person.deaf,
+        birthdate: person.birthdate || undefined,
+        birthplace: person.birthplace || '',
+        deafFamily: !!person.deafFamily,
+        family: person.family || '',
     };
 
     if (person.expand?.Videos) {
@@ -92,7 +117,11 @@ watch(visible, async (isVisible) => {
     selectedCategories.value = {};
     if (person.expand?.Category) {
         person.expand.Category.forEach((cat: any) => {
-            selectedCategories.value[cat.Parent!] = cat.id;
+            const parentId = cat.Parent!;
+            if (!selectedCategories.value[parentId]) {
+                selectedCategories.value[parentId] = [];
+            }
+            selectedCategories.value[parentId].push(cat.id);
         });
     }
 }, { immediate: true });
