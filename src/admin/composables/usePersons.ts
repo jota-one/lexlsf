@@ -10,7 +10,12 @@ const setFormData = (payload: TPerson.TForm) => {
     formData.append('illustration', payload.illustration)
   }
   formData.append('name', payload.name)
-  formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'))
+  let slug = payload.name.toLowerCase().replace(/\s+/g, '-').replace("'", '-')
+  if (payload.firstname) {
+    formData.append('firstname', payload.firstname)
+    slug = `${payload.firstname.toLowerCase().replace(/\s+/g, '-').replace("'", '-')}-${slug}`
+  }
+  formData.append('slug', slug)
   if (payload.description) {
     formData.append('description', payload.description)
   }
@@ -20,6 +25,9 @@ const setFormData = (payload: TPerson.TForm) => {
   // new simple fields
   if (typeof payload.deaf !== 'undefined') {
     formData.append('deaf', String(Boolean(payload.deaf)))
+  }
+  if (typeof payload.organism !== 'undefined') {
+    formData.append('organism', String(Boolean(payload.organism)))
   }
   if (payload.birthdate) {
     formData.append('birthdate', payload.birthdate)
@@ -53,7 +61,7 @@ export default function usePersons() {
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
       fields:
-        'id, name, illustration, slug, updated, deaf, birthdate, birthplace, deafFamily, family, expand.Category.*, expand.Sign.*, expand.Videos.*',
+        'id, name, firstname, illustration, slug, updated, deaf, organism, birthdate, birthplace, deafFamily, family, expand.Category.*, expand.Sign.*, expand.Videos.*',
       expand: 'Category,Sign,Videos',
       sort: '-updated',
     })

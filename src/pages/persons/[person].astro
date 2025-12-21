@@ -2,6 +2,7 @@
 import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
 import config from '../../config'
+import { marked } from 'marked'
 
 export const prerender = false
 
@@ -17,7 +18,7 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  fields: 'id, name, illustration, slug, description, deaf, birthdate, birthplace, deafFamily, family, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
+  fields: 'id, name, firstname, illustration, slug, description, deaf, birthdate, birthplace, deafFamily, family, organism, highlights, expand.Category.*, expand.Category.expand.Parent.*, expand.Sign.*, expand.Videos.*',
   expand: 'Category,Category.Parent,Sign,Videos',
 })
 
@@ -28,6 +29,9 @@ const imageUrl = record.illustration
 const imageThumbUrl = record.illustration
   ? `${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}?thumb=600x600`
   : null
+
+// Render Markdown description to HTML (server-side)
+const descriptionHtml = record.description ? marked.parse(String(record.description)) : ''
 
 // Fonction pour construire l'URL complète d'une catégorie
 const getCategoryUrl = (cat: any) => {
@@ -48,7 +52,7 @@ const getYouTubeId = (url: string) => {
 <PageLayout>
   <div class="max-w-5xl mx-auto">
     <!-- En-tête avec hero -->
-    <div class="hero bg-base-200 rounded-box mb-8">
+    <div class="hero bg-base-200 rounded-box mb-8 place-items-start">
       <div class="hero-content flex-col lg:flex-row gap-8 py-12">
         {imageUrl && (
           <picture class="flex-shrink-0">
@@ -61,22 +65,26 @@ const getYouTubeId = (url: string) => {
           </picture>
         )}
         <div class="flex-1">
-          <h1 class="text-5xl font-bold mb-4">{record.name}</h1>
+          <h1 class={`text-5xl font-bold mb-4 ${record.deaf ? 'text-info' : ''}`}>
+            {!record.organism && record.firstname ? `${record.firstname} ${record.name}` : record.name}
+            {record.expand?.Sign && (
+              <a
+                href={`/signs/${record.expand.Sign.slug}`}
+                class="btn btn-info hover:bg-gray-400 ml-2"
+                aria-label={`Voir le signe ${record.expand.Sign.name}`}
+              >
+                <span class="i-ic-round-sign-language"></span>
+              </a>
+            )}
+          </h1>
 
           {/* Infos rapides à droite de l'image */}
           <div class="space-y-3 mb-6">
-            {typeof record.deaf !== 'undefined' && (
-              <div class="flex items-center gap-2">
-                <span class="status status-sm status-info"></span>
-                <span class="text-sm">{record.deaf ? 'Sourd(e)' : 'Entendant(e)'}</span>
-              </div>
-            )}
-
             {(record.birthdate || record.birthplace) && (
               <div class="flex items-start gap-2">
                 <span class="i-fa-solid-baby text-base"></span>
                 <div class="text-sm">
-                  <span class="font-semibold">Naissance:</span>
+                  <span class="font-semibold">{record.organism ? 'Crée le:' : 'Né(e) le:'}</span>
                   {record.birthdate && (
                     <span> {(() => {
                       const d = new Date(String(record.birthdate).replace(' ', 'T'))
@@ -87,13 +95,13 @@ const getYouTubeId = (url: string) => {
                     })()}</span>
                   )}
                   {record.birthplace && (
-                    <span> - {record.birthplace}</span>
+                    <br><span>{record.birthplace}</span>
                   )}
                 </div>
               </div>
             )}
 
-            {(typeof record.deafFamily !== 'undefined' || record.family) && (
+            {!record.organism && (typeof record.deafFamily !== 'undefined' || record.family) && (
               <div class="flex items-start gap-2">
                 <span class="i-fa-solid-users text-base"></span>
                 <div class="text-sm">
@@ -117,13 +125,6 @@ const getYouTubeId = (url: string) => {
               ))}
             </div>
           )}
-
-          {record.expand?.Sign && (
-            <div class="alert alert-info mt-4">
-              <span class="i-fa-solid-hand text-lg"></span>
-              <span>Signe associé : <a href={`/signs/${record.expand.Sign.slug}`} class="link link-hover font-bold">{record.expand.Sign.name}</a></span>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -136,7 +137,7 @@ const getYouTubeId = (url: string) => {
           <div class="card-body">
             <h2 class="card-title text-2xl mb-4">
               <span class="i-fa-solid-scroll"></span>
-              Biographie
+              Timeline
             </h2>
             
             <div class="timeline timeline-vertical timeline-snap-icon timeline-compact">
@@ -146,7 +147,7 @@ const getYouTubeId = (url: string) => {
                     <span class="i-fa-solid-circle text-primary"></span>
                   </div>
                   <div class="timeline-start mb-10">
-                    <time class="font-mono italic text-sm opacity-70">{highlight.title}</time>
+                    <time class="font-bold text-[16px]">{highlight.title}</time>
                     <p class="mt-2 text-base-content/80">{highlight.description}</p>
                   </div>
                   <hr class="bg-primary" />
@@ -162,20 +163,15 @@ const getYouTubeId = (url: string) => {
         <div class="card-body">
           <h2 class="card-title text-2xl mb-4">
             <span class="i-fa-solid-info-circle"></span>
-            Informations détaillées
+            Présentation
           </h2>
           
           <div class="space-y-4">
             {record.description && (
-              <div>
-                <h3 class="text-xl font-semibold mb-2">Présentation</h3>
-                <p class="text-base text-base-content/80">{record.description}</p>
+              <div class="prose prose-sm md:prose-base max-w-none text-base-content prose-headings:text-base-content prose-strong:text-base-content prose-p:text-base-content/80 person-prose">
+                <article set:html={descriptionHtml} />
               </div>
             )}
-            {/* Placeholders pour infos futures */}
-            <div class="text-base-content/70">
-              <p>Contenu à venir...</p>
-            </div>
           </div>
         </div>
       </div>

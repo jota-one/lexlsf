@@ -44,11 +44,18 @@ const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
 const form = ref<TPerson.TForm>({
     name: '',
+    firstname: '',
     illustration: null,
     description: '',
     Sign: undefined,
     Category: [],
     Videos: [],
+    deaf: false,
+    birthdate: undefined,
+    birthplace: '',
+    deafFamily: false,
+    family: '',
+    organism: false,
 });
 
 const save = async () => {

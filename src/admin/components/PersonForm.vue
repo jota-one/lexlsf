@@ -20,14 +20,46 @@
           />
         </div>
 
+        <!-- Personne/organisme -->
+        <div class="flex items-center gap-4">
+          <label for="deaf" class="font-semibold w-60">Personne/organisme</label>
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.organism ? 'text-base-content/50' : 'text-base-content font-semibold'"
+              @click="form.organism = false"
+              aria-label="Choisir Personne"
+            >
+              Personne
+            </button>
+            <ToggleSwitch v-model="form.organism" inputId="deaf" />
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.organism ? 'text-base-content font-semibold' : 'text-base-content/50'"
+              @click="form.organism = true"
+              aria-label="Choisir Organisme"
+            >
+              Organisme
+            </button>
+          </div>
+        </div>
+
         <!-- Nom -->
         <div class="flex items-center gap-4">
           <label for="name" class="font-semibold w-60">Nom</label>
           <InputText v-model="form.name" id="name" class="w-full" required />
         </div>
 
+        <!-- Prénom -->
+        <div v-if="!form.organism" class="flex items-center gap-4">
+          <label for="firstname" class="font-semibold w-60">Prénom</label>
+          <InputText v-model="form.firstname" id="firstname" class="w-full" />
+        </div>
+
         <!-- Sourds/entendant -->
-        <div class="flex items-center gap-4">
+        <div v-if="!form.organism" class="flex items-center gap-4">
           <label for="deaf" class="font-semibold w-60">Sourds/entendant</label>
           <div class="flex items-center gap-3">
             <button
@@ -52,9 +84,9 @@
           </div>
         </div>
 
-        <!-- Date de naissance -->
+        <!-- Date de naissance / création -->
         <div class="flex items-center gap-4">
-          <label for="birthdate" class="font-semibold w-60">Date de naissance</label>
+          <label for="birthdate" class="font-semibold w-60">{{ form.organism ? 'Date de création' : 'Date de naissance' }}</label>
           <DatePicker
             v-model="birthdateModel"
             inputId="birthdate"
@@ -63,14 +95,14 @@
           />
         </div>
 
-        <!-- Lieu de naissance -->
+        <!-- Lieu de naissance / création -->
         <div class="flex items-center gap-4">
-          <label for="birthplace" class="font-semibold w-60">Lieu de naissance</label>
+          <label for="birthplace" class="font-semibold w-60">{{ form.organism ? 'Lieu de création' : 'Lieu de naissance' }}</label>
           <InputText v-model="form.birthplace" id="birthplace" class="w-full" />
         </div>
 
         <!-- Famille sourde/entendante -->
-        <div class="flex items-center gap-4">
+        <div v-if="!form.organism" class="flex items-center gap-4">
           <label for="deafFamily" class="font-semibold w-60">Famille</label>
           <div class="flex items-center gap-3">
             <button
@@ -96,7 +128,7 @@
         </div>
 
         <!-- Précision sur la famille -->
-        <div class="flex items-start gap-4">
+        <div v-if="!form.organism" class="flex items-start gap-4">
           <label for="family" class="font-semibold w-60 pt-2">Précision sur la famille</label>
           <textarea
             v-model="form.family"
@@ -126,13 +158,12 @@
         <!-- Description -->
         <div class="flex items-start gap-4">
           <label for="description" class="font-semibold w-60 pt-2">Description</label>
-          <textarea
-            v-model="form.description"
-            id="description"
-            class="textarea textarea-bordered w-full"
-            rows="4"
-            placeholder="Description de la personne"
-          ></textarea>
+          <div class="w-full">
+            <VMarkdownEditor
+              v-model="form.description"
+              locale="en"
+            />
+          </div>
         </div>
       </TabPanel>
 
@@ -419,6 +450,8 @@ import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ToggleSwitch from 'primevue/toggleswitch';
+import { VMarkdownEditor } from 'vue3-markdown';
+import 'vue3-markdown/dist/vue3-markdown.css';
 import useCategories from '../composables/useCategories';
 import useSigns from '../composables/useSigns';
 import useVideos from '../composables/useVideos';

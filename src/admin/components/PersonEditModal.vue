@@ -49,6 +49,7 @@ const initialVideos = ref<TVideo.TRecord[]>([]);
 
 const form = ref<TPerson.TForm>({
     name: '',
+    firstname: '',
     illustration: null,
     description: '',
     Sign: undefined,
@@ -59,6 +60,7 @@ const form = ref<TPerson.TForm>({
     birthplace: '',
     deafFamily: false,
     family: '',
+    organism: false,
 });
 
 const save = async () => {
@@ -94,6 +96,7 @@ watch(visible, async (isVisible) => {
 
     form.value = {
         name: person.name,
+        firstname: person.firstname || '',
         illustration: null,
         description: person.description || '',
         Sign: person.Sign || undefined,
@@ -105,6 +108,7 @@ watch(visible, async (isVisible) => {
         birthplace: person.birthplace || '',
         deafFamily: !!person.deafFamily,
         family: person.family || '',
+        organism: !!person.organism,
     };
 
     if (person.expand?.Videos) {

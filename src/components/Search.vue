@@ -64,18 +64,19 @@ const onSearch = async (event: any) => {
 
     loading.value = true;
     try {
-        const filter = `name~"${query}"`;
+        const signFilter = `name~"${query}"`;
+        const cultureFilter = `(name~"${query}" || firstname~"${query}")`;
 
         // Recherche dans les signes
         const signsPromise = pb.collection('sign').getList(1, 10, {
-            filter,
+            filter: signFilter,
             fields: 'id,name,definition,slug',
             sort: 'name',
         });
 
         // Recherche dans les personnes (culture)
         const culturePromise = pb.collection('person').getList(1, 10, {
-            filter,
+            filter: cultureFilter,
             fields: 'id,name,definition,slug',
             sort: 'name',
         });

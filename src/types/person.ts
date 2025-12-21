@@ -7,6 +7,7 @@ export type TBioEntry = {
 export type TRecord = {
   id: string
   name: string
+  firstname?: string
   slug: string
   illustration: string
   description: string
@@ -21,6 +22,7 @@ export type TRecord = {
   birthplace?: string
   deafFamily?: boolean
   family?: string
+  organism?: boolean
 }
 
 export type TForm = Omit<
@@ -31,10 +33,12 @@ export type TForm = Omit<
   illustration?: File | null
   description?: string
   deaf?: boolean
+  firstname?: string
   birthdate?: string
   birthplace?: string
   deafFamily?: boolean
   family?: string
+  organism?: boolean
   Sign?: string
   highlights?: TBioEntry[]
 }
