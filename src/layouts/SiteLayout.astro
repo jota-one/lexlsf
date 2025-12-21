@@ -28,11 +28,11 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
-            <AdminLink client:load />
+            <AdminLink client:only />
           </ul>
         </div>
         <div class="hidden lg:flex gap-5">
-          <UserAuth client:load />
+          <UserAuth client:only />
         </div>
       </div>
     </nav>
