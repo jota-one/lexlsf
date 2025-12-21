@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue'
+import { useTemplateRef } from 'vue'
 import useAuth from '@admin/composables/useAuth'
 import LoginModal from "./LoginModal.vue"
 
