@@ -7,6 +7,5 @@
   },
   "oxc.typeAware": true,
   "oxc.unusedDisableDirectives": "warn",
-  "oxc.configPath": "",
   "oxc.tsConfigPath": "tsconfig.json"
 }

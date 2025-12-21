@@ -30,19 +30,23 @@
         <div class="flex items-center gap-4">
           <label for="deaf" class="font-semibold w-60">Sourds/entendant</label>
           <div class="flex items-center gap-3">
-            <button type="button"
-                    class="text-sm transition-colors"
-                    :class="form.deaf ? 'text-base-content/50' : 'text-base-content font-semibold'"
-                    @click="form.deaf = false"
-                    aria-label="Choisir Entendant(e)">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deaf ? 'text-base-content/50' : 'text-base-content font-semibold'"
+              @click="form.deaf = false"
+              aria-label="Choisir Entendant(e)"
+            >
               Entendant(e)
             </button>
             <ToggleSwitch v-model="form.deaf" inputId="deaf" />
-            <button type="button"
-                    class="text-sm transition-colors"
-                    :class="form.deaf ? 'text-base-content font-semibold' : 'text-base-content/50'"
-                    @click="form.deaf = true"
-                    aria-label="Choisir Sourd(e)">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deaf ? 'text-base-content font-semibold' : 'text-base-content/50'"
+              @click="form.deaf = true"
+              aria-label="Choisir Sourd(e)"
+            >
               Sourd(e)
             </button>
           </div>
@@ -69,19 +73,23 @@
         <div class="flex items-center gap-4">
           <label for="deafFamily" class="font-semibold w-60">Famille</label>
           <div class="flex items-center gap-3">
-            <button type="button"
-                    class="text-sm transition-colors"
-                    :class="form.deafFamily ? 'text-base-content/50' : 'text-base-content font-semibold'"
-                    @click="form.deafFamily = false"
-                    aria-label="Choisir Famille entendante">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deafFamily ? 'text-base-content/50' : 'text-base-content font-semibold'"
+              @click="form.deafFamily = false"
+              aria-label="Choisir Famille entendante"
+            >
               Famille entendante
             </button>
             <ToggleSwitch v-model="form.deafFamily" inputId="deafFamily" />
-            <button type="button"
-                    class="text-sm transition-colors"
-                    :class="form.deafFamily ? 'text-base-content font-semibold' : 'text-base-content/50'"
-                    @click="form.deafFamily = true"
-                    aria-label="Choisir Famille sourde">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deafFamily ? 'text-base-content font-semibold' : 'text-base-content/50'"
+              @click="form.deafFamily = true"
+              aria-label="Choisir Famille sourde"
+            >
               Famille sourde
             </button>
           </div>

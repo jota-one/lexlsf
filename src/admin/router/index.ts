@@ -4,6 +4,7 @@ import Categories from '../views/Categories.vue'
 import Signs from '../views/Signs.vue'
 import HandConfigurations from '../views/HandConfigurations.vue'
 import Persons from '../views/Persons.vue'
+import useAuth from '../composables/useAuth'
 
 const routes = [
   { path: '', component: Home },
@@ -13,7 +14,19 @@ const routes = [
   { path: '/persons', component: Persons },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL + 'admin/'),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated.value) {
+    window.location.href = '/'
+  } else {
+    next()
+  }
+})
+
+export default router

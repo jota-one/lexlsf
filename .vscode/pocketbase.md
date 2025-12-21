@@ -74,11 +74,13 @@ const person = record.expand?.person_via_Sign?.[0] || null
 ### File URLs Pattern
 
 Public file URLs follow this pattern:
+
 ```
 ${config.apiBaseUrl}/api/files/<collection>/<id>/<filename>
 ```
 
 Example:
+
 ```javascript
 const fileUrl = `${config.apiBaseUrl}/api/files/hand_configurations/${id}/${filename}`
 ```

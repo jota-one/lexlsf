@@ -35,5 +35,5 @@ migrate((app) => {
     app.save(record)
   }
 
-}, (app) => {
+}, () => {
 })
