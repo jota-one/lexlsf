@@ -117,5 +117,5 @@ migrate((app) => {
     subrecord.set("slug", "lieu")
     subrecord.set("Parent", record.id)
     app.save(subrecord)
-}, (app) => {
+}, () => {
 })

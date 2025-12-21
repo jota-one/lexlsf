@@ -74,7 +74,7 @@ const save = async () => {
             selectedCategoryIds.push(...categoryList);
         }
     });
-    
+
     // Add to form payload
     const payload = {
         ...form.value,
