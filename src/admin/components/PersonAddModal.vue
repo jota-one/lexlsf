@@ -1,6 +1,11 @@
 <template>
   <Dialog v-model:visible="visible" modal header="Ajouter une personne" class="w-[60%]">
-    <PersonForm ref="personForm" v-model="form" v-model:categories="selectedCategories" />
+        <PersonForm
+            ref="personForm"
+            v-model="form"
+            v-model:categories="selectedCategories"
+            v-model:activities="selectedActivities"
+        />
     <!-- Toast container for PocketBase errors -->
     <PbErrorToast />
     <template #footer>
@@ -39,8 +44,9 @@ const { addPerson } = usePersons();
 const saving = ref(false)
 const { showPbError } = usePbErrorToast();
 
-// Store selected category for each parent
+// Store selected category/activity for each parent
 const selectedCategories = ref<{ [parentId: string]: string[] }>({});
+const selectedActivities = ref<{ [parentId: string]: string[] }>({});
 
 const form = ref<TPerson.TForm>({
     name: '',
@@ -49,6 +55,7 @@ const form = ref<TPerson.TForm>({
     description: '',
     Sign: undefined,
     Category: [],
+    Activities: [],
     Videos: [],
     deaf: false,
     birthdate: undefined,
@@ -71,11 +78,19 @@ const save = async () => {
             selectedCategoryIds.push(...categoryList);
         }
     });
+    // Collect all selected activity ids (flatten arrays from each parent)
+    const selectedActivityIds: string[] = [];
+    Object.values(selectedActivities.value).forEach(activityList => {
+        if (Array.isArray(activityList)) {
+            selectedActivityIds.push(...activityList);
+        }
+    });
 
     // Add to form payload
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
+        Activities: selectedActivityIds,
     };
     try {
         await addPerson(payload);
@@ -98,9 +113,11 @@ watch(visible, (newVal) => {
             description: '',
             Sign: undefined,
             Category: [],
+            Activities: [],
             Videos: [],
         };
         selectedCategories.value = {};
+        selectedActivities.value = {};
     }
 }, { immediate: true });
 </script>

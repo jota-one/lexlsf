@@ -18,7 +18,7 @@ const { person } = Astro.params
 
 const pb = new PocketBase(config.apiBaseUrl)
 const record = await pb.collection('person').getFirstListItem(`slug="${person}"`, {
-  expand: 'Category,Category.Parent,Sign,Videos',
+  expand: 'Category,Category.Parent,Sign,Videos,Activities',
 })
 
 const imageUrl = record.illustration 
@@ -31,6 +31,11 @@ const imageThumbUrl = record.illustration
 
 // Render Markdown description to HTML (server-side)
 const descriptionHtml = record.description ? marked.parse(String(record.description)) : ''
+
+// Liste des activités (depuis l'expand ou fallback)
+const activitiesList = Array.isArray(record.expand?.Activities)
+  ? record.expand.Activities.map((a: any) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a)).filter(Boolean)
+  : (Array.isArray((record as any).activities) ? (record as any).activities : [])
 
 // Fonction pour construire l'URL complète d'une catégorie
 const getCategoryUrl = (cat: any) => {
@@ -110,6 +115,16 @@ const getYouTubeId = (url: string) => {
                   {record.family && (
                     <div class="opacity-80">{record.family}</div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {activitiesList.length > 0 && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-bank text-base"></span>
+                <div class="text-sm">
+                  <span class="font-semibold">Activité(s):</span>
+                  <span> {activitiesList.join(', ')}</span>
                 </div>
               </div>
             )}

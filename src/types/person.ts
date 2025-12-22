@@ -13,6 +13,7 @@ export type TRecord = {
   description: string
   Sign?: string
   Category: string[]
+  Activities: string[]
   Videos: string[]
   timeline?: TTimelineEntry[]
   created: string

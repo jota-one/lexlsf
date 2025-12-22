@@ -44,6 +44,9 @@ const setFormData = (payload: TPerson.TForm) => {
   ;(payload.Category || []).forEach(cat => {
     formData.append('Category', cat)
   })
+  ;(payload.Activities || []).forEach(act => {
+    formData.append('Activities', act)
+  })
   ;(payload.Videos || []).forEach(video => {
     formData.append('Videos', video)
   })
@@ -70,7 +73,7 @@ export default function usePersons() {
   const loadPerson = async (id: string) => {
     return pb.collection<TPerson.TRecord & { expand?: any }>('person').getOne(id, {
       fields: '*',
-      expand: 'Category,Sign,Videos',
+      expand: 'Category,Activities,Sign,Videos',
     })
   }
 
