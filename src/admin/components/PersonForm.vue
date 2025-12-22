@@ -182,14 +182,14 @@
             <h3 class="font-semibold text-lg">Entrées de la timeline</h3>
           </div>
           <div
-            v-if="highlights && highlights.length === 0"
+            v-if="timeline && timeline.length === 0"
             class="text-center text-base-content/50 py-8"
           >
-            Aucune entrée biographique. Cliquez sur "Ajouter une entrée" pour commencer.
+            Aucune entrée de timeline. Cliquez sur "Ajouter une entrée" pour commencer.
           </div>
 
-          <div ref="highlightsContainer">
-            <div v-for="(entry, index) in highlights" :key="entry.id" class="card card-border">
+          <div ref="timelineContainer">
+            <div v-for="(entry, index) in timeline" :key="entry.id" class="card card-border">
               <!-- Mode édition -->
               <div v-if="editingBioIndex === index" class="space-y-3">
                 <div class="flex justify-between items-start gap-4">
@@ -440,10 +440,9 @@ import useVideos from '../composables/useVideos';
 import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
-import useCategories from '@admin/composables/useCategories';
 
-// Internal type for highlights with mandatory ID for sorting
-type TBioEntryWithId = TPerson.TBioEntry & { id: string };
+// Internal type for timeline entries with mandatory ID for sorting
+type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string };
 
 const props = defineProps<{
     initialVideos?: TVideo.TRecord[]
@@ -478,12 +477,12 @@ const {
     handle: '.handle',
 });
 
-// Utiliser le composable useSortableList pour les highlights
+// Utiliser le composable useSortableList pour la timeline
 const {
-    items: highlights,
-    container: highlightsContainer,
-    setItems: setHighlights,
-} = useSortableList<TBioEntryWithId>('highlightsContainer', [], {
+    items: timeline,
+    container: timelineContainer,
+    setItems: setTimeline,
+} = useSortableList<TTimelineEntryWithId>('timelineContainer', [], {
     animation: 200,
     handle: '.bio-handle',
 });
@@ -494,23 +493,23 @@ watch(() => props.initialVideos, (newVal) => {
     }
 }, { immediate: true });
 
-// Initialize highlights when form is loaded from outside (e.g., loading person from DB)
+// Initialize timeline when form is loaded from outside (e.g., loading person from DB)
 // This will fire every time the modale opens with new data
-watch(() => form.value.highlights, (newVal) => {
+watch(() => form.value.timeline, (newVal) => {
     if (newVal && newVal.length > 0) {
-        // If current highlights exist and have same count, don't reinitialize (preserve order)
-        if (highlights.value.length === newVal.length && highlights.value.length > 0) {
+        // If current timeline exist and have same count, don't reinitialize (preserve order)
+        if (timeline.value.length === newVal.length && timeline.value.length > 0) {
             return;
         }
 
-        // Ensure each highlight has an id
-        const highlightsWithIds: TBioEntryWithId[] = newVal.map((h, idx) => ({
+        // Ensure each timeline entry has an id
+        const timelineWithIds: TTimelineEntryWithId[] = newVal.map((h, idx) => ({
             ...h,
-            id: h.id || `bio-${idx}-${Date.now()}`
+            id: h.id || `timeline-${idx}-${Date.now()}`
         }));
-        setHighlights(highlightsWithIds);
+        setTimeline(timelineWithIds);
     } else if (newVal && newVal.length === 0) {
-        setHighlights([]);
+        setTimeline([]);
     }
 }, { immediate: true });
 
@@ -538,31 +537,31 @@ const onFileChange = (event: Event) => {
     }
 };
 
-// Initialize highlights if not present
-if (!form.value.highlights) {
-    form.value.highlights = [];
+// Initialize timeline if not present
+if (!form.value.timeline) {
+    form.value.timeline = [];
 }
 
 const addBioEntry = () => {
-    const newEntry: TBioEntryWithId = {
+    const newEntry: TTimelineEntryWithId = {
         id: `bio-${Date.now()}`,
         title: '',
         description: ''
     };
-    highlights.value = [...highlights.value, newEntry];
+    timeline.value = [...timeline.value, newEntry];
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
-    const newIndex = highlights.value.length - 1;
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
+    const newIndex = timeline.value.length - 1;
     editingBioIndex.value = newIndex;
 };
 
 const removeBioEntry = (index: number) => {
-    highlights.value.splice(index, 1);
-    highlights.value = [...highlights.value];
+    timeline.value.splice(index, 1);
+    timeline.value = [...timeline.value];
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     if (editingBioIndex.value === index) {
         editingBioIndex.value = null;
     } else if (editingBioIndex.value !== null && editingBioIndex.value > index) {
@@ -576,8 +575,8 @@ const editBioEntry = (index: number) => {
 
 const validateBioEntry = () => {
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     editingBioIndex.value = null;
 };
 
@@ -667,8 +666,8 @@ const removeVideo = (index: number) => {
 // Sync lists order to form before saving
 // This ensures the sorted order from drag & drop is saved to the backend
 const syncListsBeforeSave = () => {
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     form.value.Videos = getVideoIds();
     form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined as any;
 };

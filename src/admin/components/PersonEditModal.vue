@@ -102,7 +102,7 @@ watch(visible, async (isVisible) => {
         Sign: person.Sign || undefined,
         Category: person.Category || [],
         Videos: person.Videos || [],
-        highlights: person.highlights || [],
+        timeline: person.timeline || [],
         deaf: !!person.deaf,
         birthdate: person.birthdate || undefined,
         birthplace: person.birthplace || '',

@@ -1,4 +1,4 @@
-export type TBioEntry = {
+export type TTimelineEntry = {
   id?: string
   title: string
   description: string
@@ -14,7 +14,7 @@ export type TRecord = {
   Sign?: string
   Category: string[]
   Videos: string[]
-  highlights?: TBioEntry[]
+  timeline?: TTimelineEntry[]
   created: string
   updated: string
   deaf?: boolean
@@ -40,5 +40,5 @@ export type TForm = Omit<
   family?: string
   organism?: boolean
   Sign?: string
-  highlights?: TBioEntry[]
+  timeline?: TTimelineEntry[]
 }
