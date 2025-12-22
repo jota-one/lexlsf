@@ -72,6 +72,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
 import useCategories from '../composables/useCategories';
+import { ALL_ENTITIES } from '../config/entities';
 
 type Events = {
     saved: []
@@ -90,14 +91,7 @@ const form = ref({
 
 const isEditMode = computed(() => !!props.categoryToEdit);
 
-const entityOptions = [
-    { id: 'person', label: 'Personnes', disabled: false }
-];
-
-const allEntities = [
-    { id: 'sign', label: 'Signes', disabled: true },
-    ...entityOptions
-];
+const allEntities = ALL_ENTITIES;
 
 const tagElement = useTemplateRef<{ $el: HTMLInputElement }>('tagInput');
 

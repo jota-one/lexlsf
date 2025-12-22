@@ -5,6 +5,23 @@
       Catégories
     </h2>
     <p>Gestion des catégories.</p>
+    <!-- Context filters -->
+    <div class="mt-4 flex flex-wrap items-center gap-2">
+      <span class="text-sm text-gray-500 mr-2">Filtres contexte:</span>
+      <template v-for="entity in filterEntities" :key="entity.id">
+        <button
+          class="badge badge-sm cursor-pointer"
+          :class="[
+            selectedContexts.has(entity.id) || entity.disabled ? 'badge-primary' : 'badge-outline',
+            entity.disabled ? 'opacity-60 cursor-not-allowed' : ''
+          ]"
+          :disabled="entity.disabled"
+          @click="!entity.disabled && toggleContext(entity.id)"
+        >
+          {{ entity.label }}
+        </button>
+      </template>
+    </div>
     <div class="card mt-4">
       <div class="flex justify-end mb-2">
         <Button
@@ -39,7 +56,8 @@
                     <span
                       v-for="child in cat.expand.category_via_Parent"
                       :key="child.id"
-                      class="badge badge-sm badge-outline mr-1 mb-1"
+                      class="badge badge-sm mr-1 mb-1"
+                      :class="isChildMatch(child) ? 'badge-primary' : 'badge-outline'"
                     >
                       <span
                         class="cursor-pointer"
@@ -108,8 +126,9 @@
 </template>
 <script setup lang="ts">
 // filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/views/Categories.vue
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted } from 'vue';
 import useCategories from '../composables/useCategories';
+import { ALL_ENTITIES } from '../config/entities';
 import Button from 'primevue/button';
 import CategoryFormModal from '../components/CategoryFormModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
@@ -124,6 +143,42 @@ const popoverRefs = ref<{ [id: string]: any }>({});
 const showDeleteModal = ref(false);
 const categoryToDelete = ref<any>(null);
 const deleteMessage = ref('');
+
+// Filter entities (imported from config)
+const filterEntities = ALL_ENTITIES;
+
+// Context filters state - Signe always selected and disabled
+const selectedContexts = ref<Set<string>>(new Set(['sign']));
+
+// Check if a child matches all selected contexts (AND logic, excluding implicit 'sign')
+const isChildMatch = (child: any) => {
+  const hasFilter = selectedContexts.value.size > 0;
+  if (!hasFilter) return false;
+  // entities is now an array (from select field with maxSelect: 2)
+  const entsRaw = Array.isArray(child.entities) ? (child.entities as string[]) : [];
+  // Required contexts = selected contexts minus the implicit 'sign'
+  const requiredContexts = Array.from(selectedContexts.value).filter(ctx => ctx !== 'sign');
+  for (const req of requiredContexts) {
+    if (!entsRaw.includes(req)) return false;
+  }
+  return true;
+};
+
+const toggleContext = (ctx: string) => {
+  // Don't allow toggling disabled contexts
+  const entity = filterEntities.find(e => e.id === ctx);
+  if (entity?.disabled) return;
+  
+  if (selectedContexts.value.has(ctx)) {
+    selectedContexts.value.delete(ctx);
+  } else {
+    selectedContexts.value.add(ctx);
+  }
+  // force reactivity on Set by creating a new Set instance
+  selectedContexts.value = new Set(selectedContexts.value);
+};
+
+
 
 // Helper to set popover ref for each child
 function setPopoverRef(id: string) {

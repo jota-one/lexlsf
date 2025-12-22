@@ -9,7 +9,7 @@
       :suggestions="suggestions"
       @complete="onSearch"
       @item-select="onSelect"
-      option-label="name"
+      option-label="label"
       class="flex-1"
       fluid
       :loading="loading"
@@ -19,12 +19,12 @@
         <div class="flex items-start gap-2">
           <span
             class="badge badge-sm mt-1"
-            :class="slotProps.option.type === 'sign' ? 'badge-primary' : 'badge-accent'"
+            :class="slotProps.option.type === 'sign' ? 'badge-primary' : (slotProps.option.type === 'organism' ? 'badge-info' : 'badge-accent')"
           >
-            {{ slotProps.option.type === 'sign' ? 'Signe' : 'Culture' }}
+            {{ slotProps.option.type === 'sign' ? 'Signe' : (slotProps.option.type === 'organism' ? 'Organisme' : 'Personne') }}
           </span>
           <div class="flex-1">
-            <div class="font-medium">{{ slotProps.option.name }}</div>
+            <div class="font-medium">{{ slotProps.option.label }}</div>
             <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
           </div>
         </div>
@@ -76,18 +76,26 @@ const onSearch = async (event: any) => {
 
         // Recherche dans les personnes (culture)
         const culturePromise = pb.collection('person').getList(1, 10, {
-            filter: cultureFilter,
-            fields: 'id,name,definition,slug',
-            sort: 'name',
+          filter: cultureFilter,
+          fields: 'id,name,firstname,organism,definition,slug',
+          sort: 'name,firstname',
         });
 
         const [signsRes, cultureRes] = await Promise.all([signsPromise, culturePromise]);
 
         // Combiner les résultats avec un type
-        const signs = (signsRes.items || []).map((item: any) => ({ ...item, type: 'sign' }));
-        const culture = (cultureRes.items || []).map((item: any) => ({ ...item, type: 'culture' }));
+        const signs = (signsRes.items || []).map((item: any) => ({
+          ...item,
+          type: 'sign',
+          label: item.name,
+        }));
+        const culture = (cultureRes.items || []).map((item: any) => ({
+          ...item,
+          type: item.organism ? 'organism' : 'person',
+          label: item.organism ? item.name : [item.firstname, item.name].filter(Boolean).join(' '),
+        }));
 
-        suggestions.value = [...signs, ...culture].sort((a: any, b: any) => a.name.localeCompare(b.name));
+        suggestions.value = [...signs, ...culture].sort((a: any, b: any) => a.label.localeCompare(b.label));
     } catch (err) {
         console.error('Search error', err);
         suggestions.value = [];
