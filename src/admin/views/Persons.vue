@@ -86,7 +86,9 @@
             </div>
           </template>
         </Column>
-        <template #footer> Nombre total de personnes: {{ persons ? persons.length : 0 }}. </template>
+        <template #footer>
+          Nombre total de personnes: {{ persons ? persons.length : 0 }}.
+        </template>
       </DataTable>
     </div>
     <PersonAddModal v-model="showAddModal" @saved="loadPersons" />

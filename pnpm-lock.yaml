@@ -35,6 +35,9 @@ importers:
       astro:
         specifier: ^5.16.5
         version: 5.16.5(@types/node@22.15.21)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.40.0)(typescript@5.8.3)(yaml@2.7.1)
+      dayjs:
+        specifier: ^1.11.19
+        version: 1.11.19
       marked:
         specifier: ^17.0.1
         version: 17.0.1
@@ -1570,6 +1573,9 @@ packages:
 
   daisyui@5.0.27:
     resolution: {integrity: sha512-XrpqgfpGaZJvTPg9pS9Rq6xbYpmMnR0a7AKqyVPZceJzjAs5HH3rfkRkiuGin0+KC2Adnu+WLHU7UDxAtCMyAw==}
+
+  dayjs@1.11.19:
+    resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
 
   debug@4.4.0:
     resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
@@ -4706,6 +4712,8 @@ snapshots:
   csstype@3.2.3: {}
 
   daisyui@5.0.27: {}
+
+  dayjs@1.11.19: {}
 
   debug@4.4.0:
     dependencies:

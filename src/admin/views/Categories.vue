@@ -168,7 +168,7 @@ const toggleContext = (ctx: string) => {
   // Don't allow toggling disabled contexts
   const entity = filterEntities.find(e => e.id === ctx);
   if (entity?.disabled) return;
-  
+
   if (selectedContexts.value.has(ctx)) {
     selectedContexts.value.delete(ctx);
   } else {

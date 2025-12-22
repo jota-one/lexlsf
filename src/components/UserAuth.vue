@@ -38,7 +38,7 @@ const { isAuthenticated, user, logout } = useAuth()
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const openLoginModal = () => {
-  loginModalRef.value?.open()   
+  loginModalRef.value?.open()
 }
 
 const handleLoginSuccess = () => {
