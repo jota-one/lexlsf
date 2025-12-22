@@ -4,7 +4,7 @@
       <Tab :value="0">Informations</Tab>
       <Tab :value="1">Description</Tab>
       <Tab :value="2">Catégories</Tab>
-      <Tab :value="3">Bio</Tab>
+      <Tab :value="3">Timeline</Tab>
       <Tab :value="4">Vidéos</Tab>
     </TabList>
     <TabPanels>
@@ -86,7 +86,11 @@
 
         <!-- Date de naissance / création -->
         <div class="flex items-center gap-4">
-          <label for="birthdate" class="font-semibold w-60">{{ form.organism ? 'Date de création' : 'Date de naissance' }}</label>
+          <label
+            for="birthdate"
+            class="font-semibold w-60"
+            >{{ form.organism ? 'Date de création' : 'Date de naissance' }}</label
+          >
           <DatePicker
             v-model="birthdateModel"
             inputId="birthdate"
@@ -97,7 +101,11 @@
 
         <!-- Lieu de naissance / création -->
         <div class="flex items-center gap-4">
-          <label for="birthplace" class="font-semibold w-60">{{ form.organism ? 'Lieu de création' : 'Lieu de naissance' }}</label>
+          <label
+            for="birthplace"
+            class="font-semibold w-60"
+            >{{ form.organism ? 'Lieu de création' : 'Lieu de naissance' }}</label
+          >
           <InputText v-model="form.birthplace" id="birthplace" class="w-full" />
         </div>
 
@@ -159,57 +167,29 @@
         <div class="flex items-start gap-4">
           <label for="description" class="font-semibold w-60 pt-2">Description</label>
           <div class="w-full">
-            <VMarkdownEditor
-              v-model="form.description"
-              locale="en"
-            />
+            <VMarkdownEditor v-model="form.description" locale="en" class="h-64!" />
           </div>
         </div>
       </TabPanel>
 
       <TabPanel :value="2" class="space-y-4">
-        <div class="flex flex-col gap-4 w-full">
-          <template v-for="parent in parentCategories" :key="parent.id">
-            <div>
-              <span class="font-semibold mb-2 block">{{ parent.tag }}</span>
-              <div class="flex flex-wrap gap-2">
-                <template v-for="child in childCategoryOptions(parent)" :key="child.id">
-                  <input
-                    type="checkbox"
-                    :id="`person-cat-${parent.id}-${child.id}`"
-                    :value="child.id"
-                    :checked="selectedCategories[parent.id]?.includes(child.id)"
-                    @change="toggleCategory(parent.id, child.id)"
-                    class="sr-only"
-                  />
-                  <label
-                    :for="`person-cat-${parent.id}-${child.id}`"
-                    class="badge badge-sm cursor-pointer"
-                    :class="selectedCategories[parent.id]?.includes(child.id) ? 'badge-primary' : ''"
-                  >
-                    {{ child.tag }}
-                  </label>
-                </template>
-              </div>
-            </div>
-          </template>
-        </div>
+        <CategoriesPickerForm v-model="selectedCategories" />
       </TabPanel>
 
       <TabPanel :value="3" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-semibold text-lg">Entrées biographiques</h3>
+            <h3 class="font-semibold text-lg">Entrées de la timeline</h3>
           </div>
           <div
-            v-if="highlights && highlights.length === 0"
+            v-if="timeline && timeline.length === 0"
             class="text-center text-base-content/50 py-8"
           >
-            Aucune entrée biographique. Cliquez sur "Ajouter une entrée" pour commencer.
+            Aucune entrée de timeline. Cliquez sur "Ajouter une entrée" pour commencer.
           </div>
 
-          <div ref="highlightsContainer">
-            <div v-for="(entry, index) in highlights" :key="entry.id" class="card card-border">
+          <div ref="timelineContainer">
+            <div v-for="(entry, index) in timeline" :key="entry.id" class="card card-border">
               <!-- Mode édition -->
               <div v-if="editingBioIndex === index" class="space-y-3">
                 <div class="flex justify-between items-start gap-4">
@@ -441,9 +421,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
+
+dayjs.extend(customParseFormat);
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
@@ -451,15 +435,14 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { VMarkdownEditor } from 'vue3-markdown';
-import 'vue3-markdown/dist/vue3-markdown.css';
-import useCategories from '../composables/useCategories';
 import useSigns from '../composables/useSigns';
 import useVideos from '../composables/useVideos';
 import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
+import CategoriesPickerForm from './CategoriesPickerForm.vue';
 
-// Internal type for highlights with mandatory ID for sorting
-type TBioEntryWithId = TPerson.TBioEntry & { id: string };
+// Internal type for timeline entries with mandatory ID for sorting
+type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string };
 
 const props = defineProps<{
     initialVideos?: TVideo.TRecord[]
@@ -483,8 +466,6 @@ const signOptions = computed(() =>
     signs.value.map((s: any) => ({ label: s.name, value: s.id }))
 );
 
-const { categories, loadCategories } = useCategories();
-
 // Utiliser le composable useSortableList pour les vidéos
 const {
     items: videos,
@@ -496,12 +477,12 @@ const {
     handle: '.handle',
 });
 
-// Utiliser le composable useSortableList pour les highlights
+// Utiliser le composable useSortableList pour la timeline
 const {
-    items: highlights,
-    container: highlightsContainer,
-    setItems: setHighlights,
-} = useSortableList<TBioEntryWithId>('highlightsContainer', [], {
+    items: timeline,
+    container: timelineContainer,
+    setItems: setTimeline,
+} = useSortableList<TTimelineEntryWithId>('timelineContainer', [], {
     animation: 200,
     handle: '.bio-handle',
 });
@@ -512,117 +493,35 @@ watch(() => props.initialVideos, (newVal) => {
     }
 }, { immediate: true });
 
-// Initialize highlights when form is loaded from outside (e.g., loading person from DB)
+// Initialize timeline when form is loaded from outside (e.g., loading person from DB)
 // This will fire every time the modale opens with new data
-watch(() => form.value.highlights, (newVal) => {
+watch(() => form.value.timeline, (newVal) => {
     if (newVal && newVal.length > 0) {
-        // If current highlights exist and have same count, don't reinitialize (preserve order)
-        if (highlights.value.length === newVal.length && highlights.value.length > 0) {
+        // If current timeline exist and have same count, don't reinitialize (preserve order)
+        if (timeline.value.length === newVal.length && timeline.value.length > 0) {
             return;
         }
 
-        // Ensure each highlight has an id
-        const highlightsWithIds: TBioEntryWithId[] = newVal.map((h, idx) => ({
+        // Ensure each timeline entry has an id
+        const timelineWithIds: TTimelineEntryWithId[] = newVal.map((h, idx) => ({
             ...h,
-            id: h.id || `bio-${idx}-${Date.now()}`
+            id: h.id || `timeline-${idx}-${Date.now()}`
         }));
-        setHighlights(highlightsWithIds);
+        setTimeline(timelineWithIds);
     } else if (newVal && newVal.length === 0) {
-        setHighlights([]);
+        setTimeline([]);
     }
 }, { immediate: true });
 
-// Parent categories (those with Parent == null)
-const parentCategories = computed(() =>
-    categories.value.filter((cat: any) => !cat.Parent)
-);
+onMounted(loadSigns);
 
-// For each parent, get its children (category_via_Parent)
-const childCategoryOptions = (parent: any) => {
-    return (parent.expand?.category_via_Parent || []);
-};
-
-// When categories are loaded, initialize selectedCategories
-watch(categories, () => {
-    parentCategories.value.forEach(parent => {
-    if (!(parent.id in selectedCategories.value)) {
-      selectedCategories.value[parent.id] = [];
-    }
-    });
-});
-
-const toggleCategory = (parentId: string, childId: string) => {
-    // Ensure it's an array
-    if (!Array.isArray(selectedCategories.value[parentId])) {
-        selectedCategories.value[parentId] = [];
-    }
-    const categories = selectedCategories.value[parentId] as string[];
-    const index = categories.indexOf(childId);
-    if (index > -1) {
-        categories.splice(index, 1);
-    } else {
-        categories.push(childId);
-    }
-};
-
-onMounted(() => {
-    loadCategories('person');
-    loadSigns();
-  // initialize birthdateModel from form.birthdate
-  // Supported inputs:
-  // - Full ISO string from DB: e.g. "1950-05-07 00:00:00.000Z" or "1950-05-07T00:00:00.000Z"
-  // - ISO date: "YYYY-MM-DD"
-  // - French: "DD.MM.YYYY"
-  if (form.value.birthdate) {
-    const s = form.value.birthdate.trim();
-    // Try native Date parsing for ISO-like strings
-    const parsedMs = Date.parse(s.replace(' ', 'T'));
-    if (!Number.isNaN(parsedMs)) {
-      birthdateModel.value = new Date(parsedMs);
-    } else {
-      const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-      if (iso) {
-        birthdateModel.value = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
-      } else {
-        const fr = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
-        if (fr) {
-          birthdateModel.value = new Date(Number(fr[3]), Number(fr[2]) - 1, Number(fr[1]));
-        }
-      }
-    }
-    // Normalize time to local midnight for consistent Calendar display
-    if (birthdateModel.value instanceof Date) {
-      birthdateModel.value.setHours(0, 0, 0, 0);
-    }
-  }
-});
-
-// Keep DatePicker model in sync when form.birthdate changes (e.g., reopening modal)
 watch(() => form.value.birthdate, (newVal) => {
   if (!newVal) {
     birthdateModel.value = null;
     return;
   }
-  const s = newVal.trim();
-  const parsedMs = Date.parse(s.replace(' ', 'T'));
-  if (!Number.isNaN(parsedMs)) {
-    birthdateModel.value = new Date(parsedMs);
-  } else {
-    const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-    if (iso) {
-      birthdateModel.value = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
-    } else {
-      const fr = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
-      if (fr) {
-        birthdateModel.value = new Date(Number(fr[3]), Number(fr[2]) - 1, Number(fr[1]));
-      } else {
-        birthdateModel.value = null;
-      }
-    }
-  }
-  if (birthdateModel.value instanceof Date) {
-    birthdateModel.value.setHours(0, 0, 0, 0);
-  }
+  const parsed = dayjs(newVal);
+  birthdateModel.value = parsed.isValid() ? parsed.toDate() : null;
 }, { immediate: true });
 
 const onFileChange = (event: Event) => {
@@ -638,31 +537,31 @@ const onFileChange = (event: Event) => {
     }
 };
 
-// Initialize highlights if not present
-if (!form.value.highlights) {
-    form.value.highlights = [];
+// Initialize timeline if not present
+if (!form.value.timeline) {
+    form.value.timeline = [];
 }
 
 const addBioEntry = () => {
-    const newEntry: TBioEntryWithId = {
+    const newEntry: TTimelineEntryWithId = {
         id: `bio-${Date.now()}`,
         title: '',
         description: ''
     };
-    highlights.value = [...highlights.value, newEntry];
+    timeline.value = [...timeline.value, newEntry];
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
-    const newIndex = highlights.value.length - 1;
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
+    const newIndex = timeline.value.length - 1;
     editingBioIndex.value = newIndex;
 };
 
 const removeBioEntry = (index: number) => {
-    highlights.value.splice(index, 1);
-    highlights.value = [...highlights.value];
+    timeline.value.splice(index, 1);
+    timeline.value = [...timeline.value];
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     if (editingBioIndex.value === index) {
         editingBioIndex.value = null;
     } else if (editingBioIndex.value !== null && editingBioIndex.value > index) {
@@ -676,8 +575,8 @@ const editBioEntry = (index: number) => {
 
 const validateBioEntry = () => {
     // Synchronise form without the temporary IDs
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     editingBioIndex.value = null;
 };
 
@@ -767,18 +666,10 @@ const removeVideo = (index: number) => {
 // Sync lists order to form before saving
 // This ensures the sorted order from drag & drop is saved to the backend
 const syncListsBeforeSave = () => {
-    const highlightsForForm = highlights.value.map(({ id, ...rest }) => rest);
-    form.value.highlights = highlightsForForm as TPerson.TBioEntry[];
+    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
+    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     form.value.Videos = getVideoIds();
-  // sync birthdate string from Calendar model using ISO for backend
-  if (birthdateModel.value instanceof Date) {
-    const y = birthdateModel.value.getFullYear();
-    const m = String(birthdateModel.value.getMonth() + 1).padStart(2, '0');
-    const d = String(birthdateModel.value.getDate()).padStart(2, '0');
-    form.value.birthdate = `${y}-${m}-${d}`;
-  } else if (!birthdateModel.value) {
-    form.value.birthdate = undefined as any;
-  }
+    form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined as any;
 };
 
 defineExpose({ syncListsBeforeSave });

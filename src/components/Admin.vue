@@ -10,6 +10,7 @@ import router from '../admin/router';
 import Sidebar from '../admin/layouts/Sidebar.vue';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
+import 'vue3-markdown/dist/vue3-markdown.css';
 
 onBeforeMount(() => {
   const app = getCurrentInstance()?.appContext.app as App

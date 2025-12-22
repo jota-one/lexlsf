@@ -61,7 +61,7 @@ const form = ref<TPerson.TForm>({
 const save = async () => {
     saving.value = true;
 
-    // Sync highlights order before saving
+    // Sync various stuffs before saving
     personForm.value?.syncListsBeforeSave();
 
     // Collect all selected category ids (flatten arrays from each parent)

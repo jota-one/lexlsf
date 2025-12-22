@@ -34,7 +34,7 @@ export default function usePersons() {
         'id, name, firstname, organism, illustration, slug, updated, expand.Category.*, expand.Sign.*',
       expand: 'Category,Sign',
       filter: `Category.slug ?= "${category}"`,
-      sort: '-updated',
+      sort: 'name,firstname',
     })
   }
 

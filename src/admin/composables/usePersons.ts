@@ -47,8 +47,8 @@ const setFormData = (payload: TPerson.TForm) => {
   ;(payload.Videos || []).forEach(video => {
     formData.append('Videos', video)
   })
-  if (payload.highlights) {
-    formData.append('highlights', JSON.stringify(payload.highlights))
+  if (payload.timeline) {
+    formData.append('timeline', JSON.stringify(payload.timeline))
   }
 
   return formData
