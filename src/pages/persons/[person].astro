@@ -2,7 +2,7 @@
 import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
 import config from '../../config'
-import MarkdownRenderer from '@components/MarkdownRenderer.vue'
+import { marked } from 'marked'
 
 export const prerender = false
 
@@ -28,6 +28,9 @@ const imageUrl = record.illustration
 const imageThumbUrl = record.illustration
   ? `${config.apiBaseUrl}/api/files/person/${record.id}/${record.illustration}?thumb=600x600`
   : null
+
+// Render Markdown description to HTML (server-side)
+const descriptionHtml = record.description ? marked.parse(String(record.description)) : ''
 
 // Fonction pour construire l'URL complète d'une catégorie
 const getCategoryUrl = (cat: any) => {
@@ -165,7 +168,7 @@ const getYouTubeId = (url: string) => {
           <div class="space-y-4">
             {record.description && (
               <div class="prose prose-sm md:prose-base max-w-none text-base-content prose-headings:text-base-content prose-strong:text-base-content prose-p:text-base-content/80 person-prose">
-                <MarkdownRenderer client:only content={record.description} />
+                <article set:html={descriptionHtml} />
               </div>
             )}
           </div>
