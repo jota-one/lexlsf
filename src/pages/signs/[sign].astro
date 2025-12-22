@@ -31,7 +31,6 @@ const mainCategories = await pb.collection<TCategory.TRecord>('category').getFul
 const { learningSourceOptions, verificationStatusOptions } = useSigns()
 
 const record = await pb.collection('sign').getFirstListItem(`slug="${sign}"`, {
-  fields: 'id, name, definition, video, slug, level, learning_source, verification_status, placement, expand.Category.*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.person_via_Sign.*',
   expand: 'Category,ConfigurationRight,ConfigurationLeft,person_via_Sign',
 })
 
