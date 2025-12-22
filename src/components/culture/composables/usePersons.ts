@@ -30,7 +30,8 @@ export default function usePersons() {
   const persons = ref<TPerson.TRecord[]>([])
   const loadPersons = async (category: string) => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
-      fields: 'id, name, illustration, slug, updated, expand.Category.*, expand.Sign.*',
+      fields:
+        'id, name, firstname, organism, illustration, slug, updated, expand.Category.*, expand.Sign.*',
       expand: 'Category,Sign',
       filter: `Category.slug ?= "${category}"`,
       sort: '-updated',

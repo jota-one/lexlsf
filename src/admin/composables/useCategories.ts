@@ -22,15 +22,11 @@ export default function useCategories() {
       .map(parentCat => {
         if (parentCat.expand?.category_via_Parent) {
           parentCat.expand.category_via_Parent = parentCat.expand.category_via_Parent
-            .map(cat => {
-              return {
-                ...cat,
-                entities: (cat.entities as string).split(',').filter(e => e !== ''),
-              }
-            })
             .filter(cat => {
               if (entity) {
-                return (cat.entities as string[]).includes(entity)
+                // entities is now an array from PocketBase select field
+                const ents = Array.isArray(cat.entities) ? (cat.entities as string[]) : []
+                return ents.includes(entity)
               }
               return true
             })

@@ -38,7 +38,23 @@
             />
           </template>
         </Column>
-        <Column field="name" header="Nom" sortable></Column>
+        <Column field="name" header="Nom" sortable>
+          <template #body="slotProps">
+            <div class="flex items-center gap-2">
+              <span>
+                {{ slotProps.data.organism
+                  ? slotProps.data.name
+                  : [slotProps.data.firstname, slotProps.data.name].filter(Boolean).join(' ') }}
+              </span>
+              <span
+                class="badge badge-xs"
+                :class="slotProps.data.organism ? 'badge-info' : 'badge-accent'"
+              >
+                {{ slotProps.data.organism ? 'Organisme' : 'Personne' }}
+              </span>
+            </div>
+          </template>
+        </Column>
         <Column field="category" header="Catégorie(s)">
           <template #body="slotProps">
             {{ categories(slotProps.data.expand?.Category) }}
@@ -70,7 +86,7 @@
             </div>
           </template>
         </Column>
-        <template #footer> Nombre total de signes: {{ persons ? persons.length : 0 }}. </template>
+        <template #footer> Nombre total de personnes: {{ persons ? persons.length : 0 }}. </template>
       </DataTable>
     </div>
     <PersonAddModal v-model="showAddModal" @saved="loadPersons" />

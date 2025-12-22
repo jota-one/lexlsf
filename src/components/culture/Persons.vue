@@ -23,7 +23,7 @@
               class="card-body items-center justify-center p-4"
               :class="{ 'aspect-square': !person.illustration }"
             >
-              <h2 class="card-title text-lg md:text-xl text-center">{{ person.name }}</h2>
+              <h2 class="card-title text-lg md:text-xl text-center">{{ displayName(person) }}</h2>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import type { TCategory } from '../../types'
+import type { TCategory, TPerson } from '../../types'
 import usePersons from '@components/culture/composables/usePersons';
 
 const props = defineProps<{ subcategory: string; categories: TCategory.TRecord[] }>()
@@ -42,6 +42,11 @@ const { loadPersons, persons, getIllustrationUrl } = usePersons();
 
 const goToPerson = (slug: string) => {
     window.location.href = `/persons/${slug}`
+}
+
+const displayName = (person: TPerson.TRecord) => {
+  if (person.organism) return person.name
+  return [person.firstname, person.name].filter(Boolean).join(' ')
 }
 
 watch(() => props.subcategory, (value) => {
