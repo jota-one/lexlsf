@@ -18,14 +18,14 @@
           <template v-for="child in filteredChildCategoryOptions(parent)" :key="child.id">
             <input
               type="checkbox"
-              :id="`${props.entity}-cat-${parent.id}-${child.id}`"
+              :id="`${idPrefix}-cat-${parent.id}-${child.id}`"
               :value="child.id"
               :checked="selectedCategories[parent.id]?.includes(child.id)"
               @change="toggleCategory(parent.id, child.id)"
               class="sr-only"
             />
             <label
-              :for="`${props.entity}-cat-${parent.id}-${child.id}`"
+              :for="`${idPrefix}-cat-${parent.id}-${child.id}`"
               class="badge badge-sm cursor-pointer"
               :class="selectedCategories[parent.id]?.includes(child.id) ? 'badge-primary' : ''"
             >
@@ -43,9 +43,10 @@ import InputText from 'primevue/inputtext';
 import { ref, computed, watch, onMounted } from 'vue';
 
 type Props = {
-    entity: string
+  entity?: string
 }
 const props = defineProps<Props>();
+const idPrefix = computed(() => props.entity ?? 'cat');
 
 const categoryFilter = ref('');
 const selectedCategories = defineModel<{ [parentId: string]: string[] }>({ required: true });

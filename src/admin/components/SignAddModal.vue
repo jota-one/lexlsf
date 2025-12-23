@@ -40,7 +40,27 @@ const { showPbError } = usePbErrorToast();
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
-const form = ref<TSign.TForm>();
+const form = ref<TSign.TForm>({
+    video: null,
+    Category: [],
+    name: '',
+    definition: '',
+    level: 1,
+    verification_status: 'verified',
+    ConfigurationRight: {},
+    ConfigurationLeft: {},
+    learning_source: '',
+    learning_source_detail: '',
+    primary_language: 'LSF',
+    placement: {
+        right: [] as string[],
+        left: [] as string[]
+    },
+    movements: {
+        right: {},
+        left: {}
+    }
+});
 
 const save = async () => {
     saving.value = true;

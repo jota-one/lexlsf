@@ -103,32 +103,7 @@
         </div>
       </TabPanel>
       <TabPanel :value="1" class="space-y-4">
-        <div class="flex flex-col gap-4 w-full">
-          <template v-for="parent in parentCategories" :key="parent.id">
-            <div class="flex items-center gap-4">
-              <label class="font-semibold mb-2 w-50 break-words">{{ parent.tag }}</label>
-              <div class="flex flex-wrap gap-2">
-                <div v-for="child in childCategoryOptions(parent)" :key="child.id">
-                  <input
-                    type="checkbox"
-                    :id="`cat-${parent.id}-${child.id}`"
-                    :value="child.id"
-                    :checked="selectedCategories[parent.id]?.includes(child.id)"
-                    @change="toggleCategory(parent.id, child.id)"
-                    class="sr-only"
-                  />
-                  <label
-                    :for="`cat-${parent.id}-${child.id}`"
-                    class="badge badge-md mr-1 cursor-pointer"
-                    :class="selectedCategories[parent.id]?.includes(child.id) ? 'badge-primary' : ''"
-                  >
-                    {{ child.tag }}
-                  </label>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+        <CategoriesPickerForm v-model="selectedCategories" />
       </TabPanel>
       <TabPanel :value="2" class="space-y-4">
         <!-- Right hand configuration -->
@@ -276,20 +251,20 @@ import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
 import useHandConfigurations from '../composables/useHandConfigurations';
 import useSigns from '../composables/useSigns';
-import useCategories from '../composables/useCategories';
+import CategoriesPickerForm from './CategoriesPickerForm.vue';
 import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
 import type { TSign, Ui } from '../../types';
 import HandMovementForm from './HandMovementForm.vue';
 
 const form = defineModel<TSign.TForm>({ required: true });
-const selectedCategories = defineModel<{ [parentId: string]: string | null }>('categories', { required: true });
+const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
 const activeTab = ref(0);
 const activeHand = ref<'right' | 'left'>('right');
 
 const colorConfig: Ui.ColorConfig = {
-    right: '#ff000088',
-    left: '#00b3ff88'
+    right: '#dc262688',
+    left: '#2563eb88'
 };
 
 // --- Use composables for relations ---
@@ -302,8 +277,6 @@ const {
 
 const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns();
 
-const { categories, loadCategories } = useCategories();
-
 // Filtered options for dominant/non-dominant
 const handConfigOptions = computed(() =>
     handConfigurations.value
@@ -313,43 +286,6 @@ const handConfigOptions = computed(() =>
             illustration: c.illustration
         }))
 );
-
-// Parent categories (those with Parent == null)
-const parentCategories = computed(() =>
-    categories.value.filter((cat: any) => !cat.Parent)
-);
-
-// For each parent, get its children (category_via_Parent)
-const childCategoryOptions = (parent: any) => {
-    return (parent.expand?.category_via_Parent || []);
-};
-
-// When categories are loaded, initialize selectedCategories
-watch(categories, () => {
-    parentCategories.value.forEach(parent => {
-        if (!(parent.id in selectedCategories.value)) {
-            selectedCategories.value[parent.id] = [];
-        } else if (!Array.isArray(selectedCategories.value[parent.id])) {
-            // Convert old single-value format to array
-            const value = selectedCategories.value[parent.id];
-            selectedCategories.value[parent.id] = value ? [value] : [];
-        }
-    });
-});
-
-const toggleCategory = (parentId: string, childId: string) => {
-    // Ensure it's an array
-    if (!Array.isArray(selectedCategories.value[parentId])) {
-        selectedCategories.value[parentId] = [];
-    }
-    const categories = selectedCategories.value[parentId] as string[];
-    const index = categories.indexOf(childId);
-    if (index > -1) {
-        categories.splice(index, 1);
-    } else {
-        categories.push(childId);
-    }
-};
 
 watch(() => form.value.ConfigurationLeft?.id, (value) => {
     console.log('config left changed!!', value);
@@ -363,8 +299,7 @@ watch(() => form.value.ConfigurationLeft?.id, (value) => {
 })
 
 onMounted(() => {
-    loadCategories();
-    loadHandConfigurations('name');
+  loadHandConfigurations('name');
 });
 
 const levelLabel = computed(() => {
