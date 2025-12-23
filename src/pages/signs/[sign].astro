@@ -55,8 +55,8 @@ const categories = mainCategories.map(mainCat => {
 }).filter(cat => cat.subcategories.length > 0)
 
 const colors = {
-  right: '#ff000088',
-    left: '#00b3ff88'
+  right: '#dc262688',
+  left: '#2563eb88'
 }
 
 
@@ -90,7 +90,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                     {
                       cat.subcategories.map((category: any) => (
                         <li class="py-1 flex justify-end">
-                          <div class="badge badge-outline badge-accent hover:badge-ghost justify-end">
+                          <div class="badge badge-outline badge-primary hover:badge-ghost justify-end">
                             <a href={`/categories/${cat.slug}/${category.slug}`}>{category.tag}</a>
                           </div>
                         </li>
@@ -113,13 +113,13 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
               </div>
               <div class="flex items-center gap-4">
                 <h2 class="flex-1">Statut du signe</h2>
-                <span class="badge badge-outline badge-accent hover:badge-ghost">
+                <span class="badge badge-outline badge-primary hover:badge-ghost">
                   {verificationStatus}
                 </span>
               </div>
               <div class="flex items-center gap-4 mt-3">
                 <h2 class="flex-1">Source d'apprentissage</h2>
-                <span class="badge badge-outline badge-accent hover:badge-ghost">
+                <span class="badge badge-outline badge-primary hover:badge-ghost">
                   {learningSource}
                 </span>
               </div>
@@ -132,7 +132,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           <div class={`card-body gap-6 grid grid-cols-2 ${hasLeftConfiguration ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             { hasLeftConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-gray-700 font-semibold">Main gauche</div>
+                <div class="text-blue-600 font-semibold">Main gauche</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationLeftUrl}
@@ -147,7 +147,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             )}
             { hasConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-gray-700 font-semibold">Main droite</div>
+                <div class="text-red-600 font-semibold">Main droite</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationUrl}

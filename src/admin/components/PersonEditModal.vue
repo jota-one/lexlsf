@@ -4,6 +4,7 @@
       ref="personForm"
       v-model="form"
       v-model:categories="selectedCategories"
+      v-model:activities="selectedActivities"
       :initial-videos="initialVideos"
     />
     <template #footer>
@@ -45,6 +46,7 @@ const saving = ref(false)
 
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string[] }>({});
+const selectedActivities = ref<{ [parentId: string]: string[] }>({});
 const initialVideos = ref<TVideo.TRecord[]>([]);
 
 const form = ref<TPerson.TForm>({
@@ -54,6 +56,7 @@ const form = ref<TPerson.TForm>({
     description: '',
     Sign: undefined,
     Category: [],
+    Activities: [],
     Videos: [],
     deaf: false,
     birthdate: undefined,
@@ -76,11 +79,19 @@ const save = async () => {
             selectedCategoryIds.push(...categoryList);
         }
     });
+    // Collect all selected activity ids (flatten arrays from each parent)
+    const selectedActivityIds: string[] = [];
+    Object.values(selectedActivities.value).forEach(activityList => {
+        if (Array.isArray(activityList)) {
+            selectedActivityIds.push(...activityList);
+        }
+    });
 
     // Add to form payload
     const payload = {
         ...form.value,
         Category: selectedCategoryIds,
+        Activities: selectedActivityIds,
     };
     await updatePerson(props.signId, payload);
     emit('saved');
@@ -101,6 +112,7 @@ watch(visible, async (isVisible) => {
         description: person.description || '',
         Sign: person.Sign || undefined,
         Category: person.Category || [],
+        Activities: person.Activities || [],
         Videos: person.Videos || [],
         timeline: person.timeline || [],
         deaf: !!person.deaf,
@@ -126,6 +138,17 @@ watch(visible, async (isVisible) => {
                 selectedCategories.value[parentId] = [];
             }
             selectedCategories.value[parentId].push(cat.id);
+        });
+    }
+    // Initialize selected activities
+    selectedActivities.value = {};
+    if (person.expand?.Activities) {
+        person.expand.Activities.forEach((act: any) => {
+            const parentId = act.Parent!;
+            if (!selectedActivities.value[parentId]) {
+                selectedActivities.value[parentId] = [];
+            }
+            selectedActivities.value[parentId].push(act.id);
         });
     }
 }, { immediate: true });

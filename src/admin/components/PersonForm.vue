@@ -4,8 +4,9 @@
       <Tab :value="0">Informations</Tab>
       <Tab :value="1">Description</Tab>
       <Tab :value="2">Catégories</Tab>
-      <Tab :value="3">Timeline</Tab>
-      <Tab :value="4">Vidéos</Tab>
+      <Tab :value="3">Activités</Tab>
+      <Tab :value="4">Timeline</Tab>
+      <Tab :value="5">Vidéos</Tab>
     </TabList>
     <TabPanels>
       <TabPanel :value="0" class="space-y-4">
@@ -173,10 +174,14 @@
       </TabPanel>
 
       <TabPanel :value="2" class="space-y-4">
-        <CategoriesPickerForm v-model="selectedCategories" />
+        <CategoriesPickerForm v-model="selectedCategories" entity="person" />
       </TabPanel>
 
       <TabPanel :value="3" class="space-y-4">
+        <CategoriesPickerForm v-model="selectedActivities" entity="activity" />
+      </TabPanel>
+
+      <TabPanel :value="4" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-lg">Entrées de la timeline</h3>
@@ -288,7 +293,7 @@
         </div>
       </TabPanel>
 
-      <TabPanel :value="4" class="space-y-4">
+      <TabPanel :value="5" class="space-y-4">
         <div class="flex flex-col gap-4 w-full">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-lg">Vidéos</h3>
@@ -450,6 +455,7 @@ const props = defineProps<{
 
 const form = defineModel<TPerson.TForm>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
+const selectedActivities = defineModel<{ [parentId: string]: string[] }>('activities', { required: true });
 const activeTab = ref(0);
 const editingBioIndex = ref<number | null>(null);
 const editingVideoIndex = ref<number | null>(null);
