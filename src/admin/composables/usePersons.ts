@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import config from '../../config'
 import PocketBase from 'pocketbase'
 import type { TPerson } from '../../types'
+import { createSlug } from '@admin/helpers/strings'
 
 const setFormData = (payload: TPerson.TForm) => {
   const formData = new FormData()
@@ -9,13 +10,11 @@ const setFormData = (payload: TPerson.TForm) => {
   if (payload.illustration && payload.illustration instanceof File) {
     formData.append('illustration', payload.illustration)
   }
-  formData.append('name', payload.name)
-  let slug = payload.name.toLowerCase().replace(/\s+/g, '-').replace("'", '-')
+  formData.append('name', payload.name.trim())
   if (payload.firstname) {
-    formData.append('firstname', payload.firstname)
-    slug = `${payload.firstname.toLowerCase().replace(/\s+/g, '-').replace("'", '-')}-${slug}`
+    formData.append('firstname', payload.firstname.trim())
   }
-  formData.append('slug', slug)
+  formData.append('slug', createSlug(payload.name, payload.firstname))
   if (payload.description) {
     formData.append('description', payload.description)
   }
