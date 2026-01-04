@@ -5,7 +5,14 @@
       Personnes importantes
     </h2>
     <div class="card">
-      <div class="flex justify-end mb-2">
+      <div class="flex justify-between mb-2">
+        <Button
+          label="Import / Export"
+          icon="i-fa-solid-file-import-export"
+          size="small"
+          severity="secondary"
+          @click="openImportExportModal"
+        />
         <Button
           label="Ajouter une personne"
           icon="i-fa-solid-plus"
@@ -98,6 +105,7 @@
       :sign-id="editedPerson?.id"
       @saved="loadPersons"
     />
+    <PersonsImportExportModal v-model="showImportExportModal" @saved="loadPersons" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer la personne ?"
@@ -114,6 +122,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button'
 import PersonAddModal from '../components/PersonAddModal.vue';
 import PersonEditModal from '../components/PersonEditModal.vue';
+import PersonsImportExportModal from '../components/PersonsImportExportModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import type { TPerson } from '../../types';
 
@@ -142,6 +151,7 @@ function getPersonProblems(person: TPerson.TRecord): string[] {
 const { persons, loadPersons, deletePerson, getIllustrationUrl } = usePersons();
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
 const personToDelete = ref<any>(null);
@@ -154,6 +164,10 @@ const categories = (category: any[]) => {
 
 const openAddModal = () => {
   showAddModal.value = true;
+};
+
+const openImportExportModal = () => {
+  showImportExportModal.value = true;
 };
 
 const editPerson = (person: any) => {
