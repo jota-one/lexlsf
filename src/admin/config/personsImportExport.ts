@@ -1,25 +1,12 @@
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { createSlug } from '@admin/helpers/strings'
+import type { TImportExport } from '../types'
 
 dayjs.extend(customParseFormat)
 
-export type TFieldFormatter = {
-  export?: (value: any) => string
-  import?: (value: string) => any
-}
-
-export type TFieldConfig = {
-  key: string
-  label: string
-  exportable: boolean
-  importable: boolean
-  formatter?: TFieldFormatter
-  derive?: (row: Record<string, any>) => any // Permet de générer une valeur si absente à l'import
-}
-
 // Formatters pour les champs spécifiques
-const birthdateFormatter: TFieldFormatter = {
+const birthdateFormatter: TImportExport.FieldFormatter = {
   export: (value: string | undefined) => {
     if (!value) return ''
     return dayjs(value).format('DD.MM.YYYY')
@@ -31,7 +18,7 @@ const birthdateFormatter: TFieldFormatter = {
   },
 }
 
-const booleanFormatter: TFieldFormatter = {
+const booleanFormatter: TImportExport.FieldFormatter = {
   export: (value: boolean | undefined) => {
     if (value === undefined || value === null) return 'non'
     return value ? 'oui' : 'non'
@@ -44,7 +31,7 @@ const booleanFormatter: TFieldFormatter = {
 }
 
 // Configuration des champs pour l'import/export
-export const PERSONS_FIELDS_CONFIG: TFieldConfig[] = [
+export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
   {
     key: 'id',
     label: 'ID',
