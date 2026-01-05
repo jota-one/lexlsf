@@ -9,7 +9,7 @@
     <template #header>
       <div class="flex items-center gap-2">
         <span class="i-fa-solid-file-import-export text-xl"></span>
-        <span class="font-bold">Import / Export des personnes</span>
+        <span class="font-bold">Import / Export des signes</span>
       </div>
     </template>
 
@@ -20,9 +20,7 @@
           <span class="i-fa-solid-file-export"></span>
           Export
         </h3>
-        <p class="text-sm mb-4">
-          Exporter toutes les personnes dans un fichier CSV.
-        </p>
+        <p class="text-sm mb-4">Exporter tous les signes dans un fichier CSV.</p>
         <div class="flex gap-2">
           <Button
             label="Exporter en CSV"
@@ -42,8 +40,8 @@
           Import
         </h3>
         <p class="text-sm mb-4">
-          Importer des personnes depuis un fichier CSV. Les personnes existantes (par ID)
-          seront mises à jour, les nouvelles seront créées.
+          Importer des signes depuis un fichier CSV. Les signes existants (par ID) seront mis à
+          jour, les nouveaux seront créés.
         </p>
 
         <!-- File input -->
@@ -78,14 +76,16 @@
         <div class="alert alert-info mb-3">
           <span class="i-fa-solid-list-check"></span>
           <span>
-            {{ importResult.processed }} personne(s) traitée(s) —
-            {{ importResult.created }} nouvelle(s),
-            {{ importResult.updated }} mise(s) à jour,
-            {{ importResult.unchanged }} inchangée(s)
+            {{ importResult.processed }} signe(s) traité(s) —
+            {{ importResult.created }} nouveau(x), {{ importResult.updated }} mis à jour,
+            {{ importResult.unchanged }} inchangé(s)
           </span>
         </div>
 
-        <div class="alert alert-success mb-3" v-if="importResult.success > 0 && importResult.errors.length === 0">
+        <div
+          class="alert alert-success mb-3"
+          v-if="importResult.success > 0 && importResult.errors.length === 0"
+        >
           <span class="i-fa-solid-check-circle"></span>
           <span>Import terminé sans erreur</span>
         </div>
@@ -101,7 +101,7 @@
               <thead>
                 <tr>
                   <th>Ligne</th>
-                  <th>Nom</th>
+                  <th>Terme</th>
                   <th>Erreur</th>
                 </tr>
               </thead>
@@ -128,8 +128,8 @@
             <strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.
           </p>
           <p class="text-warning">
-            <strong>Note:</strong> Les fichiers d'illustration ne sont pas inclus dans
-            l'import/export. Ils doivent être gérés séparément.
+            <strong>Note:</strong> Les fichiers vidéo ne sont pas inclus dans l'import/export.
+            Ils doivent être gérés séparément.
           </p>
         </div>
       </div>
@@ -152,9 +152,9 @@
 import { ref, computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import usePersonsImportExport from '../composables/usePersonsImportExport'
+import useSignsImportExport from '../composables/useSignsImportExport'
 import type { TImportExport } from '../types'
-import { getExportableFields } from '../config/personsImportExport'
+import { getExportableFields } from '../config/signsImportExport'
 import { useToast } from 'primevue/usetoast'
 
 defineProps<{
@@ -167,8 +167,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
-const { isExporting, isImporting, exportToCSV, importFromCSV } =
-  usePersonsImportExport()
+const { isExporting, isImporting, exportToCSV, importFromCSV } = useSignsImportExport()
 
 const fileInput = ref<HTMLInputElement>()
 const selectedFile = ref<File | null>(null)
@@ -198,7 +197,7 @@ const handleExportCSV = async () => {
   } catch (error: any) {
     toast.add({
       severity: 'error',
-      summary: 'Erreur d\'export',
+      summary: "Erreur d'export",
       detail: error.message || 'Une erreur est survenue',
       life: 5000,
     })
@@ -222,7 +221,7 @@ const handleImport = async () => {
     const result = await importFromCSV(selectedFile.value)
     importResult.value = result
 
-    const detailSummary = `${result.processed} traitée(s) — ${result.created} nouvelle(s), ${result.updated} mise(s) à jour, ${result.unchanged} inchangée(s)`
+    const detailSummary = `${result.processed} traité(s) — ${result.created} nouveau(x), ${result.updated} mis à jour, ${result.unchanged} inchangé(s)`
 
     if (result.errors.length === 0) {
       toast.add({
@@ -249,7 +248,7 @@ const handleImport = async () => {
   } catch (error: any) {
     toast.add({
       severity: 'error',
-      summary: 'Erreur d\'import',
+      summary: "Erreur d'import",
       detail: error.message || 'Une erreur est survenue',
       life: 5000,
     })

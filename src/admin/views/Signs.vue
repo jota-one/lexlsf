@@ -5,7 +5,14 @@
       Signes
     </h2>
     <div class="card">
-      <div class="flex justify-end mb-2">
+      <div class="flex justify-between mb-2">
+        <Button
+          label="Import / Export"
+          icon="i-fa-solid-file-import-export"
+          size="small"
+          severity="secondary"
+          @click="openImportExportModal"
+        />
         <Button
           label="Ajouter un signe"
           icon="i-fa-solid-plus"
@@ -75,6 +82,7 @@
       :sign-id="editedSign?.id"
       @saved="loadSigns"
     />
+    <SignsImportExportModal v-model="showImportExportModal" @saved="loadSigns" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer le signe ?"
@@ -92,6 +100,7 @@ import Rating from 'primevue/rating';
 import Button from 'primevue/button'
 import SignAddModal from '../components/SignAddModal.vue';
 import SignEditModal from '../components/SignEditModal.vue';
+import SignsImportExportModal from '../components/SignsImportExportModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import type { TSign } from '../../types';
 
@@ -109,6 +118,7 @@ function getSignProblems(sign: TSign.TRecord): string[] {
 const { signs, loadSigns, deleteSign, getNumericLevel } = useSigns();
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
 const signToDelete = ref<any>(null);
@@ -121,6 +131,10 @@ const categories = (category: any[]) => {
 
 const openAddModal = () => {
   showAddModal.value = true;
+};
+
+const openImportExportModal = () => {
+  showImportExportModal.value = true;
 };
 
 const editSign = (sign: any) => {
