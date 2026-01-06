@@ -109,7 +109,8 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             <div>
               <div class="flex items-center gap-4 mb-3">
                 <h2 class="flex-1">Niveau</h2>
-                <Rating client:load v-model={level} /> ({record.level.toUpperCase()})
+                {/* @ts-expect-error - PrimeVue component props */}
+                <Rating client:load modelValue={level} readonly /> ({record.level.toUpperCase()})
               </div>
               <div class="flex items-center gap-4">
                 <h2 class="flex-1">Statut du signe</h2>
@@ -165,8 +166,8 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
               <div class="flex justify-center">
                 <FaceZonesOverlay
                   client:only
-                  right={record.placement.right}
-                  left={record.placement.left}
+                  right={record.placement?.right}
+                  left={record.placement?.left}
                   colorConfig={colors}
                   activeHand="right"
                   interactive={false}
@@ -175,8 +176,8 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
               <div class="flex justify-center pl-5">
                 <BodyZonesOverlay
                   client:only
-                  right={record.placement.right}
-                  left={record.placement.left}
+                  right={record.placement?.right}
+                  left={record.placement?.left}
                   colorConfig={colors}
                   activeHand="right"
                   interactive={false}
