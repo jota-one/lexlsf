@@ -1,7 +1,6 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
-import Rating from 'primevue/rating';
 
 import config from '../../config'
 import useSigns from '@admin/composables/useSigns';
@@ -109,8 +108,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             <div>
               <div class="flex items-center gap-4 mb-3">
                 <h2 class="flex-1">Niveau</h2>
-                {/* @ts-expect-error - PrimeVue component props */}
-                <Rating client:load modelValue={level} readonly /> ({record.level.toUpperCase()})
+                <div class="flex gap-1">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span class={`text-xl ${i < level ? 'text-primary' : 'text-base-300'}`}>★</span>
+                  ))}
+                </div>
+                <span class="text-sm">({record.level.toUpperCase()})</span>
               </div>
               <div class="flex items-center gap-4">
                 <h2 class="flex-1">Statut du signe</h2>
