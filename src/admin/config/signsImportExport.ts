@@ -1,3 +1,4 @@
+import { createSlug } from '@admin/helpers/strings'
 import type { TImportExport } from '../types'
 
 // Configuration des champs pour l'import/export des signes
@@ -13,6 +14,13 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     label: 'Terme',
     exportable: true,
     importable: true,
+  },
+  {
+    key: 'slug',
+    label: 'Slug',
+    exportable: true,
+    importable: true,
+    derive: row => createSlug(row.name || ''),
   },
   {
     key: 'definition',
