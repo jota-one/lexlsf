@@ -23,7 +23,7 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
           </h1>
         </div>
           {!isHome && <Search client:load />}
-        <div class="hidden lg:flex gap-20 justify-between items-center mr-5">
+        <div class="hidden lg:flex gap-20 justify-between items-center mr-5" id="mainNavigation">
           <ul class="flex gap-8">
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
@@ -46,3 +46,17 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
       </div>
     </footer>
 </BaseLayout>
+
+<script>
+  // Masquer la navigation si l'utilisateur n'est pas authentifié et qu'on est sur la homepage
+  const userJwt = sessionStorage.getItem('userJwt')
+  const isAuthenticated = userJwt && userJwt.length > 0
+  const isHome = window.location.pathname === '/'
+  
+  if (!isAuthenticated && isHome) {
+    const mainNavigation = document.getElementById('mainNavigation')
+    if (mainNavigation) {
+      mainNavigation.style.display = 'none'
+    }
+  }
+</script>

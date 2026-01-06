@@ -18,8 +18,21 @@ import Search from './Search.vue';
     <h1 class="text-4xl md:text-6xl font-bold leading-tight">
       Bienvenue sur le Lexique LSF
     </h1>
-    <div cl^ass="mt-6">
+    <div class="mt-6" id="heroSearch">
       <Search client:load mode="hero" />
     </div>
   </div>
 </section>
+
+<script>
+  // Masquer la recherche si l'utilisateur n'est pas authentifié
+  const userJwt = sessionStorage.getItem('userJwt')
+  const isAuthenticated = userJwt && userJwt.length > 0
+  
+  if (!isAuthenticated) {
+    const searchElement = document.getElementById('heroSearch')
+    if (searchElement) {
+      searchElement.style.display = 'none'
+    }
+  }
+</script>
