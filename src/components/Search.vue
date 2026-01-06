@@ -16,17 +16,17 @@
       :size="mode === 'hero' ? 'large' : 'small'"
     >
       <template #option="slotProps">
-        <div class="flex items-start gap-2">
+        <div class="flex items-start gap-2 w-full">
+          <div class="flex-1">
+            <div class="font-medium">{{ slotProps.option.label }}</div>
+            <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
+          </div>
           <span
             class="badge badge-sm mt-1"
             :class="slotProps.option.type === 'sign' ? 'badge-primary' : (slotProps.option.type === 'organism' ? 'badge-info' : 'badge-accent')"
           >
             {{ slotProps.option.type === 'sign' ? 'Signe' : (slotProps.option.type === 'organism' ? 'Organisme' : 'Personne') }}
           </span>
-          <div class="flex-1">
-            <div class="font-medium">{{ slotProps.option.label }}</div>
-            <div class="text-sm opacity-75">{{ slotProps.option.definition }}</div>
-          </div>
         </div>
       </template>
     </AutoComplete>
