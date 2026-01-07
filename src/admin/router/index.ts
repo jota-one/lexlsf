@@ -4,6 +4,7 @@ import Categories from '../views/Categories.vue'
 import Signs from '../views/Signs.vue'
 import HandConfigurations from '../views/HandConfigurations.vue'
 import Persons from '../views/Persons.vue'
+import Users from '../views/Users.vue'
 import useAuth from '../composables/useAuth'
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
   { path: '/signs', component: Signs },
   { path: '/hand-configurations', component: HandConfigurations },
   { path: '/persons', component: Persons },
+  { path: '/users', component: Users },
 ]
 
 const router = createRouter({

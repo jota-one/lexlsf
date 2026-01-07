@@ -136,7 +136,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           <div class={`card-body gap-6 grid grid-cols-2 ${hasLeftConfiguration ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             { hasLeftConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-info font-semibold">Main gauche</div>
+                <div class="text-lg text-info font-semibold">M. gauche</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationLeftUrl}
@@ -151,7 +151,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             )}
             { hasConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-primary font-semibold">Main droite</div>
+                <div class="text-lg text-primary font-semibold">M. droite</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationUrl}
@@ -166,7 +166,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             )}
             <div class="col-span-2 text-center">
               <h3 class="text-lg font-semibold mb-4">Emplacements</h3>
-              <div class="flex justify-center">
+              <div class="flex justify-center bg-white">
                 <FaceZonesOverlay
                   client:only
                   right={record.placement?.right}
@@ -176,7 +176,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                   interactive={false}
                 />
               </div>
-              <div class="flex justify-center pl-5">
+              <div class="flex justify-center pl-5 bg-white">
                 <BodyZonesOverlay
                   client:only
                   right={record.placement?.right}
