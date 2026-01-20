@@ -1,0 +1,9 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import Revisions from '@components/Revisions.vue'
+export const prerender = false
+---
+
+<PageLayout>
+  <Revisions client:only class="h-full" />
+</PageLayout>
