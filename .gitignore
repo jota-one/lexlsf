@@ -27,5 +27,6 @@ pnpm-debug.log*
 pb/pb_data
 pb/pb_public
 pb/pocketbase
+pb/pocketbase.custom
 videos
 sources geetha
