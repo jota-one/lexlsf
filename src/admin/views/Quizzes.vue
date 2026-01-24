@@ -7,6 +7,7 @@ import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 import ConfirmModal from '@admin/components/ConfirmModal.vue'
 import QuizAddModal from '@admin/components/QuizAddModal.vue'
+import PbErrorToast from '@admin/components/PbErrorToast.vue'
 import type { QuizRecord } from '@admin/composables/useQuizzes'
 
 const { quizzes, loading, loadQuizzes, deleteQuiz, quizItemCounts } = useQuizzes()
@@ -43,6 +44,19 @@ const confirmDelete = async () => {
     await deleteQuiz(quizToDelete.value.id)
     await loadQuizzes()
   } catch (error) {
+    const backendMessage = error?.response?.message || error?.message || ''
+    const isRelationBlocked =
+      backendMessage.includes('required relation reference') ||
+      backendMessage.includes('Failed to delete record')
+
+    // Si PocketBase bloque la suppression à cause de relations obligatoires, afficher un message clair
+    if (isRelationBlocked) {
+      showPbError(
+        "Suppression impossible : ce quiz a encore des sessions ou tentatives associées. Supprime d'abord les sessions liées avant de retirer le quiz."
+      )
+      return
+    }
+
     showPbError(error)
   } finally {
     showDeleteModal.value = false
@@ -159,5 +173,8 @@ const handleQuizSaved = async () => {
 
     <!-- Add quiz modal -->
     <QuizAddModal v-model="showAddModal" @saved="handleQuizSaved" />
+
+    <!-- Toast host -->
+    <PbErrorToast />
   </div>
 </template>
