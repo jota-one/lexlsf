@@ -22,16 +22,21 @@ export default function usePbErrorToast() {
     try {
       if (!e) return
 
-      const errObject = e.response
+      // Accept simple strings or errors without response
+      if (typeof e === 'string') {
+        toast.add({ severity: 'error', summary: 'Erreur', detail: e, life: 8000 })
+        return
+      }
+
+      // Normalize error object shape
+      const errObject = e?.response ?? e ?? {}
 
       // Try to locate the PocketBase error payload in common places
-      const fieldData = errObject.data as Record<string, PbErrorFieldDetail> | undefined
-
-      console.log(fieldData)
+      const fieldData = errObject?.data as Record<string, PbErrorFieldDetail> | undefined
 
       // Top-level message (fallback to stringified error)
       const topMessage =
-        errObject?.message || (typeof e === 'string' ? e : undefined) || 'Erreur serveur'
+        errObject?.message || (typeof e?.message === 'string' ? e.message : undefined) || 'Erreur serveur'
 
       const msg: string[] = []
       if (fieldData) {
@@ -56,11 +61,14 @@ export default function usePbErrorToast() {
         })
       }
 
+      // Build detail
+      const detail = msg.length ? `${topMessage}\n${msg.join('\n')}` : topMessage
+
       // Use formatted message (field prefix)
       toast.add({
         severity: 'error',
         summary: 'Erreur serveur',
-        detail: `${topMessage}\n\n${msg.join('\n')}`,
+        detail,
         life: 8000,
       })
 

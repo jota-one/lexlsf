@@ -35,13 +35,18 @@ const filteredResults = computed(() =>
 )
 
 const hasActiveFilters = computed(
-  () => searchTerm.value.length > 0 || !!selectedLevel.value || deafFilter.value !== 'both'
+  () =>
+    searchTerm.value.length > 0 ||
+    !!selectedLevel.value ||
+    deafFilter.value !== 'both' ||
+    !!addedSince.value
 )
 
 // Search filters
 const searchTerm = ref('')
 const selectedLevel = ref<string>('')
 const deafFilter = ref<'deaf' | 'hearing' | 'both'>('both')
+const addedSince = ref('')
 
 const levelOptions = [
   { label: 'A1', value: 'a1' },
@@ -62,11 +67,13 @@ const showLevelFilter = () => props.itemType === 'sign' || props.itemType === 'm
 const showDeafFilter = () => props.itemType === 'person' || props.itemType === 'mixed'
 
 const performSearch = async () => {
+  const addedSinceIso = addedSince.value ? new Date(addedSince.value).toISOString() : undefined
   await search({
     search: searchTerm.value,
     level: selectedLevel.value || undefined,
     deafFilter: deafFilter.value,
     itemType: props.itemType,
+    addedSince: addedSinceIso,
   })
 }
 
@@ -74,6 +81,7 @@ const handleClear = () => {
   searchTerm.value = ''
   selectedLevel.value = ''
   deafFilter.value = 'both'
+  addedSince.value = ''
   clear()
 }
 
@@ -86,13 +94,22 @@ let searchTimeout: NodeJS.Timeout
 const debouncedSearch = () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
-    if (searchTerm.value.length > 2 || selectedLevel.value || deafFilter.value !== 'both') {
+    if (
+      searchTerm.value.length > 2 ||
+      selectedLevel.value ||
+      deafFilter.value !== 'both' ||
+      addedSince.value
+    ) {
       performSearch()
     }
   }, 300)
 }
 
 watch([searchTerm, selectedLevel, deafFilter], () => {
+  debouncedSearch()
+})
+
+watch(addedSince, () => {
   debouncedSearch()
 })
 </script>
@@ -108,6 +125,20 @@ watch([searchTerm, selectedLevel, deafFilter], () => {
         v-model="searchTerm"
         class="w-full"
         placeholder="Tapez au moins 3 caractères..."
+        :disabled="loading"
+      />
+    </div>
+
+    <!-- Added Since Filter -->
+    <div>
+      <label class="label">
+        <span class="label-text font-semibold">Ajouté depuis</span>
+      </label>
+      <InputText
+        v-model="addedSince"
+        type="date"
+        class="w-full"
+        placeholder="YYYY-MM-DD"
         :disabled="loading"
       />
     </div>
