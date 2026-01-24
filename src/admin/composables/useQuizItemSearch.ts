@@ -17,6 +17,7 @@ export type QuizItemSearchQuery = {
   level?: string
   deafFilter?: 'deaf' | 'hearing' | 'both'
   itemType: ItemType
+  addedSince?: string
 }
 
 export default function useQuizItemSearch() {
@@ -29,7 +30,7 @@ export default function useQuizItemSearch() {
   /**
    * Build filter string for signs collection
    */
-  const buildSignFilter = (search: string, level?: string): string => {
+  const buildSignFilter = (search: string, level?: string, addedSince?: string): string => {
     const filters: string[] = []
 
     if (search.trim()) {
@@ -43,13 +44,21 @@ export default function useQuizItemSearch() {
       filters.push(`level = "${level}"`)
     }
 
+    if (addedSince) {
+      filters.push(`created >= "${addedSince}"`)
+    }
+
     return filters.join(' && ')
   }
 
   /**
    * Build filter string for persons collection
    */
-  const buildPersonFilter = (search: string, deafFilter?: 'deaf' | 'hearing' | 'both'): string => {
+  const buildPersonFilter = (
+    search: string,
+    deafFilter?: 'deaf' | 'hearing' | 'both',
+    addedSince?: string
+  ): string => {
     const filters: string[] = []
 
     if (search.trim()) {
@@ -65,6 +74,10 @@ export default function useQuizItemSearch() {
       filters.push('deaf = false')
     }
     // 'both' means no filter on the deaf field
+
+    if (addedSince) {
+      filters.push(`created >= "${addedSince}"`)
+    }
 
     return filters.join(' && ')
   }
@@ -107,7 +120,7 @@ export default function useQuizItemSearch() {
 
       // Search signs if applicable
       if (query.itemType === 'sign' || query.itemType === 'mixed') {
-        const filter = buildSignFilter(query.search, query.level)
+        const filter = buildSignFilter(query.search, query.level, query.addedSince)
         const signResults = await pb
           .collection('sign')
           .getFullList({
@@ -121,7 +134,7 @@ export default function useQuizItemSearch() {
 
       // Search persons if applicable
       if (query.itemType === 'person' || query.itemType === 'mixed') {
-        const filter = buildPersonFilter(query.search, query.deafFilter)
+        const filter = buildPersonFilter(query.search, query.deafFilter, query.addedSince)
         const personResults = await pb
           .collection('person')
           .getFullList({
