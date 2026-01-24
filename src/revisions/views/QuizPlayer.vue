@@ -265,7 +265,6 @@ const handleBackToList = () => {
           :get-file-url="getFileUrl"
           :is-flipped="isFlipped"
           @flip="isFlipped = $event"
-          class="flex-1"
         />
 
         <div class="flex gap-3 justify-end">
@@ -278,11 +277,11 @@ const handleBackToList = () => {
             </button>
           </template>
           <template v-else>
-            <button class="btn btn-error btn-sm" @click="handleAttempt('unknown')">
-              Je ne savais pas
+            <button class="btn btn-error btn-sm" @click="handleAttempt('unknown')" title="Je ne savais pas">
+              <span class="i-fa-solid-thumbs-down"></span>
             </button>
-            <button class="btn btn-success btn-sm" @click="handleAttempt('known')">
-              Je savais
+            <button class="btn btn-success btn-sm" @click="handleAttempt('known')" title="Je savais">
+              <span class="i-fa-solid-thumbs-up"></span>
             </button>
           </template>
         </div>
