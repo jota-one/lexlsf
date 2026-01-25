@@ -122,7 +122,7 @@
             show-clear
           >
             <template #value="slotProps">
-              <div v-if="slotProps.value" class="flex items-center">
+              <div v-if="slotProps.value?.id" class="flex items-center">
                 <div class="flex items-center">
                   <img
                     v-if="slotProps.value.illustration"
@@ -167,7 +167,7 @@
             show-clear
           >
             <template #value="slotProps">
-              <div v-if="slotProps.value" class="flex items-center">
+              <div v-if="slotProps.value?.id" class="flex items-center">
                 <div class="flex items-center">
                   <img
                     v-if="slotProps.value.illustration"
