@@ -1,0 +1,9 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import UserProfileApp from '@components/UserProfileApp.vue'
+export const prerender = false
+---
+
+<PageLayout>
+  <UserProfileApp client:only class="py-8" />
+</PageLayout>
