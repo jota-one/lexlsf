@@ -11,6 +11,14 @@ export interface TUser {
   updated: string
   name?: string
   avatar?: string
+  roles?: string[]
+  expand?: {
+    roles?: Array<{
+      id: string
+      name: string
+      slug: string
+    }>
+  }
 }
 
 export interface TUserForm {
@@ -20,6 +28,7 @@ export interface TUserForm {
   passwordConfirm?: string
   name?: string
   avatar?: File | null
+  roles?: string[]
 }
 
 export default function useUsers() {
@@ -30,11 +39,14 @@ export default function useUsers() {
   const loadUsers = async () => {
     users.value = await pb.collection('users').getFullList<TUser>({
       sort: '-created',
+      expand: 'roles',
     })
   }
 
   const loadUser = async (id: string) => {
-    return pb.collection('users').getOne<TUser>(id)
+    return pb.collection('users').getOne<TUser>(id, {
+      expand: 'roles',
+    })
   }
 
   const addUser = async (payload: TUserForm) => {
@@ -54,6 +66,12 @@ export default function useUsers() {
     
     if (payload.avatar && payload.avatar instanceof File) {
       formData.append('avatar', payload.avatar)
+    }
+    
+    if (payload.roles && payload.roles.length > 0) {
+      payload.roles.forEach(roleId => {
+        formData.append('roles', roleId)
+      })
     }
 
     return pb.collection('users').create(formData)
@@ -77,6 +95,12 @@ export default function useUsers() {
     
     if (payload.avatar && payload.avatar instanceof File) {
       formData.append('avatar', payload.avatar)
+    }
+    
+    if (payload.roles) {
+      payload.roles.forEach(roleId => {
+        formData.append('roles', roleId)
+      })
     }
 
     return pb.collection('users').update(id, formData)

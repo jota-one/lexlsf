@@ -45,6 +45,20 @@
       </div>
 
       <div class="flex flex-col gap-2">
+        <label for="roles" class="font-semibold">Rôles</label>
+        <MultiSelect
+          id="roles"
+          v-model="form.roles"
+          :options="roles"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Sélectionner des rôles"
+          :loading="rolesLoading"
+          display="chip"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
         <label for="avatar" class="font-semibold">Avatar</label>
         <div v-if="currentAvatar" class="flex items-center gap-2 mb-2">
           <img
@@ -95,10 +109,12 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
+import MultiSelect from 'primevue/multiselect';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import useUsers from '../composables/useUsers';
 import type { TUserForm } from '../composables/useUsers';
+import useRoles from '../composables/useRoles';
 import PbErrorToast from './PbErrorToast.vue';
 import usePbErrorToast from '../composables/usePbErrorToast';
 
@@ -115,8 +131,10 @@ const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
 
 const { updateUser, loadUser, getAvatarUrl } = useUsers();
+const { roles, loadRoles } = useRoles();
 const { showPbError } = usePbErrorToast();
 const saving = ref(false);
+const rolesLoading = ref(false);
 const currentAvatar = ref('');
 
 const form = ref<TUserForm>({
@@ -126,6 +144,7 @@ const form = ref<TUserForm>({
   passwordConfirm: '',
   name: '',
   avatar: null,
+  roles: [],
 });
 
 const onAvatarSelect = (event: FileUploadSelectEvent) => {
@@ -173,14 +192,24 @@ const loadUserData = async () => {
     passwordConfirm: '',
     name: user.name || '',
     avatar: null,
+    roles: user.roles || [],
   };
 
   currentAvatar.value = getAvatarUrl(user);
 };
 
+const loadRolesData = async () => {
+  rolesLoading.value = true;
+  try {
+    await loadRoles();
+  } finally {
+    rolesLoading.value = false;
+  }
+};
+
 watch(visible, async (isVisible) => {
   if (isVisible) {
-    await loadUserData();
+    await Promise.all([loadUserData(), loadRolesData()]);
   }
 }, { immediate: true });
 

@@ -46,6 +46,20 @@
       </div>
 
       <div class="flex flex-col gap-2">
+        <label for="roles" class="font-semibold">Rôles</label>
+        <MultiSelect
+          id="roles"
+          v-model="form.roles"
+          :options="roles"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Sélectionner des rôles"
+          :loading="rolesLoading"
+          display="chip"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
         <label for="avatar" class="font-semibold">Avatar</label>
         <FileUpload
           mode="basic"
@@ -88,10 +102,12 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Checkbox from 'primevue/checkbox';
+import MultiSelect from 'primevue/multiselect';
 import FileUpload from 'primevue/fileupload';
 import type { FileUploadSelectEvent } from 'primevue/fileupload';
 import useUsers from '../composables/useUsers';
 import type { TUserForm } from '../composables/useUsers';
+import useRoles from '../composables/useRoles';
 import PbErrorToast from './PbErrorToast.vue';
 import usePbErrorToast from '../composables/usePbErrorToast';
 
@@ -103,8 +119,10 @@ const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
 
 const { addUser } = useUsers();
+const { roles, loadRoles } = useRoles();
 const { showPbError } = usePbErrorToast();
 const saving = ref(false);
+const rolesLoading = ref(false);
 
 const form = ref<TUserForm>({
   email: '',
@@ -113,6 +131,7 @@ const form = ref<TUserForm>({
   passwordConfirm: '',
   name: '',
   avatar: null,
+  roles: [],
 });
 
 const onAvatarSelect = (event: FileUploadSelectEvent) => {
@@ -148,6 +167,7 @@ const save = async () => {
       passwordConfirm: '',
       name: '',
       avatar: null,
+      roles: [],
     };
   } catch (err) {
     showPbError(err);
@@ -156,8 +176,16 @@ const save = async () => {
   }
 };
 
-watch(visible, (newVal) => {
-  if (!newVal) {
+watch(visible, async (newVal) => {
+  if (newVal) {
+    // Load roles when modal opens
+    rolesLoading.value = true;
+    try {
+      await loadRoles();
+    } finally {
+      rolesLoading.value = false;
+    }
+  } else {
     // Reset form when modal closes
     form.value = {
       email: '',
@@ -166,6 +194,7 @@ watch(visible, (newVal) => {
       passwordConfirm: '',
       name: '',
       avatar: null,
+      roles: [],
     };
   }
 });

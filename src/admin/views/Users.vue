@@ -37,6 +37,20 @@
             {{ slotProps.data.email }}
           </template>
         </Column>
+        <Column field="roles" header="Rôles">
+          <template #body="slotProps">
+            <div v-if="slotProps.data.expand?.roles?.length" class="flex flex-wrap gap-1">
+              <span
+                v-for="role in slotProps.data.expand.roles"
+                :key="role.id"
+                class="badge badge-primary badge-sm"
+              >
+                {{ role.name }}
+              </span>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </Column>
         <Column field="verified" header="Vérifié" sortable>
           <template #body="slotProps">
             <span
