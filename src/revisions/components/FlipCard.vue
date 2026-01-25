@@ -55,7 +55,6 @@ const handleFlip = (flipped: boolean) => {
     :active-click="true"
     class="w-full"
     width="100%"
-    height="300px"
     :model-value="isFlipped"
     @update:model-value="handleFlip"
   >
