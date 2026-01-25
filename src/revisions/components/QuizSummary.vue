@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import dayjs from 'dayjs'
+import durationPlugin from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/fr'
 import type { QuizSessionStats } from '@admin/types/quiz'
+
+dayjs.extend(durationPlugin)
+dayjs.extend(relativeTime)
+dayjs.locale('fr')
 
 type Props = {
   stats: QuizSessionStats
@@ -25,12 +33,8 @@ const hasErrors = computed(() => props.stats.unknown > 0)
 
 const formatDuration = (ms?: number) => {
   if (!ms) return '-'
-  const seconds = Math.floor(ms / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return minutes > 0 
-    ? `${minutes}m ${remainingSeconds}s`
-    : `${remainingSeconds}s`
+  
+  return dayjs.duration(ms, 'millisecond').humanize()
 }
 </script>
 
