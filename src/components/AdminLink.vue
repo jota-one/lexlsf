@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isAuthenticated">
+  <template v-if="isAdmin">
     <li class="text-md font-semibold text-white cursor-pointer">
       <a href="/admin">Admin</a>
     </li>
@@ -9,5 +9,5 @@
 <script setup lang="ts">
 import useAuth from '@admin/composables/useAuth'
 
-const { isAuthenticated } = useAuth()
+const { isAdmin } = useAuth()
 </script>
