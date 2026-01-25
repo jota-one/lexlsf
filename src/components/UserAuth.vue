@@ -39,7 +39,7 @@
               <span>Mon compte</span>
             </a>
           </li>
-          <li>
+          <li v-if="isAdmin">
             <a href="/revisions" class="flex items-center gap-3 text-gray-700 hover:bg-gray-100">
               <span class="i-fa-solid-graduation-cap text-base"></span>
               <span>Mes quiz</span>
@@ -67,7 +67,7 @@ import useAuth from '@admin/composables/useAuth'
 import config from '@config'
 import LoginModal from "./LoginModal.vue"
 
-const { isAuthenticated, user, logout } = useAuth()
+const { isAuthenticated, isAdmin, user, logout } = useAuth()
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const avatarUrl = computed(() => {

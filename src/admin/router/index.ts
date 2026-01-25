@@ -20,19 +20,26 @@ const routes = [
   { path: '/quizzes/:id/edit', component: QuizEdit },
 ]
 
+const baseUrl = (import.meta as any).env?.BASE_URL || '/'
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL + 'admin/'),
+  history: createWebHistory(baseUrl + 'admin/'),
   routes,
 })
 
-router.beforeEach((_to, _from, next) => {
-  const { isAuthenticated } = useAuth()
+router.beforeEach(async (_to, _from, next) => {
+  const { isAuthenticated, isAdmin, refreshAuth } = useAuth()
 
-  if (!isAuthenticated.value) {
-    window.location.href = '/'
-  } else {
-    next()
+  if (isAuthenticated.value) {
+    await refreshAuth()
   }
+
+  if (!isAuthenticated.value || !isAdmin.value) {
+    window.location.href = '/'
+    return
+  }
+
+  next()
 })
 
 export default router
