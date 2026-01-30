@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/ffmpeg-go
 
 env:
   PB_PATH: pb
@@ -60,7 +61,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
