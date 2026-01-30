@@ -27,6 +27,7 @@
     "primevue": "^4.3.5",
     "tailwindcss": "^4.1.4",
     "vue": "^3.5.13",
+    "vue-flip": "^3.0.2",
     "vue-router": "^4.2.5",
     "vue3-markdown": "^1.2.17"
   },

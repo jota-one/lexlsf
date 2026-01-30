@@ -39,6 +39,18 @@
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/quizzes" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa-solid-book text-xl"></span>
+            Quiz
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/users" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa-solid-users text-xl"></span>
+            Utilisateurs
+          </RouterLink>
+        </li>
+        <li>
           <div class="flex items-center gap-3" active-class="menu-active" @click="goOut">
             <span class="i-fa-solid-sign-out-alt text-xl"></span>
             Retour au site

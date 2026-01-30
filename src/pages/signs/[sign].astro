@@ -1,7 +1,6 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
-import Rating from 'primevue/rating';
 
 import config from '../../config'
 import useSigns from '@admin/composables/useSigns';
@@ -55,8 +54,8 @@ const categories = mainCategories.map(mainCat => {
 }).filter(cat => cat.subcategories.length > 0)
 
 const colors = {
-  right: '#dc262688',
-  left: '#2563eb88'
+  right: '#f4309865',
+  left: '#00bafe74'
 }
 
 
@@ -109,7 +108,12 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             <div>
               <div class="flex items-center gap-4 mb-3">
                 <h2 class="flex-1">Niveau</h2>
-                <Rating client:load v-model={level} /> ({record.level.toUpperCase()})
+                <div class="flex gap-1">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span class={`text-xl ${i < level ? 'text-primary' : 'text-base-300'}`}>★</span>
+                  ))}
+                </div>
+                <span class="text-sm">({record.level.toUpperCase()})</span>
               </div>
               <div class="flex items-center gap-4">
                 <h2 class="flex-1">Statut du signe</h2>
@@ -132,7 +136,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
           <div class={`card-body gap-6 grid grid-cols-2 ${hasLeftConfiguration ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             { hasLeftConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-blue-600 font-semibold">Main gauche</div>
+                <div class="text-lg text-info font-semibold">M. gauche</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationLeftUrl}
@@ -147,7 +151,7 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             )}
             { hasConfiguration && (
               <div class="flex flex-col items-center gap-3">
-                <div class="text-red-600 font-semibold">Main droite</div>
+                <div class="text-lg text-primary font-semibold">M. droite</div>
                 <div class="flex items-center justify-center h-40 w-full">
                   <img
                     src={configurationUrl}
@@ -162,21 +166,21 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
             )}
             <div class="col-span-2 text-center">
               <h3 class="text-lg font-semibold mb-4">Emplacements</h3>
-              <div class="flex justify-center">
+              <div class="flex justify-center bg-white">
                 <FaceZonesOverlay
                   client:only
-                  right={record.placement.right}
-                  left={record.placement.left}
+                  right={record.placement?.right}
+                  left={record.placement?.left}
                   colorConfig={colors}
                   activeHand="right"
                   interactive={false}
                 />
               </div>
-              <div class="flex justify-center pl-5">
+              <div class="flex justify-center pl-5 bg-white">
                 <BodyZonesOverlay
                   client:only
-                  right={record.placement.right}
-                  left={record.placement.left}
+                  right={record.placement?.right}
+                  left={record.placement?.left}
                   colorConfig={colors}
                   activeHand="right"
                   interactive={false}

@@ -93,6 +93,17 @@ const handleLogin = async () => {
     // Success - result is the token
     emit('loginSuccess')
     close()
+    
+    // Vérifier s'il y a une URL de retour sauvegardée
+    const returnUrl = sessionStorage.getItem('returnUrl')
+    if (returnUrl) {
+      sessionStorage.removeItem('returnUrl')
+      window.location.href = returnUrl
+    }
+    // Si pas d'URL de retour et qu'on est sur la homepage, recharger pour afficher recherche/navigation
+    else if (window.location.pathname === '/') {
+      window.location.reload()
+    }
   } else if (result.error) {
     // Error
     errorMessage.value = result.message || 'Erreur lors de la connexion'

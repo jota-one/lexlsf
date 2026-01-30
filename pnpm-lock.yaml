@@ -53,6 +53,9 @@ importers:
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
+      vue-flip:
+        specifier: ^3.0.2
+        version: 3.0.2(typescript@5.8.3)
       vue-router:
         specifier: ^4.2.5
         version: 4.5.1(vue@3.5.13(typescript@5.8.3))
@@ -3059,6 +3062,9 @@ packages:
 
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
+
+  vue-flip@3.0.2:
+    resolution: {integrity: sha512-caHfyboV2ctdEg+sKVlcuGvja8yq2Cq11TKFhPj/EJEd43q+c6QE2qfoznjprGwYNf+HWfB21PFJFXXDrIgJtg==}
 
   vue-router@4.5.1:
     resolution: {integrity: sha512-ogAF3P97NPm8fJsE4by9dwSYtDwXIY1nFY9T6DyQnGHd1E2Da94w9JIolpe42LJGIl0DwOHBi8TcRPlPGwbTtw==}
@@ -6440,6 +6446,12 @@ snapshots:
   vscode-nls@5.2.0: {}
 
   vscode-uri@3.1.0: {}
+
+  vue-flip@3.0.2(typescript@5.8.3):
+    dependencies:
+      vue: 3.5.26(typescript@5.8.3)
+    transitivePeerDependencies:
+      - typescript
 
   vue-router@4.5.1(vue@3.5.13(typescript@5.8.3)):
     dependencies:

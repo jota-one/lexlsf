@@ -17,6 +17,7 @@ const learningSourceOptions = [
   { label: 'Enseignant', value: 'teacher' },
   { label: 'Communauté', value: 'community' },
   { label: 'Média', value: 'media' },
+  { label: 'Université / M1', value: 'uni/m1' },
   { label: 'Autre', value: 'other' },
 ]
 const primaryLanguageOptions = [

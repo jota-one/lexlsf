@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro'
 import UserAuth from '@components/UserAuth.vue'
 import AdminLink from '@components/AdminLink.vue'
 import Search from '@components/Search.vue';
+import LsflexLogo from '../assets/lsflex.svg'
 const isHome = Astro.url.pathname === '/';
 const { navBg = 'bg-transparent' } = Astro.props;
 
@@ -18,16 +19,17 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
     >
       <div class="container flex justify-between items-center mx-auto">
         <div class={logoContainerClasses}>
-          <h1 class="text-xl md:text-3xl text-white font-semibold">
-            <a href="/">Lexique LSF</a>
+          <h1 class="text-xl md:text-3xl font-semibold">
+            <a href="/" class="flex items-center text-white" aria-label="Lexique LSF">
+              <LsflexLogo class="h-10 w-auto" />
+            </a>
           </h1>
         </div>
           {!isHome && <Search client:load />}
-        <div class="hidden lg:flex gap-20 justify-between items-center mr-5">
+        <div class="hidden lg:flex gap-20 justify-between items-center mr-5" id="mainNavigation">
           <ul class="flex gap-8">
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/categories">Lexique</a></li>
             <li class="text-md font-semibold text-white cursor-pointer"><a href="/culture">Culture</a></li>
-            <li class="text-md font-semibold text-white cursor-pointer"><a href="/about">A propos</a></li>
             <AdminLink client:only />
           </ul>
         </div>
@@ -46,3 +48,17 @@ const logoContainerClasses = isHome ? 'mr-5 flex-1' : 'mr-5';
       </div>
     </footer>
 </BaseLayout>
+
+<script>
+  // Masquer la navigation si l'utilisateur n'est pas authentifié et qu'on est sur la homepage
+  const userJwt = sessionStorage.getItem('userJwt')
+  const isAuthenticated = userJwt && userJwt.length > 0
+  const isHome = window.location.pathname === '/'
+  
+  if (!isAuthenticated && isHome) {
+    const mainNavigation = document.getElementById('mainNavigation')
+    if (mainNavigation) {
+      mainNavigation.style.display = 'none'
+    }
+  }
+</script>

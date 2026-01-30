@@ -10,32 +10,70 @@
       <LoginModal ref="loginModalRef" @login-success="handleLoginSuccess" />
     </template>
     <template v-else>
-      <div
-        class="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-colors"
-      >
-        <div class="flex flex-col">
-          <span class="text-xs font-medium text-white/70 uppercase tracking-wide">Connecté(e)</span>
-          <span class="text-sm font-semibold text-white">{{ user.name }}</span>
-        </div>
+      <div class="dropdown dropdown-end">
         <button
-          class="ml-2 p-1.5 rounded-md hover:bg-white/20 transition-colors text-white/80 hover:text-white"
-          @click="handleLogout"
-          title="Déconnexion"
+          tabindex="0"
+          role="button"
+          class="flex items-center gap-3 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-colors cursor-pointer"
         >
-          <span class="i-fa-solid-sign-out-alt text-base"></span>
+          <div v-if="avatarUrl" class="flex-shrink-0">
+            <img
+              :src="avatarUrl"
+              :alt="user.name"
+              class="w-10 h-10 rounded-full object-cover border border-white/30"
+            />
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs font-medium text-white/70 uppercase tracking-wide">Connecté(e)</span>
+            <span class="text-sm font-semibold text-white">{{ user.name }}</span>
+          </div>
+          <span class="i-fa-solid-chevron-down text-xs text-white/70"></span>
         </button>
+        <ul
+          tabindex="0"
+          class="dropdown-content menu bg-white shadow-lg rounded-box z-[1] w-56 p-2 border border-gray-200 mt-3"
+        >
+          <li>
+            <a href="/profile" class="flex items-center gap-3 text-gray-700 hover:bg-gray-100">
+              <span class="i-fa-solid-user text-base"></span>
+              <span>Mon compte</span>
+            </a>
+          </li>
+          <li v-if="isAdmin">
+            <a href="/revisions" class="flex items-center gap-3 text-gray-700 hover:bg-gray-100">
+              <span class="i-fa-solid-graduation-cap text-base"></span>
+              <span>Mes quiz</span>
+            </a>
+          </li>
+          <li>
+            <button
+              @click="handleLogout"
+              class="flex items-center gap-3 text-red-600 hover:bg-red-50 w-full text-left"
+            >
+              <span class="i-fa-solid-sign-out-alt text-base"></span>
+              <span>Déconnexion</span>
+            </button>
+          </li>
+        </ul>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useTemplateRef } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import config from '@config'
 import LoginModal from "./LoginModal.vue"
 
-const { isAuthenticated, user, logout } = useAuth()
+const { isAuthenticated, isAdmin, user, logout } = useAuth()
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
+
+const avatarUrl = computed(() => {
+  if (!user.value?.avatar) return ''
+  return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
+})
 
 const openLoginModal = () => {
   loginModalRef.value?.open()

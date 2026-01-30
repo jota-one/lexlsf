@@ -94,7 +94,7 @@ watch(visible, async (isVisible) => {
         learning_source: sign.learning_source,
         learning_source_detail: sign.learning_source_detail,
         primary_language: sign.primary_language || 'LSF',
-        placement: sign.placement,
+        placement: sign.placement || { right: [], left: [] },
         movements: sign.movements || { right: {}, left: {} },
     };
     // Initialize selected categories
