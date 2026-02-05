@@ -53,15 +53,10 @@
         </Column>
         <Column field="verified" header="Vérifié" sortable>
           <template #body="slotProps">
-            <span
-              v-if="slotProps.data.verified"
-              class="badge badge-success badge-sm"
-            >
+            <span v-if="slotProps.data.verified" class="badge badge-success badge-sm">
               Vérifié
             </span>
-            <span v-else class="badge badge-warning badge-sm">
-              Non vérifié
-            </span>
+            <span v-else class="badge badge-warning badge-sm"> Non vérifié </span>
           </template>
         </Column>
         <Column field="created" header="Créé le" sortable>
@@ -89,9 +84,7 @@
             </div>
           </template>
         </Column>
-        <template #footer>
-          Nombre total d'utilisateurs: {{ users ? users.length : 0 }}.
-        </template>
+        <template #footer> Nombre total d'utilisateurs: {{ users ? users.length : 0 }}. </template>
       </DataTable>
     </div>
     <UserAddModal v-model="showAddModal" @saved="loadUsers" />
@@ -156,7 +149,7 @@ const confirmDelete = (user: TUser) => {
 
 const deleteUserConfirmed = async () => {
   if (!editedUser.value) return;
-  
+
   try {
     await deleteUser(editedUser.value.id);
     await loadUsers();

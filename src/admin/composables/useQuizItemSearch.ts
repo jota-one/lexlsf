@@ -36,7 +36,7 @@ export default function useQuizItemSearch() {
     if (search.trim()) {
       // Search in name, definition, or Category.tag
       filters.push(
-        `(name ~ "${search.trim()}" || definition ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`
+        `(name ~ "${search.trim()}" || definition ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`,
       )
     }
 
@@ -57,14 +57,14 @@ export default function useQuizItemSearch() {
   const buildPersonFilter = (
     search: string,
     deafFilter?: 'deaf' | 'hearing' | 'both',
-    addedSince?: string
+    addedSince?: string,
   ): string => {
     const filters: string[] = []
 
     if (search.trim()) {
       // Search in name, firstname, description, Activities.tag, or Category.tag
       filters.push(
-        `(name ~ "${search.trim()}" || firstname ~ "${search.trim()}" || description ~ "${search.trim()}" || Activities.tag ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`
+        `(name ~ "${search.trim()}" || firstname ~ "${search.trim()}" || description ~ "${search.trim()}" || Activities.tag ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`,
       )
     }
 
@@ -121,29 +121,25 @@ export default function useQuizItemSearch() {
       // Search signs if applicable
       if (query.itemType === 'sign' || query.itemType === 'mixed') {
         const filter = buildSignFilter(query.search, query.level, query.addedSince)
-        const signResults = await pb
-          .collection('sign')
-          .getFullList({
-            filter: filter || undefined,
-            expand: 'Category',
-            limit: 50,
-          })
+        const signResults = await pb.collection('sign').getFullList({
+          filter: filter || undefined,
+          expand: 'Category',
+          limit: 50,
+        })
 
-        allResults.push(...signResults.map((r) => formatResult(r, 'sign')))
+        allResults.push(...signResults.map(r => formatResult(r, 'sign')))
       }
 
       // Search persons if applicable
       if (query.itemType === 'person' || query.itemType === 'mixed') {
         const filter = buildPersonFilter(query.search, query.deafFilter, query.addedSince)
-        const personResults = await pb
-          .collection('person')
-          .getFullList({
-            filter: filter || undefined,
-            expand: 'Category,Activities',
-            limit: 50,
-          })
+        const personResults = await pb.collection('person').getFullList({
+          filter: filter || undefined,
+          expand: 'Category,Activities',
+          limit: 50,
+        })
 
-        allResults.push(...personResults.map((r) => formatResult(r, 'person')))
+        allResults.push(...personResults.map(r => formatResult(r, 'person')))
       }
 
       results.value = allResults

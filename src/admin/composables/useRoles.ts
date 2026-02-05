@@ -14,7 +14,7 @@ export default function useRoles() {
   const pb = new PocketBase(config.apiBaseUrl)
 
   const roles = ref<TRole[]>([])
-  
+
   const loadRoles = async () => {
     roles.value = await pb.collection('roles').getFullList<TRole>({
       sort: 'name',

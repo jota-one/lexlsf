@@ -166,7 +166,11 @@ watch(addedSince, () => {
         <span class="label-text font-semibold">Filtre par statut auditif</span>
       </label>
       <div class="space-y-2">
-        <div v-for="option in deafFilterOptions" :key="option.value" class="flex items-center gap-2">
+        <div
+          v-for="option in deafFilterOptions"
+          :key="option.value"
+          class="flex items-center gap-2"
+        >
           <RadioButton
             v-model="deafFilter"
             :value="option.value"
@@ -194,7 +198,10 @@ watch(addedSince, () => {
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center gap-2">
-                <span class="badge badge-sm" :class="item.type === 'sign' ? 'badge-primary' : 'badge-secondary'">
+                <span
+                  class="badge badge-sm"
+                  :class="item.type === 'sign' ? 'badge-primary' : 'badge-secondary'"
+                >
                   {{ item.type === 'sign' ? 'Signe' : 'Personne' }}
                 </span>
                 <span class="font-semibold">{{ item.label }}</span>
@@ -227,14 +234,23 @@ watch(addedSince, () => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && filteredResults.length === 0 && hasActiveFilters" class="text-center py-4 text-base-content/50">
+    <div
+      v-if="!loading && filteredResults.length === 0 && hasActiveFilters"
+      class="text-center py-4 text-base-content/50"
+    >
       <p v-if="results.length === 0">Aucun résultat trouvé</p>
       <p v-else>Tous les résultats sont déjà dans ce quiz</p>
     </div>
 
     <!-- Clear Button -->
     <div v-if="filteredResults.length > 0 || searchTerm" class="flex gap-2 justify-end pt-2">
-      <Button type="button" label="Effacer" severity="secondary" size="small" @click="handleClear" />
+      <Button
+        type="button"
+        label="Effacer"
+        severity="secondary"
+        size="small"
+        @click="handleClear"
+      />
       <Button
         v-if="filteredResults.length > 1"
         type="button"

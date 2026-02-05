@@ -111,12 +111,17 @@ const deleteItem = async (itemId: string) => {
         :key="item.id"
         class="flex items-start gap-3 p-3 border border-base-200 rounded-lg hover:bg-base-100/50 transition"
       >
-        <div class="flex-none w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-semibold">
+        <div
+          class="flex-none w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-semibold"
+        >
           {{ index + 1 }}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="badge badge-sm" :class="item.itemType === 'sign' ? 'badge-primary' : 'badge-secondary'">
+            <span
+              class="badge badge-sm"
+              :class="item.itemType === 'sign' ? 'badge-primary' : 'badge-secondary'"
+            >
               {{ item.itemType === 'sign' ? 'Signe' : 'Personne' }}
             </span>
             <span class="font-semibold truncate">{{ item.label }}</span>

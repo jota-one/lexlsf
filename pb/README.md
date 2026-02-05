@@ -5,20 +5,20 @@
 Ce dossier contient tout ce qui est déployé côté PocketBase pour lexlsf. Nous utilisons un binaire PocketBase personnalisé (Go) qui ajoute :
 
 - des hooks post-commit pour optimiser les vidéos via ffmpeg ;
-- une commande CLI `video:optimize` dédiée (utile pour reprocess). 
+- une commande CLI `video:optimize` dédiée (utile pour reprocess).
 
 Ce document explique comment remplacer proprement le binaire standard par notre version custom dans les pipelines existants et sur l’infra JOTA.
 
 ## TL;DR (build local)
 
-1) Générer les assets publics Astro dans `pb/pb_public` :
+1. Générer les assets publics Astro dans `pb/pb_public` :
 
 ```bash
 pnpm install
 pnpm build   # sort dans pb/pb_public
 ```
 
-2) Compiler le binaire Linux statique dans `pb/pocketbase` :
+2. Compiler le binaire Linux statique dans `pb/pocketbase` :
 
 ```bash
 cd pb
@@ -44,7 +44,7 @@ Par défaut, le bundle « pb » inclut : `.nodeversion`, `.pbversion`, `pb_hoo
 
 ### Recommandation (simple et fiable)
 
-1) Construire le binaire custom dans ce repo AVANT la création de l’artefact :
+1. Construire le binaire custom dans ce repo AVANT la création de l’artefact :
 
 Ajouter dans `lexlsf/.github/workflows/deploy.yaml` (job `build`, après `Install dependencies` et avant `Prepare artifact`) :
 
@@ -61,7 +61,7 @@ Ajouter dans `lexlsf/.github/workflows/deploy.yaml` (job `build`, après `Instal
           chmod +x pocketbase
 ```
 
-2) Faire inclure le binaire dans le bundle « pb » côté infra :
+2. Faire inclure le binaire dans le bundle « pb » côté infra :
 
 - Dans `infra/.github/workflows/deploy-pb-db.yaml`, étendre la boucle de packaging :
 
@@ -72,7 +72,7 @@ Ajouter dans `lexlsf/.github/workflows/deploy.yaml` (job `build`, après `Instal
 
 - Le script de déploiement `infra/bin/pb_deploy` n’a pas besoin de logique spéciale : le fichier `pocketbase` sera déposé dans le répertoire de l’app et utilisé par le service existant (lance toujours `./pocketbase serve`).
 
-3) Versionnage upstream :
+3. Versionnage upstream :
 
 - Conserver `.pbversion` dans ce repo synchronisé avec la version PocketBase cible (ex. `v0.34.2`).
 - Le script `pb_install` de l’infra n’écrasera pas notre binaire si la version courante correspond à `.pbversion` (no-op). Si besoin de rollback vers l’officiel : modifier `.pbversion` → relancer un déploiement (il téléchargera l’upstream correspondant).
@@ -109,9 +109,9 @@ Tester un upload/édition d’un « sign » : la taille de la vidéo dans `pb_
 
 ## Plan de rollback
 
-1) Modifier `.pbversion` vers la version upstream désirée (ex. `v0.34.2`).
-2) Redéployer (workflow habituel). `pb_install` remplacera `pocketbase` par l’officiel.
-3) Alternativement, pousser un bundle « pb » sans le fichier `pocketbase`.
+1. Modifier `.pbversion` vers la version upstream désirée (ex. `v0.34.2`).
+2. Redéployer (workflow habituel). `pb_install` remplacera `pocketbase` par l’officiel.
+3. Alternativement, pousser un bundle « pb » sans le fichier `pocketbase`.
 
 ---
 

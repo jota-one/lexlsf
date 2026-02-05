@@ -24,7 +24,9 @@
             />
           </div>
           <div class="flex flex-col">
-            <span class="text-xs font-medium text-white/70 uppercase tracking-wide">Connecté(e)</span>
+            <span class="text-xs font-medium text-white/70 uppercase tracking-wide"
+              >Connecté(e)</span
+            >
             <span class="text-sm font-semibold text-white">{{ user.name }}</span>
           </div>
           <span class="i-fa-solid-chevron-down text-xs text-white/70"></span>

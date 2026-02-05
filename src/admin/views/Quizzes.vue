@@ -74,11 +74,7 @@ const handleQuizSaved = async () => {
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-2xl font-bold">Quiz</h2>
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        @click="showAddModal = true"
-      >
+      <button type="button" class="btn btn-primary btn-sm" @click="showAddModal = true">
         <span class="i-fa-solid-plus"></span>
         Nouveau quiz
       </button>

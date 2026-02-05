@@ -126,7 +126,9 @@ export default function useQuizSession() {
   const resumeSession = async (sessionId: string) => {
     loading.value = true
     try {
-      currentSession.value = await pb.collection<QuizSessionRecord>('quiz_session').getOne(sessionId)
+      currentSession.value = await pb
+        .collection<QuizSessionRecord>('quiz_session')
+        .getOne(sessionId)
 
       if (!currentSession.value) {
         throw new Error('Session not found')
@@ -197,7 +199,7 @@ export default function useQuizSession() {
       const expandFields = [...mode.faceA, ...mode.faceB]
         .filter(field => field.type === 'relation')
         .map(field => field.key)
-      
+
       const records = await pb.collection(collectionName).getFullList({
         filter: itemIds.map(id => `id = "${id}"`).join(' || '),
         expand: expandFields.join(','),
@@ -236,10 +238,9 @@ export default function useQuizSession() {
       stats[result]++
     }
 
-    currentSession.value = await pb.collection<QuizSessionRecord>('quiz_session').update(
-      currentSession.value.id,
-      { stats }
-    )
+    currentSession.value = await pb
+      .collection<QuizSessionRecord>('quiz_session')
+      .update(currentSession.value.id, { stats })
 
     // Move to next card
     currentIndex.value++
@@ -260,12 +261,11 @@ export default function useQuizSession() {
   const completeSession = async () => {
     if (!currentSession.value) return
 
-    currentSession.value = await pb.collection<QuizSessionRecord>('quiz_session').update(
-      currentSession.value.id,
-      {
+    currentSession.value = await pb
+      .collection<QuizSessionRecord>('quiz_session')
+      .update(currentSession.value.id, {
         completed_at: new Date().toISOString(),
-      }
-    )
+      })
 
     return currentSession.value
   }
@@ -284,7 +284,7 @@ export default function useQuizSession() {
       configKey?: string
       onlyIncomplete?: boolean
       limit?: number
-    }
+    },
   ) => {
     const filters = [`Quiz = "${quizId}"`]
 

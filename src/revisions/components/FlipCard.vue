@@ -65,7 +65,9 @@ const handleFlip = (flipped: boolean) => {
           <div v-if="usesSplitLayout(mode.faceA)" class="grid gap-4 md:grid-cols-2 md:items-start">
             <div class="space-y-4">
               <div v-for="field in videoFields(mode.faceA)" :key="field.key" class="space-y-2">
-                <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+                <p class="text-sm font-semibold text-base-content/70">
+                  {{ field.label || field.key }}
+                </p>
                 <video
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
@@ -77,14 +79,20 @@ const handleFlip = (flipped: boolean) => {
             </div>
             <div class="space-y-4">
               <div v-for="field in otherFields(mode.faceA)" :key="field.key" class="space-y-2">
-                <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+                <p class="text-sm font-semibold text-base-content/70">
+                  {{ field.label || field.key }}
+                </p>
 
                 <template v-if="field.type === 'text'">
                   <p class="text-lg">{{ renderFieldValue(field.key) }}</p>
                 </template>
 
                 <template v-else-if="field.type === 'file'">
-                  <img v-if="mediaUrl(field.key)" :src="mediaUrl(field.key)" class="w-full rounded" />
+                  <img
+                    v-if="mediaUrl(field.key)"
+                    :src="mediaUrl(field.key)"
+                    class="w-full rounded"
+                  />
                   <p v-else class="text-base-content/50 text-sm">Aucun média</p>
                 </template>
 
@@ -97,7 +105,9 @@ const handleFlip = (flipped: boolean) => {
           <div v-else-if="hasVideo(mode.faceA)" class="grid gap-4 md:grid-cols-2 md:items-start">
             <div class="space-y-4">
               <div v-for="field in videoFields(mode.faceA)" :key="field.key" class="space-y-2">
-                <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+                <p class="text-sm font-semibold text-base-content/70">
+                  {{ field.label || field.key }}
+                </p>
                 <video
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
@@ -110,7 +120,9 @@ const handleFlip = (flipped: boolean) => {
           </div>
           <div v-else class="space-y-4">
             <div v-for="field in mode.faceA" :key="field.key" class="space-y-2">
-              <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+              <p class="text-sm font-semibold text-base-content/70">
+                {{ field.label || field.key }}
+              </p>
 
               <template v-if="field.type === 'text'">
                 <p class="text-lg">{{ renderFieldValue(field.key) }}</p>
@@ -137,7 +149,9 @@ const handleFlip = (flipped: boolean) => {
           <div v-if="usesSplitLayout(mode.faceB)" class="grid gap-4 md:grid-cols-2 md:items-start">
             <div class="space-y-4">
               <div v-for="field in videoFields(mode.faceB)" :key="field.key" class="space-y-2">
-                <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+                <p class="text-sm font-semibold text-base-content/70">
+                  {{ field.label || field.key }}
+                </p>
                 <video
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
@@ -149,14 +163,20 @@ const handleFlip = (flipped: boolean) => {
             </div>
             <div class="space-y-4">
               <div v-for="field in otherFields(mode.faceB)" :key="field.key" class="space-y-2">
-                <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+                <p class="text-sm font-semibold text-base-content/70">
+                  {{ field.label || field.key }}
+                </p>
 
                 <template v-if="field.type === 'text'">
                   <p class="text-lg">{{ renderFieldValue(field.key) }}</p>
                 </template>
 
                 <template v-else-if="field.type === 'file'">
-                  <img v-if="mediaUrl(field.key)" :src="mediaUrl(field.key)" class="w-full rounded" />
+                  <img
+                    v-if="mediaUrl(field.key)"
+                    :src="mediaUrl(field.key)"
+                    class="w-full rounded"
+                  />
                   <p v-else class="text-base-content/50 text-sm">Aucun média</p>
                 </template>
 
@@ -168,14 +188,21 @@ const handleFlip = (flipped: boolean) => {
           </div>
           <div v-else class="space-y-4">
             <div v-for="field in mode.faceB" :key="field.key" class="space-y-2">
-              <p class="text-sm font-semibold text-base-content/70">{{ field.label || field.key }}</p>
+              <p class="text-sm font-semibold text-base-content/70">
+                {{ field.label || field.key }}
+              </p>
 
               <template v-if="field.type === 'text'">
                 <p class="text-lg">{{ renderFieldValue(field.key) }}</p>
               </template>
 
               <template v-else-if="field.type === 'video'">
-                <video v-if="mediaUrl(field.key)" :src="mediaUrl(field.key)" controls class="w-full rounded" />
+                <video
+                  v-if="mediaUrl(field.key)"
+                  :src="mediaUrl(field.key)"
+                  controls
+                  class="w-full rounded"
+                />
                 <p v-else class="text-base-content/50 text-sm">Aucune vidéo</p>
               </template>
 

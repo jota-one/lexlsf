@@ -7,8 +7,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "pnpm oxlint --type-aware",
-    "format": "pnpm oxfmt . --write",
+    "lint": "oxlint --type-aware",
+    "format": "oxfmt",
     "db": "cd pb && ./pocketbase serve"
   },
   "dependencies": {

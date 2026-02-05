@@ -1,6 +1,6 @@
 // Types for the quiz system
-export type ItemType = "sign" | "person" | "mixed"
-export type QuizResult = "known" | "unknown" | "skip"
+export type ItemType = 'sign' | 'person' | 'mixed'
+export type QuizResult = 'known' | 'unknown' | 'skip'
 
 export type QuizSettings = {
   shuffle?: boolean
@@ -20,7 +20,7 @@ export type Quiz = {
 export type QuizItem = {
   id: string
   Quiz: string
-  item_type: Exclude<ItemType, "mixed">
+  item_type: Exclude<ItemType, 'mixed'>
   item_id: string
   position?: number
   created: string
