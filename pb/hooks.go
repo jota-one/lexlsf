@@ -95,8 +95,7 @@ func optimizeVideoRecord(app *pocketbase.PocketBase, record *core.Record) error 
 			"-c:v", "libx264",
 			"-crf", "23",
 			"-preset", "veryfast",
-			"-c:a", "aac",
-			"-b:a", "128k",
+			"-an", // supprime la piste audio
 			"-movflags", "faststart",
 			"-y", // Overwrite
 			tmpOutputPath,
