@@ -76,9 +76,8 @@
         <div class="alert alert-info mb-3">
           <span class="i-fa-solid-list-check"></span>
           <span>
-            {{ importResult.processed }} signe(s) traité(s) —
-            {{ importResult.created }} nouveau(x), {{ importResult.updated }} mis à jour,
-            {{ importResult.unchanged }} inchangé(s)
+            {{ importResult.processed }} signe(s) traité(s) — {{ importResult.created }} nouveau(x),
+            {{ importResult.updated }} mis à jour, {{ importResult.unchanged }} inchangé(s)
           </span>
         </div>
 
@@ -124,12 +123,10 @@
           Format des fichiers
         </h3>
         <div class="text-xs space-y-2">
-          <p>
-            <strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.
-          </p>
+          <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
           <p class="text-warning">
-            <strong>Note:</strong> Les fichiers vidéo ne sont pas inclus dans l'import/export.
-            Ils doivent être gérés séparément.
+            <strong>Note:</strong> Les fichiers vidéo ne sont pas inclus dans l'import/export. Ils
+            doivent être gérés séparément.
           </p>
         </div>
       </div>

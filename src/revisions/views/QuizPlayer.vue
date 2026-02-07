@@ -164,7 +164,10 @@ const handleBackToList = () => {
     <h1 class="text-3xl font-bold mb-4">{{ quizTitle }}</h1>
 
     <!-- Sessions en cours -->
-    <div v-if="incompleteSessions.length > 0 && !currentSession" class="card bg-base-100 shadow p-4 mb-4">
+    <div
+      v-if="incompleteSessions.length > 0 && !currentSession"
+      class="card bg-base-100 shadow p-4 mb-4"
+    >
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-lg font-semibold">Reprendre une session</h3>
         <button class="btn btn-ghost btn-sm" @click="dismissSessions">
@@ -186,16 +189,22 @@ const handleBackToList = () => {
             <tr v-for="session in incompleteSessions" :key="session.id">
               <td>{{ getQuizMode(session.config_key)?.label }}</td>
               <td>
-                {{ session.stats.known + session.stats.unknown + session.stats.skipped }} / {{ session.stats.total }}
+                {{ session.stats.known + session.stats.unknown + session.stats.skipped }} /
+                {{ session.stats.total }}
               </td>
-              <td>{{ new Date(session.started_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) }}</td>
+              <td>
+                {{ new Date(session.started_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) }}
+              </td>
               <td class="text-right space-x-2">
                 <button
                   class="btn btn-primary btn-xs"
                   :disabled="starting || deletingSessionId === session.id"
                   @click="handleResume(session.id)"
                 >
-                  <span v-if="starting && deletingSessionId !== session.id" class="loading loading-spinner loading-xs"></span>
+                  <span
+                    v-if="starting && deletingSessionId !== session.id"
+                    class="loading loading-spinner loading-xs"
+                  ></span>
                   Reprendre
                 </button>
                 <button
@@ -203,7 +212,10 @@ const handleBackToList = () => {
                   :disabled="deletingSessionId === session.id"
                   @click="handleDeleteSession(session.id)"
                 >
-                  <span v-if="deletingSessionId === session.id" class="loading loading-spinner loading-xs"></span>
+                  <span
+                    v-if="deletingSessionId === session.id"
+                    class="loading loading-spinner loading-xs"
+                  ></span>
                   Supprimer
                 </button>
               </td>
@@ -257,18 +269,22 @@ const handleBackToList = () => {
           <!-- Action buttons (left) -->
           <div class="flex gap-2">
             <template v-if="!isFlipped">
-              <button class="btn btn-outline btn-sm" @click="handleAttempt('skip')">
-                Passer
-              </button>
-              <button class="btn btn-ghost btn-sm" @click="isFlipped = true">
-                Retourner
-              </button>
+              <button class="btn btn-outline btn-sm" @click="handleAttempt('skip')">Passer</button>
+              <button class="btn btn-ghost btn-sm" @click="isFlipped = true">Retourner</button>
             </template>
             <template v-else>
-              <button class="btn btn-error btn-lg" @click="handleAttempt('unknown')" title="Je ne savais pas">
+              <button
+                class="btn btn-error btn-lg"
+                @click="handleAttempt('unknown')"
+                title="Je ne savais pas"
+              >
                 <span class="i-fa-solid-thumbs-down"></span>
               </button>
-              <button class="btn btn-success btn-lg" @click="handleAttempt('known')" title="Je savais">
+              <button
+                class="btn btn-success btn-lg"
+                @click="handleAttempt('known')"
+                title="Je savais"
+              >
                 <span class="i-fa-solid-thumbs-up"></span>
               </button>
             </template>

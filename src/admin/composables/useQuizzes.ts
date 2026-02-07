@@ -34,7 +34,7 @@ export default function useQuizzes() {
   const quizzes = ref<QuizRecord[]>([])
   const loading = ref(false)
   const quizItemCounts = ref<Record<string, number>>({})
-  
+
   type QuizCountRow = {
     id: string
     items_count: number
@@ -54,7 +54,7 @@ export default function useQuizzes() {
 
       quizzes.value = quizRows
       quizItemCounts.value = Object.fromEntries(
-        countRows.map((r) => [r.id, Number(r.items_count) || 0])
+        countRows.map(r => [r.id, Number(r.items_count) || 0]),
       )
     } finally {
       loading.value = false
@@ -93,7 +93,7 @@ export default function useQuizzes() {
         item_type: item.item_type,
         item_id: item.item_id,
         position: item.position,
-      })
+      }),
     )
 
     await Promise.all(itemPromises)
@@ -107,7 +107,7 @@ export default function useQuizzes() {
    */
   const updateQuiz = async (
     id: string,
-    data: Partial<Pick<QuizFormData, 'title' | 'description' | 'settings'>>
+    data: Partial<Pick<QuizFormData, 'title' | 'description' | 'settings'>>,
   ) => {
     return pb.collection<QuizRecord>('quiz').update(id, data)
   }
@@ -124,7 +124,7 @@ export default function useQuizzes() {
    */
   const addQuizItems = async (
     quizId: string,
-    items: Array<{ item_type: 'sign' | 'person'; item_id: string }>
+    items: Array<{ item_type: 'sign' | 'person'; item_id: string }>,
   ) => {
     // Get current max position
     const existingItems = await pb.collection<QuizItemRecord>('quiz_item').getFullList({
@@ -145,7 +145,7 @@ export default function useQuizzes() {
         item_type: item.item_type,
         item_id: item.item_id,
         position: maxPosition + 1 + index,
-      })
+      }),
     )
 
     return Promise.all(itemPromises)
@@ -166,7 +166,7 @@ export default function useQuizzes() {
     const updatePromises = items.map(item =>
       pb.collection<QuizItemRecord>('quiz_item').update(item.id, {
         position: item.position,
-      })
+      }),
     )
     return Promise.all(updatePromises)
   }

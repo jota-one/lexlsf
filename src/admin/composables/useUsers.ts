@@ -35,7 +35,7 @@ export default function useUsers() {
   const pb = new PocketBase(config.apiBaseUrl)
 
   const users = ref<TUser[]>([])
-  
+
   const loadUsers = async () => {
     users.value = await pb.collection('users').getFullList<TUser>({
       sort: '-created',
@@ -51,23 +51,23 @@ export default function useUsers() {
 
   const addUser = async (payload: TUserForm) => {
     const formData = new FormData()
-    
+
     formData.append('email', payload.email.trim())
     formData.append('emailVisibility', String(payload.emailVisibility))
-    
+
     if (payload.password) {
       formData.append('password', payload.password)
       formData.append('passwordConfirm', payload.passwordConfirm || payload.password)
     }
-    
+
     if (payload.name) {
       formData.append('name', payload.name.trim())
     }
-    
+
     if (payload.avatar && payload.avatar instanceof File) {
       formData.append('avatar', payload.avatar)
     }
-    
+
     if (payload.roles && payload.roles.length > 0) {
       payload.roles.forEach(roleId => {
         formData.append('roles', roleId)
@@ -79,24 +79,24 @@ export default function useUsers() {
 
   const updateUser = async (id: string, payload: TUserForm) => {
     const formData = new FormData()
-    
+
     formData.append('email', payload.email.trim())
     formData.append('emailVisibility', String(payload.emailVisibility))
-    
+
     // Only include password if it's being changed
     if (payload.password) {
       formData.append('password', payload.password)
       formData.append('passwordConfirm', payload.passwordConfirm || payload.password)
     }
-    
+
     if (payload.name) {
       formData.append('name', payload.name.trim())
     }
-    
+
     if (payload.avatar && payload.avatar instanceof File) {
       formData.append('avatar', payload.avatar)
     }
-    
+
     if (payload.roles) {
       payload.roles.forEach(roleId => {
         formData.append('roles', roleId)

@@ -1,11 +1,11 @@
 <template>
   <Dialog v-model:visible="visible" modal header="Ajouter une personne" class="w-[60%]">
-        <PersonForm
-            ref="personForm"
-            v-model="form"
-            v-model:categories="selectedCategories"
-            v-model:activities="selectedActivities"
-        />
+    <PersonForm
+      ref="personForm"
+      v-model="form"
+      v-model:categories="selectedCategories"
+      v-model:activities="selectedActivities"
+    />
     <!-- Toast container for PocketBase errors -->
     <PbErrorToast />
     <template #footer>

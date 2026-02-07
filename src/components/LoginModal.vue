@@ -93,7 +93,7 @@ const handleLogin = async () => {
     // Success - result is the token
     emit('loginSuccess')
     close()
-    
+
     // Vérifier s'il y a une URL de retour sauvegardée
     const returnUrl = sessionStorage.getItem('returnUrl')
     if (returnUrl) {

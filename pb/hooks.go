@@ -1,0 +1,134 @@
+package main
+
+import (
+	"io"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
+
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
+)
+
+// SetupVideoOptimizationHooks configure les hooks pour compresser les vidéos
+func SetupVideoOptimizationHooks(app *pocketbase.PocketBase) {
+	// Après succès de création (transaction déjà commit)
+	app.OnRecordAfterCreateSuccess("sign").BindFunc(func(e *core.RecordEvent) error {
+		go func() {
+			if err := optimizeVideoRecord(app, e.Record); err != nil {
+				log.Printf("❌ optimizeVideoRecord (create) failed: %v", err)
+			}
+		}()
+		return nil
+	})
+
+	// Après succès de mise à jour (transaction déjà commit)
+	app.OnRecordAfterUpdateSuccess("sign").BindFunc(func(e *core.RecordEvent) error {
+		go func() {
+			if err := optimizeVideoRecord(app, e.Record); err != nil {
+				log.Printf("❌ optimizeVideoRecord (update) failed: %v", err)
+			}
+		}()
+		return nil
+	})
+
+	log.Println("✅ Video optimization hooks registered for 'sign' collection")
+}
+
+// optimizeVideoRecord compresse les vidéos trouvées dans le répertoire du record
+func optimizeVideoRecord(app *pocketbase.PocketBase, record *core.Record) error {
+	collectionPath := filepath.Join(app.DataDir(), "storage", record.Collection().Id)
+	recordPath := filepath.Join(collectionPath, record.Id)
+
+	// Scanne le répertoire pour trouver les fichiers vidéo
+	entries, err := os.ReadDir(recordPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			// Normal si pas de fichiers uploadés
+			return nil
+		}
+		log.Printf("⚠️ failed to read record dir: %v", err)
+		return nil
+	}
+
+	videoExtensions := map[string]bool{
+		".mp4": true, ".mkv": true, ".webm": true, ".mov": true,
+		".avi": true, ".flv": true, ".m4v": true, ".wmv": true,
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		ext := filepath.Ext(entry.Name())
+		if !videoExtensions[ext] {
+			continue
+		}
+
+		// Trouvé une vidéo à optimiser
+		inputPath := filepath.Join(recordPath, entry.Name())
+
+		// Vérifie que ffmpeg est disponible
+		ffmpegBin, err := exec.LookPath("ffmpeg")
+		if err != nil {
+			// fallback Homebrew path (common on macOS arm64)
+			fallback := "/opt/homebrew/bin/ffmpeg"
+			if _, statErr := os.Stat(fallback); statErr == nil {
+				ffmpegBin = fallback
+			} else {
+				// FFmpeg absent: on skip l'optimisation sans bloquer l'enregistrement
+				log.Printf("⚠️ ffmpeg not available, skipping video optimization for: %s", inputPath)
+				return nil
+			}
+		}
+
+		log.Printf("🎬 Optimizing video: %s", inputPath)
+
+		// Crée un nom de sortie temporaire
+		tmpOutputPath := inputPath + ".tmp.mp4"
+
+		cmd := exec.Command(ffmpegBin,
+			"-i", inputPath,
+			"-vf", "scale=640:-2:force_divisible_by=2",
+			"-c:v", "libx264",
+			"-crf", "23",
+			"-preset", "veryfast",
+			"-an", // supprime la piste audio
+			"-movflags", "faststart",
+			"-y", // Overwrite
+			tmpOutputPath,
+		)
+
+		// Capture les logs FFmpeg
+		stdout, _ := cmd.StdoutPipe()
+		stderr, _ := cmd.StderrPipe()
+
+		if err := cmd.Start(); err != nil {
+			log.Printf("⚠️ failed to start ffmpeg: %v", err)
+			return nil // Ne bloque pas l'enregistrement
+		}
+
+		// Consomme les logs en arrière-plan
+		go io.Copy(os.Stdout, stdout)
+		go io.Copy(os.Stderr, stderr)
+
+		if err := cmd.Wait(); err != nil {
+			log.Printf("⚠️ ffmpeg encoding failed: %v", err)
+			return nil // Ne bloque pas l'enregistrement
+		}
+
+		// Remplace le fichier original
+		if err := os.Rename(tmpOutputPath, inputPath); err != nil {
+			log.Printf("⚠️ failed to replace original video: %v", err)
+			// Nettoie le fichier temporaire
+			os.Remove(tmpOutputPath)
+			return nil
+		}
+
+		log.Printf("✅ Video optimized: %s", inputPath)
+	}
+
+	return nil
+}

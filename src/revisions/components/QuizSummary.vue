@@ -33,7 +33,7 @@ const hasErrors = computed(() => props.stats.unknown > 0)
 
 const formatDuration = (ms?: number) => {
   if (!ms) return '-'
-  
+
   return dayjs.duration(ms, 'millisecond').humanize()
 }
 </script>
@@ -48,7 +48,10 @@ const formatDuration = (ms?: number) => {
     <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
       <div class="stat">
         <div class="stat-title">Score</div>
-        <div class="stat-value" :class="accuracy >= 80 ? 'text-success' : accuracy >= 50 ? 'text-warning' : 'text-error'">
+        <div
+          class="stat-value"
+          :class="accuracy >= 80 ? 'text-success' : accuracy >= 50 ? 'text-warning' : 'text-error'"
+        >
           {{ accuracy }}%
         </div>
         <div class="stat-desc">{{ stats.known }} / {{ stats.known + stats.unknown }} correctes</div>
@@ -75,15 +78,13 @@ const formatDuration = (ms?: number) => {
 
     <div v-if="duration" class="alert">
       <span class="i-fa-solid-clock"></span>
-      <span>Temps total : <strong>{{ formatDuration(duration) }}</strong></span>
+      <span
+        >Temps total : <strong>{{ formatDuration(duration) }}</strong></span
+      >
     </div>
 
     <div class="flex flex-wrap gap-3 justify-center">
-      <button 
-        v-if="hasErrors"
-        class="btn btn-error btn-sm"
-        @click="emit('reviewErrors')"
-      >
+      <button v-if="hasErrors" class="btn btn-error btn-sm" @click="emit('reviewErrors')">
         <span class="i-fa-solid-redo"></span>
         Réviser mes erreurs
       </button>
@@ -98,4 +99,3 @@ const formatDuration = (ms?: number) => {
     </div>
   </div>
 </template>
-

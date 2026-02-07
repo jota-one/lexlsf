@@ -111,7 +111,6 @@ const handleItemsRefresh = () => {
 const handleItemsLoaded = (keys: string[]) => {
   existingItemKeys.value = keys
 }
-
 </script>
 
 <template>
@@ -133,50 +132,48 @@ const handleItemsLoaded = (keys: string[]) => {
         <TabPanels>
           <TabPanel value="0">
             <div class="p-6">
-            <QuizForm v-model="form" :is-edit-mode="true" :loading="saving" />
-            <div class="flex justify-end gap-2 mt-6">
-              <button type="button" class="btn btn-ghost btn-sm" @click="cancel">
-                Annuler
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                :disabled="loading || saving"
-                @click="saveQuiz"
-              >
-                <span v-if="saving" class="loading loading-spinner loading-sm"></span>
-                Mettre à jour
-              </button>
-            </div>
+              <QuizForm v-model="form" :is-edit-mode="true" :loading="saving" />
+              <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn btn-ghost btn-sm" @click="cancel">Annuler</button>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  :disabled="loading || saving"
+                  @click="saveQuiz"
+                >
+                  <span v-if="saving" class="loading loading-spinner loading-sm"></span>
+                  Mettre à jour
+                </button>
+              </div>
             </div>
           </TabPanel>
           <TabPanel value="1">
             <div class="p-6 space-y-6">
-            <!-- Current Items -->
-            <div>
-              <h3 class="text-lg font-semibold mb-4">Éléments actuels</h3>
-              <QuizItemsList
-                :key="itemsRefreshKey"
-                :quiz-id="quizId"
-                :item-type="form.item_type"
-                @delete="handleItemsRefresh"
-                @loaded="handleItemsLoaded"
-              />
-            </div>
+              <!-- Current Items -->
+              <div>
+                <h3 class="text-lg font-semibold mb-4">Éléments actuels</h3>
+                <QuizItemsList
+                  :key="itemsRefreshKey"
+                  :quiz-id="quizId"
+                  :item-type="form.item_type"
+                  @delete="handleItemsRefresh"
+                  @loaded="handleItemsLoaded"
+                />
+              </div>
 
-            <!-- Divider -->
-            <div class="divider"></div>
+              <!-- Divider -->
+              <div class="divider"></div>
 
-            <!-- Search & Add -->
-            <div>
-              <h3 class="text-lg font-semibold mb-4">Ajouter des éléments</h3>
-              <QuizItemSearch
-                :item-type="form.item_type"
-                :exclude-keys="existingItemKeys"
-                @select="handleItemSelected"
-                @select-all="handleItemsSelectedAll"
-              />
-            </div>
+              <!-- Search & Add -->
+              <div>
+                <h3 class="text-lg font-semibold mb-4">Ajouter des éléments</h3>
+                <QuizItemSearch
+                  :item-type="form.item_type"
+                  :exclude-keys="existingItemKeys"
+                  @select="handleItemSelected"
+                  @select-all="handleItemsSelectedAll"
+                />
+              </div>
             </div>
           </TabPanel>
         </TabPanels>

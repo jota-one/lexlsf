@@ -20,9 +20,7 @@
           <span class="i-fa-solid-file-export"></span>
           Export
         </h3>
-        <p class="text-sm mb-4">
-          Exporter toutes les personnes dans un fichier CSV.
-        </p>
+        <p class="text-sm mb-4">Exporter toutes les personnes dans un fichier CSV.</p>
         <div class="flex gap-2">
           <Button
             label="Exporter en CSV"
@@ -42,8 +40,8 @@
           Import
         </h3>
         <p class="text-sm mb-4">
-          Importer des personnes depuis un fichier CSV. Les personnes existantes (par ID)
-          seront mises à jour, les nouvelles seront créées.
+          Importer des personnes depuis un fichier CSV. Les personnes existantes (par ID) seront
+          mises à jour, les nouvelles seront créées.
         </p>
 
         <!-- File input -->
@@ -79,13 +77,15 @@
           <span class="i-fa-solid-list-check"></span>
           <span>
             {{ importResult.processed }} personne(s) traitée(s) —
-            {{ importResult.created }} nouvelle(s),
-            {{ importResult.updated }} mise(s) à jour,
+            {{ importResult.created }} nouvelle(s), {{ importResult.updated }} mise(s) à jour,
             {{ importResult.unchanged }} inchangée(s)
           </span>
         </div>
 
-        <div class="alert alert-success mb-3" v-if="importResult.success > 0 && importResult.errors.length === 0">
+        <div
+          class="alert alert-success mb-3"
+          v-if="importResult.success > 0 && importResult.errors.length === 0"
+        >
           <span class="i-fa-solid-check-circle"></span>
           <span>Import terminé sans erreur</span>
         </div>
@@ -124,9 +124,7 @@
           Format des fichiers
         </h3>
         <div class="text-xs space-y-2">
-          <p>
-            <strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.
-          </p>
+          <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
           <p class="text-warning">
             <strong>Note:</strong> Les fichiers d'illustration ne sont pas inclus dans
             l'import/export. Ils doivent être gérés séparément.

@@ -3,9 +3,9 @@
     <div class="card bg-white shadow-xl">
       <div class="card-body">
         <h2 class="card-title text-3xl mb-6">Mon compte</h2>
-        
+
         <PbErrorToast />
-        
+
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Nom -->
           <div class="form-control">
@@ -64,7 +64,7 @@
 
           <!-- Section changement de mot de passe -->
           <div class="divider">Changer le mot de passe</div>
-          
+
           <div class="form-control">
             <label class="label">
               <span class="label-text font-semibold">Ancien mot de passe</span>
@@ -106,18 +106,8 @@
 
           <!-- Boutons d'action -->
           <div class="card-actions justify-end gap-3 pt-4">
-            <button
-              type="button"
-              class="btn btn-ghost"
-              @click="goBack"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="isLoading"
-            >
+            <button type="button" class="btn btn-ghost" @click="goBack">Annuler</button>
+            <button type="submit" class="btn btn-primary" :disabled="isLoading">
               <span v-if="isLoading" class="loading loading-spinner loading-sm"></span>
               <span v-else>Enregistrer</span>
             </button>
@@ -158,7 +148,7 @@ const avatarPreview = ref<string>('')
 const handleAvatarChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  
+
   if (file) {
     // Vérifier la taille
     if (file.size > 5 * 1024 * 1024) {
@@ -170,9 +160,9 @@ const handleAvatarChange = (event: Event) => {
       })
       return
     }
-    
+
     avatarFile.value = file
-    
+
     // Créer une prévisualisation
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -208,7 +198,7 @@ const handleSubmit = async () => {
   try {
     const formData = new FormData()
     formData.append('name', profile.name)
-    
+
     // Ajouter l'avatar s'il a été sélectionné
     if (avatarFile.value) {
       formData.append('avatar', avatarFile.value)
@@ -280,7 +270,7 @@ const handleSubmit = async () => {
     passwordData.oldPassword = ''
     passwordData.password = ''
     passwordData.passwordConfirm = ''
-    
+
     // Recharger l'avatar après mise à jour
     if (user.value?.avatar) {
       avatarPreview.value = getAvatarUrl()

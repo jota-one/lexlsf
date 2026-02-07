@@ -14,11 +14,7 @@
 
       <div class="flex flex-col gap-2">
         <label for="name" class="font-semibold">Nom complet</label>
-        <InputText
-          id="name"
-          v-model="form.name"
-          placeholder="Prénom Nom"
-        />
+        <InputText id="name" v-model="form.name" placeholder="Prénom Nom" />
       </div>
 
       <div class="flex flex-col gap-2">
@@ -30,7 +26,9 @@
           :feedback="false"
           toggleMask
         />
-        <p class="text-sm text-gray-500">Laissez vide si vous ne voulez pas changer le mot de passe</p>
+        <p class="text-sm text-gray-500">
+          Laissez vide si vous ne voulez pas changer le mot de passe
+        </p>
       </div>
 
       <div v-if="form.password" class="flex flex-col gap-2">
@@ -85,18 +83,8 @@
 
     <template #footer>
       <div class="flex justify-end gap-2 pt-4">
-        <Button
-          type="button"
-          label="Annuler"
-          severity="secondary"
-          @click="visible = false"
-        />
-        <Button
-          type="button"
-          label="Enregistrer"
-          :loading="saving"
-          @click="save"
-        />
+        <Button type="button" label="Annuler" severity="secondary" @click="visible = false" />
+        <Button type="button" label="Enregistrer" :loading="saving" @click="save" />
       </div>
     </template>
   </Dialog>
@@ -166,7 +154,7 @@ const save = async () => {
   }
 
   saving.value = true;
-  
+
   try {
     await updateUser(props.userId, form.value);
     emit('saved');
@@ -182,9 +170,9 @@ const loadUserData = async () => {
   if (!visible.value) {
     return;
   }
-  
+
   const user = await loadUser(props.userId);
-  
+
   form.value = {
     email: user.email,
     emailVisibility: true,

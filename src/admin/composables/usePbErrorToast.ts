@@ -36,7 +36,9 @@ export default function usePbErrorToast() {
 
       // Top-level message (fallback to stringified error)
       const topMessage =
-        errObject?.message || (typeof e?.message === 'string' ? e.message : undefined) || 'Erreur serveur'
+        errObject?.message ||
+        (typeof e?.message === 'string' ? e.message : undefined) ||
+        'Erreur serveur'
 
       const msg: string[] = []
       if (fieldData) {
