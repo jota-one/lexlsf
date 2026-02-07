@@ -8,10 +8,16 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 )
 
 func main() {
 	app := pocketbase.New()
+
+	// Enable migrate command (JS migrations)
+	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
+		TemplateLang: migratecmd.TemplateLangJS,
+	})
 
 	// Register custom commands
 	app.RootCmd.AddCommand(commands.VideoOptimizeCommand(app))
