@@ -13,7 +13,14 @@ export default defineConfig({
     ...(process.env.NODE_ENV === 'production'
       ? {
           ssr: {
-            noExternal: ['vue', 'pocketbase', '@primevue/themes', '@primeuix/themes', 'marked'],
+            noExternal: [
+              'vue',
+              'pocketbase',
+              '@primevue/themes',
+              '@primeuix/themes',
+              'marked',
+              'dayjs',
+            ],
           },
         }
       : {}),
