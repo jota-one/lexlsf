@@ -26,11 +26,9 @@ export type TRecord = {
   organism?: boolean
 }
 
-export type TForm = Omit<
-  TRecord,
-  'id' | 'slug' | 'illustration' | 'updated' | 'expand' | 'created'
-> & {
+export type TForm = Omit<TRecord, 'id' | 'illustration' | 'updated' | 'expand' | 'created'> & {
   id?: string
+  slug?: string
   illustration?: File | null
   description?: string
   deaf?: boolean

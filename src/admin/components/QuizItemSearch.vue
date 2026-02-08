@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import dayjs from 'dayjs'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import RadioButton from 'primevue/radiobutton'
@@ -67,7 +68,7 @@ const showLevelFilter = () => props.itemType === 'sign' || props.itemType === 'm
 const showDeafFilter = () => props.itemType === 'person' || props.itemType === 'mixed'
 
 const performSearch = async () => {
-  const addedSinceIso = addedSince.value ? new Date(addedSince.value).toISOString() : undefined
+  const addedSinceIso = addedSince.value ? dayjs(addedSince.value).toISOString() : undefined
   await search({
     search: searchTerm.value,
     level: selectedLevel.value || undefined,

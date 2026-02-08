@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import config from '../../config'
 import PocketBase from 'pocketbase'
 import type { TSign } from '../../types'
+import { createSlug } from '@admin/helpers/strings'
 
 const translateNumericLevel = (level: number) => {
   const levels = ['a1', 'a2', 'b1', 'b2', 'c1']
@@ -44,7 +45,9 @@ const setFormData = (payload: TSign.TForm) => {
   }
   formData.append('name', payload.name)
   formData.append('definition', payload.definition)
-  formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'))
+  // Use provided slug if available, otherwise generate from name
+  const slug = payload.slug || createSlug(payload.name)
+  formData.append('slug', slug)
   formData.append('level', translateNumericLevel(payload.level))
   ;(payload.Category || []).forEach(cat => {
     formData.append('Category', cat)

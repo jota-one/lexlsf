@@ -25,6 +25,9 @@ func main() {
 	// Setup video optimization hooks
 	SetupVideoOptimizationHooks(app)
 
+	// Setup slug validation hooks
+	SetupSlugHooks(app)
+
 	// Serve static files from pb_public (same as default pocketbase binary)
 	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
 		se.Router.GET("/{path...}", apis.Static(os.DirFS("./pb_public"), false))

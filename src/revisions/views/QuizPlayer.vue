@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 import useQuizzes from '@admin/composables/useQuizzes'
 import useQuizSession from '@admin/composables/useQuizSession'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
@@ -67,7 +68,7 @@ onMounted(async () => {
 
 // Time tracking
 watch(currentCard, () => {
-  cardStartTime.value = Date.now()
+  cardStartTime.value = dayjs().valueOf()
 })
 
 const start = async () => {
@@ -78,8 +79,8 @@ const start = async () => {
     await startSession(quizId, selectedMode.value)
     finished.value = false
     isFlipped.value = false
-    sessionStartTime.value = Date.now()
-    cardStartTime.value = Date.now()
+    sessionStartTime.value = dayjs().valueOf()
+    cardStartTime.value = dayjs().valueOf()
   } catch (error) {
     showPbError(error)
   } finally {
@@ -88,11 +89,11 @@ const start = async () => {
 }
 
 const handleAttempt = async (result: 'known' | 'unknown' | 'skip') => {
-  const timeSpent = Date.now() - cardStartTime.value
+  const timeSpent = dayjs().valueOf() - cardStartTime.value
   await logAttempt(result, timeSpent)
   isFlipped.value = false
   if (isComplete.value) {
-    sessionDuration.value = Date.now() - sessionStartTime.value
+    sessionDuration.value = dayjs().valueOf() - sessionStartTime.value
     await completeSession()
     finished.value = true
   }
@@ -109,8 +110,8 @@ const handleResume = async (sessionId: string) => {
     selectedMode.value = session.config_key
     finished.value = false
     incompleteSessions.value = [] // Nettoyer la liste après reprise
-    sessionStartTime.value = new Date(session.started_at).getTime()
-    cardStartTime.value = Date.now()
+    sessionStartTime.value = dayjs(session.started_at).valueOf()
+    cardStartTime.value = dayjs().valueOf()
   } catch (error) {
     showPbError(error)
   } finally {

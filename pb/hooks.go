@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
@@ -131,4 +133,81 @@ func optimizeVideoRecord(app *pocketbase.PocketBase, record *core.Record) error 
 	}
 
 	return nil
+}
+
+// SetupSlugHooks configure les hooks pour valider et gérer l'unicité des slugs
+func SetupSlugHooks(app *pocketbase.PocketBase) {
+	slugPattern := regexp.MustCompile(`^[a-z0-9-]+$`)
+
+	// Hook avant la création d'un enregistrement
+	app.OnRecordCreate("sign", "person").BindFunc(func(e *core.RecordEvent) error {
+		slug := e.Record.GetString("slug")
+
+		// Valide le format du slug
+		if slug == "" {
+			return fmt.Errorf("slug cannot be empty")
+		}
+		if !slugPattern.MatchString(slug) {
+			return fmt.Errorf("slug must contain only lowercase letters, numbers, and hyphens")
+		}
+
+		// Vérifie l'unicité du slug
+		slug = ensureUniqueSlug(app, e.Record.Collection().Name, slug, "")
+		e.Record.Set("slug", slug)
+
+		// Continue avec l'opération de création
+		return e.Next()
+	})
+
+	// Hook avant la mise à jour d'un enregistrement
+	app.OnRecordUpdate("sign", "person").BindFunc(func(e *core.RecordEvent) error {
+		slug := e.Record.GetString("slug")
+
+		// Valide le format du slug
+		if slug == "" {
+			return fmt.Errorf("slug cannot be empty")
+		}
+		if !slugPattern.MatchString(slug) {
+			return fmt.Errorf("slug must contain only lowercase letters, numbers, and hyphens")
+		}
+
+		// Vérifie l'unicité du slug (en excluant l'enregistrement actuel)
+		slug = ensureUniqueSlug(app, e.Record.Collection().Name, slug, e.Record.Id)
+		e.Record.Set("slug", slug)
+
+		// Continue avec l'opération de mise à jour
+		return e.Next()
+	})
+
+	log.Println("✅ Slug validation hooks registered for 'sign' and 'person' collections")
+}
+
+// ensureUniqueSlug vérifie qu'un slug est unique et ajoute un suffixe numérique si nécessaire
+func ensureUniqueSlug(app *pocketbase.PocketBase, collectionName, slug, excludeId string) string {
+	baseSlug := slug
+	counter := 2
+
+	for {
+		// Cherche un enregistrement avec ce slug
+		filter := fmt.Sprintf("slug = '%s'", slug)
+		if excludeId != "" {
+			filter = fmt.Sprintf("slug = '%s' && id != '%s'", slug, excludeId)
+		}
+
+		record, err := app.FindFirstRecordByFilter(collectionName, filter)
+		if err != nil || record == nil {
+			// Slug disponible
+			return slug
+		}
+
+		// Slug déjà utilisé, on ajoute un numéro
+		slug = fmt.Sprintf("%s-%d", baseSlug, counter)
+		counter++
+
+		// Sécurité: évite une boucle infinie
+		if counter > 1000 {
+			log.Printf("⚠️ Too many slug conflicts for: %s", baseSlug)
+			return slug
+		}
+	}
 }
