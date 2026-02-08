@@ -59,6 +59,26 @@
           <InputText v-model="form.firstname" id="firstname" class="w-full" />
         </div>
 
+        <!-- Slug -->
+        <div class="flex items-center gap-4">
+          <label for="slug" class="font-semibold w-60">Slug</label>
+          <div class="flex gap-2 w-full">
+            <InputText
+              v-model="form.slug"
+              id="slug"
+              class="flex-1"
+              placeholder="Auto-généré depuis prénom + nom"
+            />
+            <Button
+              icon="i-fa6-solid-arrows-rotate"
+              severity="secondary"
+              size="small"
+              @click="regenerateSlug"
+              v-tooltip="'Régénérer depuis prénom + nom'"
+            />
+          </div>
+        </div>
+
         <!-- Sourds/entendant -->
         <div v-if="!form.organism" class="flex items-center gap-4">
           <label for="deaf" class="font-semibold w-60">Sourds/entendant</label>
@@ -431,6 +451,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
+import Button from 'primevue/button';
 
 dayjs.extend(customParseFormat);
 import Tabs from 'primevue/tabs';
@@ -445,6 +466,7 @@ import useVideos from '../composables/useVideos';
 import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
+import { createSlug } from '@admin/helpers/strings';
 
 // Internal type for timeline entries with mandatory ID for sorting
 type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string };
@@ -529,6 +551,21 @@ watch(() => form.value.birthdate, (newVal) => {
   const parsed = dayjs(newVal);
   birthdateModel.value = parsed.isValid() ? parsed.toDate() : null;
 }, { immediate: true });
+
+// Slug management
+const regenerateSlug = () => {
+  if (form.value.name) {
+    form.value.slug = createSlug(form.value.name, form.value.firstname)
+  }
+}
+
+// Auto-generate slug on name/firstname change for new records
+watch([() => form.value.name, () => form.value.firstname], ([newName, newFirstname]) => {
+  // Only auto-generate if slug is empty or this is a new record
+  if ((!form.value.slug || !form.value.id) && newName) {
+    form.value.slug = createSlug(newName, newFirstname)
+  }
+})
 
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;

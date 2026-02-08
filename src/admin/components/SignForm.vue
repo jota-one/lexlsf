@@ -23,6 +23,25 @@
           <label for="name" class="font-semibold w-40">Terme</label>
           <InputText v-model="form.name" id="name" class="w-full" required />
         </div>
+        <!-- Slug -->
+        <div class="flex items-center gap-4">
+          <label for="slug" class="font-semibold w-40">Slug</label>
+          <div class="flex gap-2 w-full">
+            <InputText
+              v-model="form.slug"
+              id="slug"
+              class="flex-1"
+              placeholder="Auto-généré depuis le terme"
+            />
+            <Button
+              icon="i-fa6-solid-arrows-rotate"
+              severity="secondary"
+              size="small"
+              @click="regenerateSlug"
+              v-tooltip="'Régénérer depuis le terme'"
+            />
+          </div>
+        </div>
         <div class="flex items-center gap-4">
           <label for="name" class="font-semibold w-40">Définition</label>
           <Textarea v-model="form.definition" class="w-full" rows="5" cols="30" />
@@ -249,6 +268,7 @@ import Textarea from 'primevue/textarea';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import Rating from 'primevue/rating';
+import Button from 'primevue/button';
 import useHandConfigurations from '../composables/useHandConfigurations';
 import useSigns from '../composables/useSigns';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
@@ -256,6 +276,7 @@ import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
 import type { TSign, Ui } from '../../types';
 import HandMovementForm from './HandMovementForm.vue';
+import { createSlug } from '@admin/helpers/strings';
 
 const form = defineModel<TSign.TForm>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
@@ -306,6 +327,21 @@ const levelLabel = computed(() => {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
     return levels[form.value.level - 1] || '';
 });
+
+// Slug management
+const regenerateSlug = () => {
+  if (form.value.name) {
+    form.value.slug = createSlug(form.value.name)
+  }
+}
+
+// Auto-generate slug on name change for new records
+watch(() => form.value.name, (newName) => {
+  // Only auto-generate if slug is empty or this is a new record
+  if ((!form.value.slug || !form.value.id) && newName) {
+    form.value.slug = createSlug(newName)
+  }
+})
 
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;

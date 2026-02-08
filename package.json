@@ -9,7 +9,8 @@
     "astro": "astro",
     "lint": "oxlint --type-aware",
     "format": "oxfmt",
-    "db": "cd pb && ./pocketbase serve"
+    "db": "cd pb && ./pocketbase serve",
+    "build:db": "cd pb && go build -o pocketbase main.go hooks.go && echo \"✅ Build successful\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
@@ -35,6 +36,7 @@
     "@egoist/tailwindcss-icons": "^1.9.0",
     "@iconify-json/fa-solid": "^1.2.1",
     "@iconify-json/fa6-solid": "^1.1.0",
+    "@iconify-json/fa7-solid": "^1.2.0",
     "@iconify-json/ic": "^1.2.4",
     "@tailwindcss/typography": "^0.5.19",
     "@vueuse/integrations": "^14.1.0",
@@ -43,7 +45,8 @@
     "oxlint": "^1.32.0",
     "oxlint-tsgolint": "^0.8.6",
     "sortablejs": "^1.15.6",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.18"
   },
   "volta": {
     "node": "22.19.0"

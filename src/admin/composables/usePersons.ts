@@ -14,7 +14,9 @@ const setFormData = (payload: TPerson.TForm) => {
   if (payload.firstname) {
     formData.append('firstname', payload.firstname.trim())
   }
-  formData.append('slug', createSlug(payload.name, payload.firstname))
+  // Use provided slug if available, otherwise generate from name + firstname
+  const slug = payload.slug || createSlug(payload.name, payload.firstname)
+  formData.append('slug', slug)
   if (payload.description) {
     formData.append('description', payload.description)
   }

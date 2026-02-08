@@ -65,6 +65,7 @@ export type TForm = Omit<
   | 'created'
 > & {
   id?: string
+  slug?: string
   video?: File | null
   level: number
   ConfigurationRight: Partial<THandConfiguration.TRecord>
