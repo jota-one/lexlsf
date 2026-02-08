@@ -8,7 +8,6 @@ Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
 
 Liste des petites améliorations et refactorings potentiels.
 
-- Utiliser dayjs() au lieu de l'objet Date natif pour le formatage des dates.
 - Fiche publique d'un signe — rendre l'affichage de la personne associée plus discret (ajustement design).
 
 ## Nouvelles fonctionalités
@@ -37,6 +36,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-02-08] Migration vers dayjs — remplacement de l'objet Date natif par dayjs() pour le formatage des dates.
 - [2026-02-08] Gestion des slugs — amélioration de la génération avec normalisation des accents et ajout de l'édition manuelle.
 - [2026-02-07] Optimisation vidéos — suppression du son et ajustements build/migrations.
 - [2026-01-25] Rôles & permissions — gestion des rôles, accès restreints, profil utilisateur.

@@ -105,6 +105,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
 import useUsers from '../composables/useUsers';
 import type { TUser } from '../composables/useUsers';
 import DataTable from 'primevue/datatable';
@@ -122,14 +123,7 @@ const editedUser = ref<TUser | null>(null);
 const deleteMessage = ref('');
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return dayjs(dateString).format('DD MMM YYYY, HH:mm');
 };
 
 const openAddModal = () => {

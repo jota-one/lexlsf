@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import dayjs from 'dayjs'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import useQuizzes from '@admin/composables/useQuizzes'
@@ -131,7 +132,7 @@ const handleQuizSaved = async () => {
         <!-- Updated column -->
         <Column field="updated" header="Modifié" :sortable="true" style="min-width: 120px">
           <template #body="slotProps">
-            {{ new Date(slotProps.data.updated).toLocaleDateString('fr-FR') }}
+            {{ dayjs(slotProps.data.updated).format('DD/MM/YYYY') }}
           </template>
         </Column>
 

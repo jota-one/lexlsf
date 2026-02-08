@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import dayjs from 'dayjs'
 import config from '../../config'
 import PocketBase from 'pocketbase'
 import type { QuizSession, QuizAttempt, QuizResult, QuizSessionStats } from '../types/quiz'
@@ -91,7 +92,7 @@ export default function useQuizSession() {
         Quiz: quizId,
         User: userId,
         config_key: configKey,
-        started_at: new Date().toISOString(),
+        started_at: dayjs().toISOString(),
         settings_snapshot: quiz.settings || {},
         stats: {
           total: filteredItems.length,
@@ -264,7 +265,7 @@ export default function useQuizSession() {
     currentSession.value = await pb
       .collection<QuizSessionRecord>('quiz_session')
       .update(currentSession.value.id, {
-        completed_at: new Date().toISOString(),
+        completed_at: dayjs().toISOString(),
       })
 
     return currentSession.value

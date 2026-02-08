@@ -116,6 +116,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
 import usePersons from '../composables/usePersons';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -192,10 +193,7 @@ const deletePersonConfirmed = async () => {
 
 const formatDate = (date: string) => {
   if (!date) return '';
-  const d = new Date(date);
-  return d.toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' }) +
-    ' ' +
-    d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return dayjs(date).format('DD/MM/YYYY HH:mm');
 };
 
 onMounted(loadPersons)

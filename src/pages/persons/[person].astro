@@ -3,6 +3,7 @@ import PageLayout from '@layouts/PageLayout.astro'
 import PocketBase from 'pocketbase'
 import config from '../../config'
 import { marked } from 'marked'
+import dayjs from 'dayjs'
 
 export const prerender = false
 
@@ -90,13 +91,7 @@ const getYouTubeId = (url: string) => {
                 <div class="text-sm">
                   <span class="font-semibold">{record.organism ? 'Crée le:' : 'Né(e) le:'}</span>
                   {record.birthdate && (
-                    <span> {(() => {
-                      const d = new Date(String(record.birthdate).replace(' ', 'T'))
-                      const dd = String(d.getDate()).padStart(2, '0')
-                      const mm = String(d.getMonth() + 1).padStart(2, '0')
-                      const yyyy = d.getFullYear()
-                      return `${dd}.${mm}.${yyyy}`
-                    })()}</span>
+                    <span> {dayjs(record.birthdate).format('DD.MM.YYYY')}</span>
                   )}
                   {record.birthplace && (
                     <br><span>{record.birthplace}</span>
