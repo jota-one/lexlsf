@@ -68,8 +68,19 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
 
 <PageLayout>
   <div>
-    <div class="px-6 mb-4"> 
-      <h1 class="text-5xl mb-8 font-display text-primary">{record.name}</h1>
+    <div class="px-6 mb-4">
+      <h1 class="text-5xl mb-8 font-display text-primary">
+        {record.name}
+        {personRecord && (
+          <a
+            href={`/persons/${personRecord.slug}`}
+            class="btn btn-primary hover:bg-pink-600 ml-2"
+            aria-label={`Voir la personne ${personRecord.firstname ? personRecord.firstname + ' ' : ''}${personRecord.name}`}
+          >
+            <span class="i-fa-solid-user"></span>
+          </a>
+        )}
+      </h1>
       <p>
         {record.definition && <span class="italic">Déf. </span>}{record.definition}
       </p>
@@ -98,12 +109,6 @@ const learningSource = learningSourceOptions.find(option => option.value === rec
                   </ul>
                 </div>
               ))}
-              {personRecord && (
-                <div class="alert alert-info mt-4">
-                  <span class="i-fa-solid-user text-lg"></span>
-                  <span>Personne associée : <a href={`/persons/${personRecord.slug}`} class="link link-hover font-bold">{personRecord.name}</a></span>
-                </div>
-              )}
             </div>
             <div>
               <div class="flex items-center gap-4 mb-3">
