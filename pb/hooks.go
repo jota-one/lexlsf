@@ -93,13 +93,14 @@ func optimizeVideoRecord(app *pocketbase.PocketBase, record *core.Record) error 
 
 		cmd := exec.Command(ffmpegBin,
 			"-i", inputPath,
-			"-vf", "scale=640:-2:force_divisible_by=2",
-			"-c:v", "libx264",
-			"-crf", "23",
-			"-preset", "veryfast",
-			"-an", // supprime la piste audio
-			"-movflags", "faststart",
-			"-y", // Overwrite
+			"-vf", "crop=1440:1080,scale=720:-2:flags=lanczos:force_divisible_by=2,fps=15",
+			"-c:v", "libx265",
+			"-crf", "24",
+			"-preset", "veryslow",
+			"-tag:v", "hvc1",
+			"-an",
+			"-movflags", "+faststart",
+			"-y",
 			tmpOutputPath,
 		)
 
