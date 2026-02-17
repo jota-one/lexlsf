@@ -63,6 +63,8 @@ const form = ref<TPerson.TForm>({
     deafFamily: false,
     family: '',
     organism: false,
+    deceased: false,
+    deathdate: undefined,
 });
 
 const save = async () => {
@@ -109,12 +111,21 @@ watch(visible, (newVal) => {
         // Reset form when modal is opened
         form.value = {
             name: '',
+            firstname: '',
             illustration: null,
             description: '',
             Sign: undefined,
             Category: [],
             Activities: [],
             Videos: [],
+            deaf: false,
+            birthdate: undefined,
+            birthplace: '',
+            deafFamily: false,
+            family: '',
+            organism: false,
+            deceased: false,
+            deathdate: undefined,
         };
         selectedCategories.value = {};
         selectedActivities.value = {};

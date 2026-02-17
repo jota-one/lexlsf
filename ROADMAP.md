@@ -14,14 +14,10 @@ Liste des petites améliorations et refactorings potentiels.
 
 ### Admin personnes/organismes — onglet Liens / Bibliographie
 
-Ajouter un onglet « Liens / Bibliographie » avec CRUD de liens web, sur le même modèle que l’onglet des vidéos YouTube.
+Ajouter un onglet « Liens / Bibliographie » avec CRUD de liens web, sur le même modèle que l'onglet des vidéos YouTube.
 Dans la partie publique, afficher ces liens sous la description, séparés par un trait.
 
-### Fiche personne — champs “décédé” et “date de décès”
-
-Ajouter un champ booléen « Décédé » et un champ « Date de décès » dans la fiche personne (admin et public).
-
-### Signes — finaliser l’implémentation des mouvements
+### Signes — finaliser l'implémentation des mouvements
 
 L’UI admin est déjà en place via `HandMovementForm` dans `SignForm`, et les formulaires initient `movements` pour la main droite/gauche. Il manque la persistance côté PocketBase (ajouter le champ/migration si nécessaire et sérialiser `movements` dans `useSigns.setFormData`), puis l’affichage côté public : remplacer les placeholders « Mouvement main ... (bientôt disponible) » dans la page signe par un rendu des données sauvegardées. Vérifier aussi la cohérence main gauche (si pas de configuration gauche, ne pas stocker/afficher). Enfin, clarifier le rôle de la collection `hand_movements`/composable associé (utiliser pour des options dynamiques ou le supprimer).
 
@@ -36,6 +32,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-02-17] Fiche personne — champs "décédé" et "date de décès" disponibles en admin et public, avec labels adaptés pour personnes/organismes et support import/export.
 - [2026-02-08] Affichage personne associée — remplacement de l'alert par un bouton icône discret sur la page signe.
 - [2026-02-08] Migration vers dayjs — remplacement de l'objet Date natif par dayjs() pour le formatage des dates.
 - [2026-02-08] Gestion des slugs — amélioration de la génération avec normalisation des accents et ajout de l'édition manuelle.

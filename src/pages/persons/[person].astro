@@ -100,6 +100,18 @@ const getYouTubeId = (url: string) => {
               </div>
             )}
 
+            {record.deceased && (
+              <div class="flex items-start gap-2">
+                <span class="i-fa-solid-cross text-base"></span>
+                <div class="text-sm">
+                  <span class="font-semibold">{record.organism ? 'Dissout' : 'Décédé·e'}</span>
+                  {record.deathdate && (
+                    <span> le {dayjs(record.deathdate).format('DD.MM.YYYY')}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {!record.organism && (typeof record.deafFamily !== 'undefined' || record.family) && (
               <div class="flex items-start gap-2">
                 <span class="i-fa-solid-users text-base"></span>

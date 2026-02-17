@@ -64,6 +64,8 @@ const form = ref<TPerson.TForm>({
     deafFamily: false,
     family: '',
     organism: false,
+    deceased: false,
+    deathdate: undefined,
 });
 
 const save = async () => {
@@ -121,6 +123,8 @@ watch(visible, async (isVisible) => {
         deafFamily: !!person.deafFamily,
         family: person.family || '',
         organism: !!person.organism,
+        deceased: !!person.deceased,
+        deathdate: person.deathdate || undefined,
     };
 
     if (person.expand?.Videos) {

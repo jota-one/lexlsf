@@ -42,6 +42,12 @@ const setFormData = (payload: TPerson.TForm) => {
   if (payload.family) {
     formData.append('family', payload.family)
   }
+  if (typeof payload.deceased !== 'undefined') {
+    formData.append('deceased', String(Boolean(payload.deceased)))
+  }
+  if (payload.deathdate) {
+    formData.append('deathdate', payload.deathdate)
+  }
   ;(payload.Category || []).forEach(cat => {
     formData.append('Category', cat)
   })
@@ -65,7 +71,7 @@ export default function usePersons() {
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
       fields:
-        'id, name, firstname, illustration, slug, updated, deaf, organism, birthdate, birthplace, deafFamily, family, expand.Category.*, expand.Sign.*, expand.Videos.*',
+        'id, name, firstname, illustration, slug, updated, deaf, organism, birthdate, birthplace, deafFamily, family, deceased, deathdate, expand.Category.*, expand.Sign.*, expand.Videos.*',
       expand: 'Category,Sign,Videos',
       sort: '-updated',
     })
