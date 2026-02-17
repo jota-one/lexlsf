@@ -103,6 +103,20 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
   },
+  {
+    key: 'deceased',
+    label: 'Décédé(e)/Dissout',
+    exportable: true,
+    importable: true,
+    formatter: booleanFormatter,
+  },
+  {
+    key: 'deathdate',
+    label: 'Date de décès',
+    exportable: true,
+    importable: true,
+    formatter: birthdateFormatter,
+  },
 ]
 
 // Helpers pour obtenir les champs exportables/importables

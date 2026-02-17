@@ -24,9 +24,14 @@ export type TRecord = {
   deafFamily?: boolean
   family?: string
   organism?: boolean
+  deceased?: boolean
+  deathdate?: string
 }
 
-export type TForm = Omit<TRecord, 'id' | 'illustration' | 'updated' | 'expand' | 'created'> & {
+export type TForm = Omit<
+  TRecord,
+  'id' | 'illustration' | 'updated' | 'expand' | 'created' | 'slug'
+> & {
   id?: string
   slug?: string
   illustration?: File | null
@@ -38,6 +43,8 @@ export type TForm = Omit<TRecord, 'id' | 'illustration' | 'updated' | 'expand' |
   deafFamily?: boolean
   family?: string
   organism?: boolean
+  deceased?: boolean
+  deathdate?: string
   Sign?: string
   timeline?: TTimelineEntry[]
 }

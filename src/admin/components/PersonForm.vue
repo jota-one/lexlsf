@@ -130,6 +130,47 @@
           <InputText v-model="form.birthplace" id="birthplace" class="w-full" />
         </div>
 
+        <!-- Décédé/Dissout -->
+        <div class="flex items-center gap-4">
+          <label for="deceased" class="font-semibold w-60">{{ form.organism ? 'Dissout' : 'Décédé·e' }}</label>
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deceased ? 'text-base-content/50' : 'text-base-content font-semibold'"
+              @click="form.deceased = false"
+              aria-label="Vivant / Actif"
+            >
+              {{ form.organism ? 'Actif' : 'Vivant(e)' }}
+            </button>
+            <ToggleSwitch v-model="form.deceased" inputId="deceased" />
+            <button
+              type="button"
+              class="text-sm transition-colors"
+              :class="form.deceased ? 'text-base-content font-semibold' : 'text-base-content/50'"
+              @click="form.deceased = true"
+              aria-label="Décédé / Dissout"
+            >
+              {{ form.organism ? 'Dissout' : 'Décédé(e)' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Date de décès / dissolution -->
+        <div v-if="form.deceased" class="flex items-center gap-4">
+          <label
+            for="deathdate"
+            class="font-semibold w-60"
+            >{{ form.organism ? 'Date de dissolution' : 'Date de décès' }}</label
+          >
+          <DatePicker
+            v-model="deathdateModel"
+            inputId="deathdate"
+            dateFormat="dd.mm.yy"
+            class="w-full max-w-xs"
+          />
+        </div>
+
         <!-- Famille sourde/entendante -->
         <div v-if="!form.organism" class="flex items-center gap-4">
           <label for="deafFamily" class="font-semibold w-60">Famille</label>
@@ -488,6 +529,9 @@ const editingVideo = ref<TVideo.TForm>({ title: '', url: '' });
 // Calendar model for birthdate (Date)
 const birthdateModel = ref<Date | null>(null);
 
+// Calendar model for deathdate (Date)
+const deathdateModel = ref<Date | null>(null);
+
 const { signs, loadSigns } = useSigns();
 const { addVideo, updateVideo, findVideoByUrl } = useVideos();
 const signOptions = computed(() =>
@@ -550,6 +594,15 @@ watch(() => form.value.birthdate, (newVal) => {
   }
   const parsed = dayjs(newVal);
   birthdateModel.value = parsed.isValid() ? parsed.toDate() : null;
+}, { immediate: true });
+
+watch(() => form.value.deathdate, (newVal) => {
+  if (!newVal) {
+    deathdateModel.value = null;
+    return;
+  }
+  const parsed = dayjs(newVal);
+  deathdateModel.value = parsed.isValid() ? parsed.toDate() : null;
 }, { immediate: true });
 
 // Slug management
@@ -713,6 +766,7 @@ const syncListsBeforeSave = () => {
     form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     form.value.Videos = getVideoIds();
     form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined as any;
+    form.value.deathdate = deathdateModel.value ? dayjs(deathdateModel.value).format('YYYY-MM-DD') : undefined as any;
 };
 
 defineExpose({ syncListsBeforeSave });
