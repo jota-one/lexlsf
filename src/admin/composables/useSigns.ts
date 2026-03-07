@@ -25,7 +25,7 @@ const primaryLanguageOptions = [
   { label: 'LSF', value: 'LSF' },
   { label: 'LSR', value: 'LSR' },
   { label: 'ASL', value: 'ASL' },
-  { label: 'LS Internationale', value: 'LS Internationale' },
+  { label: 'LSI', value: 'LSI' },
   { label: 'BSL', value: 'BSL' },
   { label: 'ISL', value: 'ISL' },
   { label: 'Autre', value: 'other' },

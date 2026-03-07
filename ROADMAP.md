@@ -8,9 +8,16 @@ Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
 
 Liste des petites améliorations et refactorings potentiels.
 
-(Aucune amélioration en attente pour le moment.)
+- Admin signes: Ajouter 2 colonnes dans UI list (type de langue et learning source)
+- Admin Quizz: Geetha n'arrive pas à supprimer un certain quizz "test"
+- Admin Quizz: Admin doit pouvoir partager un quizz avec d'autres utilisateurs
+- Rôle étudiant: Doivent pouvoir voir les quizz partagé avec eux
 
 ## Nouvelles fonctionalités
+
+### Impersonate d'un utilisateur
+
+Depuis l'admin des utilisateur, un administrateur doit pouvoir se connecter en tant qu'un autre utilisateur et idéalement disposer ensuite d'un bouton (dans son menu utilisateur du site public) pour récupérer son compte initial. J'imagine que c'est faisable en sauvant le JWT et en le restaurant ensuite.
 
 ### Admin personnes/organismes — onglet Liens / Bibliographie
 
@@ -32,6 +39,8 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-07] Droits étudiants signes — les étudiants peuvent voir les signes de level c1 (migration DB, règle remplacée : `learning_source = 'uni/m1'` → `level = 'c1'`).
+- [2026-03-07] Renommage LSI — "LS Internationale" renommé en "LSI" dans le champ `primary_language` (migration DB + labels UI admin et public).
 - [2026-02-17] Fiche personne — champs "décédé" et "date de décès" disponibles en admin et public, avec labels adaptés pour personnes/organismes et support import/export.
 - [2026-02-08] Affichage personne associée — remplacement de l'alert par un bouton icône discret sur la page signe.
 - [2026-02-08] Migration vers dayjs — remplacement de l'objet Date natif par dayjs() pour le formatage des dates.
