@@ -8,7 +8,27 @@ Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
 
 Liste des petites améliorations et refactorings potentiels.
 
+- Retirer "uni/m1" (et tout ce qui le concerne dans le code) des learning_source
+- Gérer un peu mieux la largeur des colonnes dans la liste des signes dans l'admin.
+- améliorer l'import des signes. Ajouter une colonne roles.
+
 ## Nouvelles fonctionalités
+
+### Amélioration de l'UX/UI dans une question de quiz.
+Pour l'instant on a une FlipCard très large qui ne sert à rien et dont l'animation fatigue les utilisateur.
+
+On garde la card, mais on arrête le flip.
+On garde la zone question à gauche, mais on met la zone réponse à droite (qui va apparaître lorsque l'utilisateur clique sur "Retourner", bouton à renommer "Réponse").
+On déplace tous les boutons d'action en-dessous de la carte, centrés.
+On ne garde que la vidéo (ou l'image pour les quiz "personnes") et le terme. On dégage les autres champs.
+On ajoute un bouton "Ouvrir la fiche" qui ouvre le détail du signe ou de la personne dans une nouvelle fenêtre.
+
+### Changement visibilité signes - association avec les rôles
+Pour l'instant on détermine ce que les utilisateurs 'student' peuvent voir comme signe en se basant sur le level=c1. C'est pas idéal. Le signe doit avoir un lien avec la table role et on doit pouvoir explicitement associer un signe à un role.
+
+Par défaut, le role admin a accès à tous les signes, sans qu'une association explicite soit nécessaire.
+
+Une fois cette modification effectuée, il faut retirer la contrainte sur level=c1
 
 ### Admin personnes/organismes — onglet Liens / Bibliographie
 
@@ -30,6 +50,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-07] Visibilite signes par roles - ajout d'une relation `roles` sur `sign` + regles PocketBase mises a jour (`admin` voit tout, autres utilisateurs selon intersection de roles) ; UI admin des signes enrichie pour associer explicitement les roles.
 - [2026-03-07] Partage de quiz — champ `shared_with_users` sur la collection `quiz` ; modal de partage dans l'admin (liste + QuizEdit) ; règles d'accès PocketBase mises à jour sur `quiz`, `quiz_item` et la vue `quiz_counts` pour inclure les utilisateurs partagés ; les quiz partagés apparaissent dans la liste publique des révisions.
 - [2026-03-07] Quiz shuffle & skip — deck mélangé au démarrage/reprise ; cartes passées réinsérées aléatoirement dans la file des skips (jamais avant une carte non évaluée) ; session terminée uniquement quand toutes les cartes ont une réponse définitive.
 - [2026-03-07] Historique sessions quiz — cartouche de stats (durée min/moy/max, réussite min/moy/max, mini graphique) affiché sous le formulaire de démarrage.

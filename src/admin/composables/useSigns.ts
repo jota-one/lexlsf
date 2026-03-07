@@ -62,6 +62,9 @@ const setFormData = (payload: TSign.TForm) => {
   formData.append('learning_source', payload.learning_source)
   formData.append('learning_source_detail', payload.learning_source_detail)
   formData.append('primary_language', payload.primary_language)
+  ;(payload.Roles || []).forEach(roleId => {
+    formData.append('Roles', roleId)
+  })
   formData.append('placement', JSON.stringify(payload.placement))
 
   return formData
@@ -74,16 +77,17 @@ export default function useSigns() {
   const loadSigns = async () => {
     signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
       fields:
-        'id, name, video, slug, definition, level, primary_language, learning_source, learning_source_detail, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
-      expand: 'Category,ConfigurationRight,ConfigurationLeft',
+        'id, name, video, slug, definition, level, primary_language, learning_source, learning_source_detail, Roles, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*, expand.Roles.*',
+      expand: 'Category,ConfigurationRight,ConfigurationLeft,Roles',
       sort: '-updated',
     })
   }
 
   const loadSign = async (id: string) => {
     return pb.collection<TSign.TRecord>('sign').getOne(id, {
-      fields: '*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
-      expand: 'Category,ConfigurationRight,ConfigurationLeft',
+      fields:
+        '*, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*, expand.Roles.*',
+      expand: 'Category,ConfigurationRight,ConfigurationLeft,Roles',
     })
   }
 

@@ -59,6 +59,9 @@ const setFormData = (payload: TSign.TForm) => {
   formData.append('learning_source', payload.learning_source)
   formData.append('learning_source_detail', payload.learning_source_detail)
   formData.append('primary_language', payload.primary_language)
+  ;(payload.Roles || []).forEach(roleId => {
+    formData.append('Roles', roleId)
+  })
   formData.append('placement', JSON.stringify(payload.placement))
 
   return formData

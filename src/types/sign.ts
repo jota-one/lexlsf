@@ -33,6 +33,7 @@ export type TRecord = {
   learning_source: string
   learning_source_detail: string
   primary_language: string
+  Roles: string[]
   placement: TPlacement
   movements: TMovements
   expand: {
@@ -47,6 +48,11 @@ export type TRecord = {
       name: string
       illustration: string
     }
+    Roles?: Array<{
+      id: string
+      name: string
+      slug: string
+    }>
   }
   created: string
   updated: string
@@ -68,6 +74,7 @@ export type TForm = Omit<
   slug?: string
   video?: File | null
   level: number
+  Roles: string[]
   ConfigurationRight: Partial<THandConfiguration.TRecord>
   ConfigurationLeft: Partial<THandConfiguration.TRecord>
 }

@@ -46,6 +46,26 @@
           <label for="name" class="font-semibold w-40">Définition</label>
           <Textarea v-model="form.definition" class="w-full" rows="5" cols="30" />
         </div>
+        <div class="flex items-center gap-4">
+          <label for="roles" class="font-semibold w-40">Visible pour</label>
+          <div class="flex flex-wrap gap-2 w-full">
+            <span v-if="rolesLoading" class="loading loading-spinner loading-sm"></span>
+            <template v-else>
+              <button
+                v-for="role in roles"
+                :key="role.id"
+                type="button"
+                class="badge badge-md"
+                :class="roleBadgeClass(role)"
+                :title="role.slug === 'admin' ? 'Toujours autorisé (automatique)' : ''"
+                @click="toggleRole(role)"
+              >
+                {{ role.name }}
+                <span v-if="role.slug === 'admin'" class="ml-1 i-fa6-solid-lock text-xs"></span>
+              </button>
+            </template>
+          </div>
+        </div>
         <!-- Statut de vérification -->
         <div class="flex items-center gap-4">
           <label for="verification_status" class="font-semibold w-40">Statut</label>
@@ -271,6 +291,7 @@ import Rating from 'primevue/rating';
 import Button from 'primevue/button';
 import useHandConfigurations from '../composables/useHandConfigurations';
 import useSigns from '../composables/useSigns';
+import useRoles from '../composables/useRoles';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
 import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
@@ -296,6 +317,10 @@ const {
     getIllustrationUrl,
 } = useHandConfigurations();
 
+const { roles, loadRoles } = useRoles();
+const rolesLoading = ref(false);
+const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '')
+
 const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns();
 
 // Filtered options for dominant/non-dominant
@@ -319,14 +344,56 @@ watch(() => form.value.ConfigurationLeft?.id, (value) => {
     }
 })
 
+watch(roles, () => {
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
+    return
+  }
+  // Admin access is implicit; keep it visually selected but out of persisted explicit assignments.
+  form.value.Roles = form.value.Roles.filter(roleId => roleId !== adminRoleId.value)
+})
+
 onMounted(() => {
   loadHandConfigurations('name');
+  rolesLoading.value = true;
+  loadRoles().finally(() => {
+    rolesLoading.value = false;
+  });
 });
 
 const levelLabel = computed(() => {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
     return levels[form.value.level - 1] || '';
 });
+
+const isRoleSelected = (roleId: string) => {
+  if (!roleId) {
+    return false
+  }
+  if (roleId === adminRoleId.value) {
+    return true
+  }
+  return form.value.Roles.includes(roleId)
+}
+
+const toggleRole = (role: { id: string; slug: string }) => {
+  if (role.slug === 'admin') {
+    return
+  }
+
+  if (form.value.Roles.includes(role.id)) {
+    form.value.Roles = form.value.Roles.filter(roleId => roleId !== role.id)
+    return
+  }
+  form.value.Roles = [...form.value.Roles, role.id]
+}
+
+const roleBadgeClass = (role: { id: string; slug: string }) => {
+  if (role.slug === 'admin') {
+    return 'badge-primary opacity-60 cursor-not-allowed'
+  }
+
+  return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
+}
 
 // Slug management
 const regenerateSlug = () => {

@@ -50,6 +50,7 @@ const form = ref<TSign.TForm>({
     learning_source: '',
     learning_source_detail: '',
     primary_language: 'LSF',
+    Roles: [],
     placement: {
         right: [] as string[],
         left: [] as string[]
@@ -94,6 +95,7 @@ watch(visible, async (isVisible) => {
         learning_source: sign.learning_source,
         learning_source_detail: sign.learning_source_detail,
         primary_language: sign.primary_language || 'LSF',
+        Roles: sign.Roles || [],
         placement: sign.placement || { right: [], left: [] },
         movements: sign.movements || { right: {}, left: {} },
     };
