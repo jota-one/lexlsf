@@ -1,6 +1,6 @@
 export type FieldFormatter = {
-  export?: (value: any) => string
-  import?: (value: string) => any
+  export?: (value: any, row?: Record<string, any>) => string | Promise<string>
+  import?: (value: string, row?: Record<string, any>) => any
 }
 
 export type FieldConfig = {

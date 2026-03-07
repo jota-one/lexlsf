@@ -124,6 +124,14 @@
         </h3>
         <div class="text-xs space-y-2">
           <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
+          <p>
+            <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules.
+            Exemples: <code>student</code> ou <code>student,visitor</code>.
+          </p>
+          <p>
+            <strong>Category:</strong> utiliser les slugs de categories séparés par des virgules.
+            Exemples: <code>animaux</code> ou <code>animaux,quotidien</code>.
+          </p>
           <p class="text-warning">
             <strong>Note:</strong> Les fichiers vidéo ne sont pas inclus dans l'import/export. Ils
             doivent être gérés séparément.
