@@ -24,26 +24,15 @@ export const QUIZ_MODES: QuizMode[] = [
     description: 'Affiche la vidéo du signe, devinez le terme',
     itemType: 'sign',
     faceA: [{ key: 'video', type: 'video', label: 'Vidéo' }],
-    faceB: [
-      { key: 'name', type: 'text', label: 'Terme' },
-      { key: 'Category', type: 'relation', label: 'Catégorie' },
-      { key: 'ConfigurationLeft', type: 'relation', label: 'Configuration gauche' },
-      { key: 'ConfigurationRight', type: 'relation', label: 'Configuration droite' },
-      { key: 'definition', type: 'text', label: 'Définition' },
-    ],
+    faceB: [{ key: 'name', type: 'text', label: 'Terme' }],
   },
   {
     key: 'sign_term_to_video',
-    label: 'Terme → Vidéo + détails',
-    description: 'Affiche le terme, visualisez le signe et ses détails',
+    label: 'Terme → Vidéo',
+    description: 'Affiche le terme, visualisez la vidéo du signe',
     itemType: 'sign',
     faceA: [{ key: 'name', type: 'text', label: 'Terme' }],
-    faceB: [
-      { key: 'video', type: 'video', label: 'Vidéo' },
-      { key: 'Category', type: 'relation', label: 'Catégorie' },
-      { key: 'ConfigurationLeft', type: 'relation', label: 'Configuration gauche' },
-      { key: 'definition', type: 'text', label: 'Définition' },
-    ],
+    faceB: [{ key: 'video', type: 'video', label: 'Vidéo' }],
   },
   {
     key: 'person_illustration_to_name',
@@ -54,20 +43,15 @@ export const QUIZ_MODES: QuizMode[] = [
     faceB: [
       { key: 'name', type: 'text', label: 'Nom' },
       { key: 'firstname', type: 'text', label: 'Prénom' },
-      { key: 'Category', type: 'relation', label: 'Catégorie' },
     ],
   },
   {
     key: 'person_name_to_details',
-    label: 'Nom → Détails',
-    description: 'Affiche le nom, visualisez les détails de la personne/organisme',
+    label: 'Nom → Photo',
+    description: 'Affiche le nom, retrouvez la photo de la personne/organisme',
     itemType: 'person',
     faceA: [{ key: 'name', type: 'text', label: 'Nom' }],
-    faceB: [
-      { key: 'illustration', type: 'file', label: 'Photo' },
-      { key: 'firstname', type: 'text', label: 'Prénom' },
-      { key: 'Category', type: 'relation', label: 'Catégorie' },
-    ],
+    faceB: [{ key: 'illustration', type: 'file', label: 'Photo' }],
   },
 ]
 

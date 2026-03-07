@@ -6,7 +6,7 @@ import useQuizzes from '@admin/composables/useQuizzes'
 import useQuizSession from '@admin/composables/useQuizSession'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 import { getQuizModes, getQuizMode, type QuizMode } from '@admin/config/quizModes'
-import FlipCard from '../components/FlipCard.vue'
+import QuizCard from '../components/QuizCard.vue'
 import QuizSummary from '../components/QuizSummary.vue'
 import QuizHistoryStats from '../components/QuizHistoryStats.vue'
 
@@ -279,57 +279,53 @@ const handleBackToList = () => {
     <!-- Session en cours -->
     <div v-if="currentSession" class="space-y-3 flex-1 flex flex-col mt-4">
       <div v-if="!finished && currentCard && currentMode" class="flex-1 flex flex-col">
-        <!-- Top bar: Buttons + Progress -->
-        <div class="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-base-300">
-          <!-- Action buttons (left) -->
-          <div class="flex gap-2">
-            <template v-if="!isFlipped">
-              <button class="btn btn-outline btn-sm" @click="handleAttempt('skip')">Passer</button>
-              <button class="btn btn-ghost btn-sm" @click="isFlipped = true">Retourner</button>
-            </template>
-            <template v-else>
-              <button
-                class="btn btn-error btn-lg"
-                @click="handleAttempt('unknown')"
-                title="Je ne savais pas"
-              >
-                <span class="i-fa-solid-thumbs-down"></span>
-              </button>
-              <button
-                class="btn btn-success btn-lg"
-                @click="handleAttempt('known')"
-                title="Je savais"
-              >
-                <span class="i-fa-solid-thumbs-up"></span>
-              </button>
-            </template>
+        <!-- Progress -->
+        <div class="flex justify-end items-center gap-2 mb-4 pb-3 border-b border-base-300 whitespace-nowrap">
+          <div class="text-sm text-base-content/70">
+            {{ progress.current }} / {{ progress.total }}
           </div>
-
-          <!-- Progress (right) -->
-          <div class="flex items-center gap-2 whitespace-nowrap">
-            <div class="text-sm text-base-content/70">
-              {{ progress.current }} / {{ progress.total }}
-            </div>
-            <progress
-              class="progress progress-primary w-32"
-              :value="progress.current"
-              :max="progress.total"
-            ></progress>
-            <div v-if="loading" class="text-sm text-base-content/50">
-              <span class="loading loading-spinner loading-xs"></span>
-            </div>
+          <progress
+            class="progress progress-primary w-32"
+            :value="progress.current"
+            :max="progress.total"
+          ></progress>
+          <div v-if="loading" class="text-sm text-base-content/50">
+            <span class="loading loading-spinner loading-xs"></span>
           </div>
         </div>
 
-        <!-- FlipCard -->
-        <FlipCard
+        <!-- QuizCard -->
+        <QuizCard
           :key="currentCard.quizItemId"
           :mode="currentMode"
           :card="currentCard"
           :get-file-url="getFileUrl"
           :is-flipped="isFlipped"
-          @flip="isFlipped = $event"
         />
+
+        <!-- Boutons d'action -->
+        <div class="flex justify-center items-center gap-3 mt-6">
+          <template v-if="!isFlipped">
+            <button class="btn btn-outline btn-sm" @click="handleAttempt('skip')">Passer</button>
+            <button class="btn btn-primary" @click="isFlipped = true">Réponse</button>
+          </template>
+          <template v-else>
+            <button
+              class="btn btn-error btn-lg"
+              @click="handleAttempt('unknown')"
+              title="Je ne savais pas"
+            >
+              <span class="i-fa-solid-thumbs-down"></span>
+            </button>
+            <button
+              class="btn btn-success btn-lg"
+              @click="handleAttempt('known')"
+              title="Je savais"
+            >
+              <span class="i-fa-solid-thumbs-up"></span>
+            </button>
+          </template>
+        </div>
       </div>
 
       <div v-else-if="finished && currentSession && currentSession.stats" class="space-y-4">
