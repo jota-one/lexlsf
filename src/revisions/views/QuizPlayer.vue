@@ -97,8 +97,8 @@ const start = async () => {
 
 const handleAttempt = async (result: 'known' | 'unknown' | 'skip') => {
   const timeSpent = dayjs().valueOf() - cardStartTime.value
-  await logAttempt(result, timeSpent)
   isFlipped.value = false
+  await logAttempt(result, timeSpent)
   if (isComplete.value) {
     sessionDuration.value = dayjs().valueOf() - sessionStartTime.value
     await completeSession()
@@ -323,6 +323,7 @@ const handleBackToList = () => {
 
         <!-- FlipCard -->
         <FlipCard
+          :key="currentCard.quizItemId"
           :mode="currentMode"
           :card="currentCard"
           :get-file-url="getFileUrl"
