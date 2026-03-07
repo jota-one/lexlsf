@@ -64,7 +64,7 @@
             <span>{{ formatDate(slotProps.data.created) }}</span>
           </template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 100px;">
           <template #body="slotProps">
             <div class="flex gap-2">
               <button
@@ -80,6 +80,14 @@
                 @click="confirmDelete(slotProps.data)"
               >
                 <span class="i-fa-solid-trash"></span>
+              </button>
+              <button
+                v-if="slotProps.data.id !== currentUser?.id"
+                class="btn btn-xs btn-ghost"
+                title="Prendre le contrôle"
+                @click="impersonate(slotProps.data.id)"
+              >
+                <span class="i-fa-solid-user-secret"></span>
               </button>
             </div>
           </template>
@@ -107,6 +115,7 @@
 import { onMounted, ref } from 'vue';
 import dayjs from 'dayjs';
 import useUsers from '../composables/useUsers';
+import useAuth from '../composables/useAuth';
 import type { TUser } from '../composables/useUsers';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -116,6 +125,7 @@ import UserEditModal from '../components/UserEditModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 
 const { users, loadUsers, deleteUser, getAvatarUrl } = useUsers();
+const { user: currentUser, impersonate } = useAuth();
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showDeleteModal = ref(false);

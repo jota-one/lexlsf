@@ -36,6 +36,9 @@ func main() {
 	// Setup slug validation hooks
 	SetupSlugHooks(app)
 
+	// Setup impersonate route
+	SetupImpersonateRoute(app)
+
 	// Run migrations automatically after bootstrap
 	app.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
 		// First, initialize DB and resources

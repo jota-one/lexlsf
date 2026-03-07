@@ -10,7 +10,7 @@
     "lint": "oxlint --type-aware",
     "format": "oxfmt",
     "db": "cd pb && ./pocketbase serve",
-    "build:db": "cd pb && go build -o pocketbase main.go hooks.go && echo \"✅ Build successful\""
+    "build:db": "cd pb && go build -o pocketbase . && echo \"✅ Build successful\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

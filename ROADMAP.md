@@ -14,10 +14,6 @@ Liste des petites améliorations et refactorings potentiels.
 
 ## Nouvelles fonctionalités
 
-### Impersonate d'un utilisateur
-
-Depuis l'admin des utilisateur, un administrateur doit pouvoir se connecter en tant qu'un autre utilisateur et idéalement disposer ensuite d'un bouton (dans son menu utilisateur du site public) pour récupérer son compte initial. J'imagine que c'est faisable en sauvant le JWT et en le restaurant ensuite.
-
 ### Admin personnes/organismes — onglet Liens / Bibliographie
 
 Ajouter un onglet « Liens / Bibliographie » avec CRUD de liens web, sur le même modèle que l'onglet des vidéos YouTube.
@@ -38,6 +34,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-07] Prise de contrôle — un admin peut prendre le contrôle d'un autre compte utilisateur et reprendre son compte admin via le menu public.
 - [2026-03-07] Admin signes colonnes — ajout des colonnes "Langue" et "Source" dans la liste des signes (fetch PocketBase + DataTable).
 - [2026-03-07] Droits étudiants signes — les étudiants peuvent voir les signes de level c1 (migration DB, règle remplacée : `learning_source = 'uni/m1'` → `level = 'c1'`).
 - [2026-03-07] Renommage LSI — "LS Internationale" renommé en "LSI" dans le champ `primary_language` (migration DB + labels UI admin et public).
