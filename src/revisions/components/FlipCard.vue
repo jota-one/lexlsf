@@ -72,6 +72,8 @@ const handleFlip = (flipped: boolean) => {
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
                   controls
+                  autoplay
+                  muted
                   class="w-full rounded aspect-video object-contain"
                 />
                 <p v-else class="text-base-content/50 text-sm">Aucune vidéo</p>
@@ -112,6 +114,8 @@ const handleFlip = (flipped: boolean) => {
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
                   controls
+                  autoplay
+                  muted
                   class="w-full rounded aspect-video object-contain"
                 />
                 <p v-else class="text-base-content/50 text-sm">Aucune vidéo</p>
@@ -156,6 +160,8 @@ const handleFlip = (flipped: boolean) => {
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
                   controls
+                  autoplay
+                  muted
                   class="w-full rounded aspect-video object-contain"
                 />
                 <p v-else class="text-base-content/50 text-sm">Aucune vidéo</p>
@@ -201,6 +207,8 @@ const handleFlip = (flipped: boolean) => {
                   v-if="mediaUrl(field.key)"
                   :src="mediaUrl(field.key)"
                   controls
+                  autoplay
+                  muted
                   class="w-full rounded"
                 />
                 <p v-else class="text-base-content/50 text-sm">Aucune vidéo</p>
