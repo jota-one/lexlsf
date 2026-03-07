@@ -8,6 +8,7 @@ import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 import ConfirmModal from '@admin/components/ConfirmModal.vue'
 import QuizAddModal from '@admin/components/QuizAddModal.vue'
+import QuizShareModal from '@admin/components/QuizShareModal.vue'
 import PbErrorToast from '@admin/components/PbErrorToast.vue'
 import type { QuizRecord } from '@admin/composables/useQuizzes'
 
@@ -16,7 +17,9 @@ const { showPbError } = usePbErrorToast()
 
 const showAddModal = ref(false)
 const showDeleteModal = ref(false)
+const showShareModal = ref(false)
 const quizToDelete = ref<QuizRecord | null>(null)
+const quizToShare = ref<QuizRecord | null>(null)
 const deleteMessage = ref('')
 
 onMounted(() => {
@@ -36,6 +39,11 @@ const openDeleteConfirm = (quiz: QuizRecord) => {
   quizToDelete.value = quiz
   deleteMessage.value = `Êtes-vous sûr de vouloir supprimer le quiz "${quiz.title}" ? Cela supprimera également tous les éléments du quiz.`
   showDeleteModal.value = true
+}
+
+const openShareModal = (quiz: QuizRecord) => {
+  quizToShare.value = quiz
+  showShareModal.value = true
 }
 
 const confirmDelete = async () => {
@@ -148,6 +156,13 @@ const handleQuizSaved = async () => {
                 <span class="i-fa-solid-pen"></span>
               </RouterLink>
               <button
+                class="btn btn-xs btn-ghost"
+                title="Partager"
+                @click="openShareModal(slotProps.data)"
+              >
+                <span class="i-fa6-solid-share-nodes"></span>
+              </button>
+              <button
                 class="btn btn-xs btn-error"
                 title="Supprimer"
                 @click="openDeleteConfirm(slotProps.data)"
@@ -170,6 +185,14 @@ const handleQuizSaved = async () => {
 
     <!-- Add quiz modal -->
     <QuizAddModal v-model="showAddModal" @saved="handleQuizSaved" />
+
+    <!-- Share quiz modal -->
+    <QuizShareModal
+      v-if="quizToShare"
+      v-model="showShareModal"
+      :quiz-id="quizToShare.id"
+      :quiz-title="quizToShare.title"
+    />
 
     <!-- Toast host -->
     <PbErrorToast />

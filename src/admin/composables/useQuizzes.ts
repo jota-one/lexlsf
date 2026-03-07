@@ -113,6 +113,15 @@ export default function useQuizzes() {
   }
 
   /**
+   * Update the list of users a quiz is shared with
+   */
+  const shareQuiz = async (id: string, userIds: string[]) => {
+    return pb.collection<QuizRecord>('quiz').update(id, {
+      shared_with_users: userIds,
+    })
+  }
+
+  /**
    * Delete a quiz (cascade will delete items automatically)
    */
   const deleteQuiz = async (id: string) => {
@@ -180,6 +189,7 @@ export default function useQuizzes() {
     createQuiz,
     updateQuiz,
     deleteQuiz,
+    shareQuiz,
     addQuizItems,
     removeQuizItems,
     reorderQuizItems,

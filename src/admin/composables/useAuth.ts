@@ -65,6 +65,7 @@ export default function useAuth() {
   const isAuthenticated = computed(() => !!userJwt.value && userJwt.value.length > 0)
   const roles = computed(() => user.value?.expand?.roles ?? [])
   const isAdmin = computed(() => roles.value.some((r: any) => r?.slug === 'admin'))
+  const isStudent = computed(() => roles.value.some((r: any) => r?.slug === 'student'))
   const isImpersonating = computed(() => !!impersonatorJwt.value)
 
   const impersonate = async (userId: string) => {
@@ -87,6 +88,7 @@ export default function useAuth() {
   return {
     isAuthenticated,
     isAdmin,
+    isStudent,
     isImpersonating,
     login,
     logout,
