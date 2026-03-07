@@ -74,7 +74,7 @@ export default function useSigns() {
   const loadSigns = async () => {
     signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
       fields:
-        'id, name, video, slug, definition, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
+        'id, name, video, slug, definition, level, primary_language, learning_source, learning_source_detail, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
       expand: 'Category,ConfigurationRight,ConfigurationLeft',
       sort: '-updated',
     })
