@@ -35,8 +35,9 @@ export default function useImportExport(
   const exportToCSV = async () => {
     isExporting.value = true
     try {
+      const expand = collectionName === 'sign' ? 'Category,Roles' : 'Category'
       const records = await pb.collection(collectionName).getFullList({
-        expand: 'Category',
+        expand,
       })
 
       const exportableFields = getExportableFields()
@@ -45,13 +46,13 @@ export default function useImportExport(
       // Create CSV content
       const csvRows = [headers.join(',')]
 
-      records.forEach((record: any) => {
+      for (const record of records as any[]) {
         const row = exportableFields.map(fieldConfig => {
           const value = record[fieldConfig.key]
 
           // Apply formatter if exists
           if (fieldConfig.formatter?.export) {
-            return escapeCSV(fieldConfig.formatter.export(value))
+            return fieldConfig.formatter.export(value, record)
           }
 
           // Default formatting based on field type
@@ -69,8 +70,16 @@ export default function useImportExport(
 
           return escapeCSV(String(value))
         })
+
+        for (let i = 0; i < row.length; i++) {
+          if (row[i] instanceof Promise) {
+            row[i] = await row[i]
+          }
+          row[i] = escapeCSV(String(row[i] ?? ''))
+        }
+
         csvRows.push(row.join(','))
-      })
+      }
 
       const csvContent = csvRows.join('\n')
       const filename = `${collectionName}-export.csv`
@@ -115,29 +124,29 @@ export default function useImportExport(
         try {
           const record: any = {}
 
-          headers.forEach((header, index) => {
+          for (const [index, header] of headers.entries()) {
             const value = values[index] || ''
             const fieldConfig = getFieldConfig(header)
 
             if (!fieldConfig || !fieldConfig.importable) {
-              return
+              continue
             }
 
             // Apply formatter if exists
             if (fieldConfig.formatter?.import) {
-              record[header] = fieldConfig.formatter.import(value)
-              return
+              record[header] = await fieldConfig.formatter.import(value, record)
+              continue
             }
 
             // Default formatting based on field key
             if (header === 'Category') {
               record[header] = value ? value.split(';').filter(Boolean) : []
-              return
+              continue
             }
 
             // Handle text fields that might contain escaped commas/newlines
             record[header] = unescapeCSV(value)
-          })
+          }
 
           // Apply derive functions for missing values
           getImportableFields().forEach((fieldConfig: any) => {
@@ -347,7 +356,9 @@ export default function useImportExport(
       if (value === '') value = null
 
       if (Array.isArray(value)) {
-        return fieldKey === 'Category' ? [...value].sort() : value
+        return fieldKey === 'Category' || fieldKey === 'Roles'
+          ? [...value].sort((left, right) => String(left).localeCompare(String(right)))
+          : value
       }
 
       if (!config || !config.formatter) {
