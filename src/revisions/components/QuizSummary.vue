@@ -5,6 +5,7 @@ import durationPlugin from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/fr'
 import type { QuizSessionStats } from '@admin/types/quiz'
+import { computeQuizScore, scoreColorClass } from '../../helpers/quizScore'
 
 dayjs.extend(durationPlugin)
 dayjs.extend(relativeTime)
@@ -29,6 +30,13 @@ const accuracy = computed(() => {
   return Math.round((props.stats.known / total) * 100)
 })
 
+const score = computed(() =>
+  computeQuizScore({
+    ...props.stats,
+    durationSeconds: props.duration ? props.duration / 1000 : 0,
+  }),
+)
+
 const hasErrors = computed(() => props.stats.unknown > 0)
 
 const formatDuration = (ms?: number) => {
@@ -50,11 +58,11 @@ const formatDuration = (ms?: number) => {
         <div class="stat-title">Score</div>
         <div
           class="stat-value"
-          :class="accuracy >= 80 ? 'text-success' : accuracy >= 50 ? 'text-warning' : 'text-error'"
+          :class="scoreColorClass(score)"
         >
-          {{ accuracy }}%
+          {{ score }}
         </div>
-        <div class="stat-desc">{{ stats.known }} / {{ stats.known + stats.unknown }} correctes</div>
+        <div class="stat-desc">{{ accuracy }}% de réussite brute</div>
       </div>
 
       <div class="stat">

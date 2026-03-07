@@ -13,6 +13,7 @@ export type Quiz = {
   description?: string
   item_type: ItemType
   settings?: QuizSettings
+  shared_with_users?: string[]
   created: string
   updated: string
 }

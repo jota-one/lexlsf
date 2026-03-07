@@ -9,6 +9,7 @@ import TabPanel from 'primevue/tabpanel'
 import QuizForm from '@admin/components/QuizForm.vue'
 import QuizItemSearch from '@admin/components/QuizItemSearch.vue'
 import QuizItemsList from '@admin/components/QuizItemsList.vue'
+import QuizShareModal from '@admin/components/QuizShareModal.vue'
 import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 
@@ -21,6 +22,7 @@ const quizId = computed(() => route.params.id as string)
 const loading = ref(false)
 const saving = ref(false)
 const activeTab = ref('0')
+const showShareModal = ref(false)
 
 const form = ref({
   title: '',
@@ -117,6 +119,16 @@ const handleItemsLoaded = (keys: string[]) => {
   <div class="p-8">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-bold">Éditer le quiz</h2>
+      <button
+        v-if="!loading"
+        type="button"
+        class="btn btn-ghost btn-sm"
+        title="Partager ce quiz"
+        @click="showShareModal = true"
+      >
+        <span class="i-fa-solid-share-nodes"></span>
+        Partager
+      </button>
     </div>
 
     <div v-if="loading" class="card p-6 text-center">
@@ -180,4 +192,7 @@ const handleItemsLoaded = (keys: string[]) => {
       </Tabs>
     </div>
   </div>
+
+  <!-- Share modal -->
+  <QuizShareModal v-model="showShareModal" :quiz-id="quizId" :quiz-title="form.title" />
 </template>

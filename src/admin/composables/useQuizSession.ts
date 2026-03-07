@@ -23,9 +23,18 @@ type DeckItem = {
   itemId: string
   position: number
   itemData?: any // The actual sign or person record
+  isSkipRequeue?: boolean
 }
 
 const BATCH_SIZE = 20 // Load 20 items at a time for video optimization
+
+const shuffle = <T>(arr: T[]): T[] => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
 
 export default function useQuizSession() {
   const pb = new PocketBase(config.apiBaseUrl)
@@ -45,16 +54,18 @@ export default function useQuizSession() {
   const progress = computed(() => {
     if (!currentSession.value) return { current: 0, total: 0, percentage: 0 }
     const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
-    const completed = stats.known + stats.unknown + stats.skipped
+    const answered = stats.known + stats.unknown
     return {
-      current: completed,
+      current: answered,
       total: stats.total,
-      percentage: stats.total > 0 ? Math.round((completed / stats.total) * 100) : 0,
+      percentage: stats.total > 0 ? Math.round((answered / stats.total) * 100) : 0,
     }
   })
 
   const isComplete = computed(() => {
-    return progress.value.current >= progress.value.total
+    if (!currentSession.value) return false
+    const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
+    return stats.known + stats.unknown >= stats.total
   })
 
   /**
@@ -102,13 +113,15 @@ export default function useQuizSession() {
         },
       })
 
-      // Initialize deck with filtered quiz items (without data yet)
-      deck.value = filteredItems.map(item => ({
-        quizItemId: item.id,
-        itemType: item.item_type,
-        itemId: item.item_id,
-        position: item.position,
-      }))
+      // Initialize deck with filtered quiz items (without data yet), shuffled
+      deck.value = shuffle(
+        filteredItems.map(item => ({
+          quizItemId: item.id,
+          itemType: item.item_type,
+          itemId: item.item_id,
+          position: item.position,
+        })),
+      )
 
       currentIndex.value = 0
 
@@ -146,21 +159,30 @@ export default function useQuizSession() {
         filter: `Session = "${sessionId}"`,
       })
 
-      const attemptedItemIds = new Set(attempts.map(a => a.QuizItem))
+      const definitivelyAnswered = new Set(
+        attempts.filter(a => a.result === 'known' || a.result === 'unknown').map(a => a.QuizItem),
+      )
+      const skippedOnly = new Set(
+        attempts
+          .filter(a => a.result === 'skip')
+          .map(a => a.QuizItem)
+          .filter(id => !definitivelyAnswered.has(id)),
+      )
 
-      // Initialize deck
-      deck.value = quizItems.map(item => ({
+      const allDeckItems = quizItems.map(item => ({
         quizItemId: item.id,
-        itemType: item.item_type,
-        itemId: item.item_id,
-        position: item.position,
+        itemType: item.item_type as 'sign' | 'person',
+        itemId: item.item_id as string,
+        position: item.position as number,
       }))
 
-      // Find first unattempted item
-      currentIndex.value = deck.value.findIndex(item => !attemptedItemIds.has(item.quizItemId))
-      if (currentIndex.value === -1) {
-        currentIndex.value = deck.value.length // Session complete
-      }
+      const unattempted = allDeckItems.filter(
+        item => !definitivelyAnswered.has(item.quizItemId) && !skippedOnly.has(item.quizItemId),
+      )
+      const skippedOnlyItems = allDeckItems.filter(item => skippedOnly.has(item.quizItemId))
+
+      deck.value = [...shuffle(unattempted), ...shuffle(skippedOnlyItems)]
+      currentIndex.value = 0
 
       // Load batch around current position
       await loadNextBatch()
@@ -232,9 +254,23 @@ export default function useQuizSession() {
 
     // Update session stats
     const stats = currentSession.value.stats as QuizSessionStats
-    // Map 'skip' result to 'skipped' in stats
     if (result === 'skip') {
       stats.skipped++
+      // Find the start of the "skipped zone" (first re-queued card after current position)
+      let skippedZoneStart = -1
+      for (let i = currentIndex.value + 1; i < deck.value.length; i++) {
+        if (deck.value[i].isSkipRequeue) {
+          skippedZoneStart = i
+          break
+        }
+      }
+      // Insert at a random position within the skipped zone (or append if none yet)
+      const insertAt =
+        skippedZoneStart === -1
+          ? deck.value.length
+          : skippedZoneStart +
+            Math.floor(Math.random() * (deck.value.length - skippedZoneStart + 1))
+      deck.value.splice(insertAt, 0, { ...deck.value[currentIndex.value], isSkipRequeue: true })
     } else {
       stats[result]++
     }
@@ -284,6 +320,7 @@ export default function useQuizSession() {
     options?: {
       configKey?: string
       onlyIncomplete?: boolean
+      onlyComplete?: boolean
       limit?: number
     },
   ) => {
@@ -291,6 +328,10 @@ export default function useQuizSession() {
 
     if (options?.onlyIncomplete) {
       filters.push('completed_at = null')
+    }
+
+    if (options?.onlyComplete) {
+      filters.push('completed_at != null')
     }
 
     if (options?.configKey) {

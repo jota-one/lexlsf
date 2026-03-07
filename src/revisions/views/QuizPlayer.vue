@@ -8,6 +8,7 @@ import usePbErrorToast from '@admin/composables/usePbErrorToast'
 import { getQuizModes, getQuizMode, type QuizMode } from '@admin/config/quizModes'
 import FlipCard from '../components/FlipCard.vue'
 import QuizSummary from '../components/QuizSummary.vue'
+import QuizHistoryStats from '../components/QuizHistoryStats.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,6 +40,7 @@ const cardStartTime = ref<number>(0)
 const sessionStartTime = ref<number>(0)
 const sessionDuration = ref<number>(0)
 const incompleteSessions = ref<any[]>([])
+const completedSessions = ref<any[]>([])
 const deletingSessionId = ref<string | null>(null)
 
 const availableModes = computed(() => {
@@ -59,6 +61,11 @@ onMounted(async () => {
     incompleteSessions.value = await loadQuizSessions(quizId, {
       onlyIncomplete: true,
       limit: 10,
+    })
+
+    // Charger les sessions complétées pour les stats historiques
+    completedSessions.value = await loadQuizSessions(quizId, {
+      onlyComplete: true,
     })
   } catch (error) {
     showPbError(error)
@@ -261,6 +268,13 @@ const handleBackToList = () => {
         </button>
       </div>
     </div>
+
+    <!-- Historique des sessions complétées -->
+    <QuizHistoryStats
+      v-if="!currentSession && completedSessions.length > 0"
+      :sessions="completedSessions"
+      class="mt-4"
+    />
 
     <!-- Session en cours -->
     <div v-if="currentSession" class="space-y-3 flex-1 flex flex-col mt-4">

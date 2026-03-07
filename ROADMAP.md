@@ -8,10 +8,6 @@ Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
 
 Liste des petites améliorations et refactorings potentiels.
 
-- Admin Quizz: Geetha n'arrive pas à supprimer un certain quizz "test"
-- Admin Quizz: Admin doit pouvoir partager un quizz avec d'autres utilisateurs
-- Rôle étudiant: Doivent pouvoir voir les quizz partagé avec eux
-
 ## Nouvelles fonctionalités
 
 ### Admin personnes/organismes — onglet Liens / Bibliographie
@@ -34,6 +30,9 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-07] Partage de quiz — champ `shared_with_users` sur la collection `quiz` ; modal de partage dans l'admin (liste + QuizEdit) ; règles d'accès PocketBase mises à jour sur `quiz`, `quiz_item` et la vue `quiz_counts` pour inclure les utilisateurs partagés ; les quiz partagés apparaissent dans la liste publique des révisions.
+- [2026-03-07] Quiz shuffle & skip — deck mélangé au démarrage/reprise ; cartes passées réinsérées aléatoirement dans la file des skips (jamais avant une carte non évaluée) ; session terminée uniquement quand toutes les cartes ont une réponse définitive.
+- [2026-03-07] Historique sessions quiz — cartouche de stats (durée min/moy/max, réussite min/moy/max, mini graphique) affiché sous le formulaire de démarrage.
 - [2026-03-07] Prise de contrôle — un admin peut prendre le contrôle d'un autre compte utilisateur et reprendre son compte admin via le menu public.
 - [2026-03-07] Admin signes colonnes — ajout des colonnes "Langue" et "Source" dans la liste des signes (fetch PocketBase + DataTable).
 - [2026-03-07] Droits étudiants signes — les étudiants peuvent voir les signes de level c1 (migration DB, règle remplacée : `learning_source = 'uni/m1'` → `level = 'c1'`).
