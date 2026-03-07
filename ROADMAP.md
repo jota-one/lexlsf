@@ -12,22 +12,6 @@ Liste des petites améliorations et refactorings potentiels.
 
 ## Nouvelles fonctionnalités
 
-### Amélioration de l'UX/UI dans une question de quiz.
-Pour l'instant on a une FlipCard très large qui ne sert à rien et dont l'animation fatigue les utilisateur.
-
-On garde la card, mais on arrête le flip.
-On garde la zone question à gauche, mais on met la zone réponse à droite (qui va apparaître lorsque l'utilisateur clique sur "Retourner", bouton à renommer "Réponse").
-On déplace tous les boutons d'action en-dessous de la carte, centrés.
-On ne garde que la vidéo (ou l'image pour les quiz "personnes") et le terme. On dégage les autres champs.
-On ajoute un bouton "Ouvrir la fiche" qui ouvre le détail du signe ou de la personne dans une nouvelle fenêtre.
-
-### Changement visibilité signes - association avec les rôles
-Pour l'instant on détermine ce que les utilisateurs 'student' peuvent voir comme signe en se basant sur le level=c1. C'est pas idéal. Le signe doit avoir un lien avec la table role et on doit pouvoir explicitement associer un signe à un role.
-
-Par défaut, le role admin a accès à tous les signes, sans qu'une association explicite soit nécessaire.
-
-Une fois cette modification effectuée, il faut retirer la contrainte sur level=c1
-
 ### Admin personnes/organismes — onglet Liens / Bibliographie
 
 Ajouter un onglet « Liens / Bibliographie » avec CRUD de liens web, sur le même modèle que l'onglet des vidéos YouTube.
@@ -48,6 +32,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-07] UX quiz — refonte de la carte : layout question/réponse côte à côte, suppression de l'animation flip, champs réduits à vidéo/image + terme, boutons en bas centrés, bouton "Ouvrir la fiche".
 - [2026-03-07] Retrait uni/m1 — suppression de la valeur `uni/m1` du champ `learning_source` (migration DB + labels UI admin et public).
 - [2026-03-07] Import des signes finalisé — import/export admin des signes validé avec prise en charge des rôles ; données réimportées et signes mis à jour (attribution du rôle `student` appliquée sur l'existant).
 - [2026-03-07] Visibilité des signes par rôles — ajout d'une relation `roles` sur `sign` + règles PocketBase mises à jour (`admin` voit tout, autres utilisateurs selon intersection de rôles) ; UI admin des signes enrichie pour associer explicitement les rôles.
