@@ -127,7 +127,7 @@ func optimizeVideoRecord(app *pocketbase.PocketBase, record *core.Record) error 
 			"-vf", "crop=ih*4/3:ih,scale=720:-2:flags=lanczos:force_divisible_by=2,fps=24",
 			"-c:v", "libx265",
 			"-crf", "24",
-			"-preset", "slower",
+			"-preset", "slow",
 			"-tag:v", "hvc1",
 			"-an",
 			"-movflags", "+faststart",

@@ -25,7 +25,7 @@ const primaryLanguageOptions = [
   { label: 'LSF', value: 'LSF' },
   { label: 'LSR', value: 'LSR' },
   { label: 'ASL', value: 'ASL' },
-  { label: 'LS Internationale', value: 'LS Internationale' },
+  { label: 'LSI', value: 'LSI' },
   { label: 'BSL', value: 'BSL' },
   { label: 'ISL', value: 'ISL' },
   { label: 'Autre', value: 'other' },
@@ -74,7 +74,7 @@ export default function useSigns() {
   const loadSigns = async () => {
     signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
       fields:
-        'id, name, video, slug, definition, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
+        'id, name, video, slug, definition, level, primary_language, learning_source, learning_source_detail, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
       expand: 'Category,ConfigurationRight,ConfigurationLeft',
       sort: '-updated',
     })

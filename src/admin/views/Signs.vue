@@ -46,6 +46,18 @@
             <Rating :modelValue="getNumericLevel(slotProps.data.level)" readonly />
           </template>
         </Column>
+        <Column field="primary_language" header="Langue">
+          <template #body="slotProps">
+            {{ getPrimaryLanguageLabel(slotProps.data.primary_language) }}
+          </template>
+        </Column>
+        <Column field="learning_source" header="Source">
+          <template #body="slotProps">
+            <span v-tooltip="slotProps.data.learning_source_detail || undefined">
+              {{ getLearningSourceLabel(slotProps.data.learning_source) }}
+            </span>
+          </template>
+        </Column>
         <!-- Dernière modif -->
         <Column field="updated" header="Dernière modif" sortable>
           <template #body="slotProps">
@@ -116,7 +128,13 @@ function getSignProblems(sign: TSign.TRecord): string[] {
   return problems;
 }
 
-const { signs, loadSigns, deleteSign, getNumericLevel } = useSigns();
+const { signs, loadSigns, deleteSign, getNumericLevel, learningSourceOptions, primaryLanguageOptions } = useSigns();
+
+const getPrimaryLanguageLabel = (value: string) =>
+  primaryLanguageOptions.find(o => o.value === value)?.label ?? value ?? ''
+
+const getLearningSourceLabel = (value: string) =>
+  learningSourceOptions.find(o => o.value === value)?.label ?? value ?? ''
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const showImportExportModal = ref(false);

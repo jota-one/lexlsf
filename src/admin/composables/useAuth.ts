@@ -6,6 +6,7 @@ import config from '../../config'
 const pb = new PocketBase(config.apiBaseUrl)
 
 const userJwt = useSessionStorage('userJwt', '')
+const impersonatorJwt = useSessionStorage('impersonatorJwt', '')
 const user = ref<any>({})
 // Charge l'utilisateur avec expand:roles pour déterminer les slugs
 const loadUserWithRoles = async (model: any) => {
@@ -64,13 +65,34 @@ export default function useAuth() {
   const isAuthenticated = computed(() => !!userJwt.value && userJwt.value.length > 0)
   const roles = computed(() => user.value?.expand?.roles ?? [])
   const isAdmin = computed(() => roles.value.some((r: any) => r?.slug === 'admin'))
+  const isImpersonating = computed(() => !!impersonatorJwt.value)
+
+  const impersonate = async (userId: string) => {
+    const authData = await pb.send(`/api/custom/impersonate/${userId}`, { method: 'POST' })
+    impersonatorJwt.value = userJwt.value
+    pb.authStore.save(authData.token, authData.record)
+    userJwt.value = authData.token
+    window.location.href = '/'
+  }
+
+  const exitImpersonation = async () => {
+    const adminJwt = impersonatorJwt.value
+    impersonatorJwt.value = ''
+    pb.authStore.save(adminJwt, null)
+    userJwt.value = adminJwt
+    await refreshAuth()
+    window.location.href = '/admin'
+  }
 
   return {
     isAuthenticated,
     isAdmin,
+    isImpersonating,
     login,
     logout,
     refreshAuth,
+    impersonate,
+    exitImpersonation,
     pb,
     user,
     userJwt,

@@ -47,6 +47,15 @@
               <span>Mes quiz</span>
             </a>
           </li>
+          <li v-if="isImpersonating">
+            <button
+              @click="exitImpersonation"
+              class="flex items-center gap-3 text-amber-600 hover:bg-amber-50 w-full text-left"
+            >
+              <span class="i-fa-solid-user-secret text-base"></span>
+              <span>Reprendre mon compte</span>
+            </button>
+          </li>
           <li>
             <button
               @click="handleLogout"
@@ -69,7 +78,7 @@ import useAuth from '@admin/composables/useAuth'
 import config from '@config'
 import LoginModal from "./LoginModal.vue"
 
-const { isAuthenticated, isAdmin, user, logout } = useAuth()
+const { isAuthenticated, isAdmin, isImpersonating, user, logout, exitImpersonation } = useAuth()
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const avatarUrl = computed(() => {
