@@ -367,17 +367,8 @@ export default function useImportExport(
 
       const { formatter } = config
 
-      if (formatter.export && formatter.import) {
-        const exported = formatter.export(value)
-        return formatter.import(exported)
-      }
-
       if (formatter.import) {
         return formatter.import(String(value ?? ''))
-      }
-
-      if (formatter.export) {
-        return formatter.export(value)
       }
 
       return value ?? null
