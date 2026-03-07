@@ -284,6 +284,7 @@ export default function useQuizSession() {
     options?: {
       configKey?: string
       onlyIncomplete?: boolean
+      onlyComplete?: boolean
       limit?: number
     },
   ) => {
@@ -291,6 +292,10 @@ export default function useQuizSession() {
 
     if (options?.onlyIncomplete) {
       filters.push('completed_at = null')
+    }
+
+    if (options?.onlyComplete) {
+      filters.push('completed_at != null')
     }
 
     if (options?.configKey) {
