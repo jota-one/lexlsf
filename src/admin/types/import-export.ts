@@ -8,6 +8,7 @@ export type FieldConfig = {
   label: string
   exportable: boolean
   importable: boolean
+  unique?: boolean
   formatter?: FieldFormatter
   derive?: (row: Record<string, any>) => any
 }
