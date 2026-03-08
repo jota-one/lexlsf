@@ -60,6 +60,12 @@ const setFormData = (payload: TPerson.TForm) => {
   if (payload.timeline) {
     formData.append('timeline', JSON.stringify(payload.timeline))
   }
+  ;(payload.Roles || []).forEach(roleId => {
+    formData.append('Roles', roleId)
+  })
+  if ((payload.Roles || []).length === 0) {
+    formData.append('Roles', '')
+  }
 
   return formData
 }
@@ -71,8 +77,8 @@ export default function usePersons() {
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
       fields:
-        'id, name, firstname, illustration, slug, updated, deaf, organism, birthdate, birthplace, deafFamily, family, deceased, deathdate, expand.Category.*, expand.Sign.*, expand.Videos.*',
-      expand: 'Category,Sign,Videos',
+        'id, name, firstname, illustration, slug, updated, deaf, organism, birthdate, birthplace, deafFamily, family, deceased, deathdate, expand.Category.*, expand.Sign.*, expand.Videos.*, expand.Roles.*',
+      expand: 'Category,Sign,Videos,Roles',
       sort: '-updated',
     })
   }
@@ -80,7 +86,7 @@ export default function usePersons() {
   const loadPerson = async (id: string) => {
     return pb.collection<TPerson.TRecord & { expand?: any }>('person').getOne(id, {
       fields: '*',
-      expand: 'Category,Activities,Sign,Videos',
+      expand: 'Category,Activities,Sign,Videos,Roles',
     })
   }
 

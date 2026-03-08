@@ -48,6 +48,7 @@ This file collects the minimal, actionable knowledge an AI coding agent needs to
 
 - Migrations live in `pb/pb_migrations/` — review JS migration files to understand schema changes.
 - To run the local PocketBase server for integration testing, use `pnpm db` (it runs the locally included binary if present) or run the binary yourself in `pb/`.
+- **Important:** `pocketbase migrate up` writes the schema change to the SQLite DB but does NOT reload collections in the running server's memory. After any migration, a **full PocketBase restart** is required for the new fields/rules to be fully operational. Without a restart, saving records with new relation fields will silently fail or behave incorrectly even though the field appears in the schema.
 
 7. Where to make changes for common tasks
 
