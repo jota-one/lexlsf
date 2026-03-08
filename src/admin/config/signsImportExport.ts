@@ -71,6 +71,7 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     label: 'Slug',
     exportable: true,
     importable: true,
+    unique: true,
     derive: row => createSlug(row.name || ''),
   },
   {

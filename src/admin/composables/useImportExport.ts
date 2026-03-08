@@ -178,8 +178,9 @@ export default function useImportExport(
                 result.unchanged++
               }
             } catch {
-              // Create new (ID doesn't exist)
+              // ID not found in DB → check for slug conflicts before creating
               delete record.id
+              await checkUniqueConflicts(record, getImportableFields())
               logImport('info', 'création (id absent en base)', {
                 tempId: record.id,
               })
@@ -187,7 +188,8 @@ export default function useImportExport(
               result.created++
             }
           } else {
-            // Create new record
+            // No id → check for slug conflicts before creating
+            await checkUniqueConflicts(record, getImportableFields())
             logImport('info', 'création (sans id)')
             await pb.collection(collectionName).create(record)
             result.created++
@@ -347,6 +349,23 @@ export default function useImportExport(
       })
 
     return { hasChanges: diffs.length > 0, diffs }
+  }
+
+  const checkUniqueConflicts = async (
+    record: Record<string, any>,
+    importableFields: TImportExport.FieldConfig[],
+  ): Promise<void> => {
+    const uniqueFields = importableFields.filter(f => f.unique && record[f.key])
+
+    for (const field of uniqueFields) {
+      try {
+        await pb.collection(collectionName).getFirstListItem(`${field.key}="${record[field.key]}"`)
+        throw new Error(`${field.label} "${record[field.key]}" existe déjà`)
+      } catch (e: any) {
+        if (e?.status === 404) continue
+        throw e
+      }
+    }
   }
 
   const isEqualValue = (a: any, b: any, key?: string): boolean => {
