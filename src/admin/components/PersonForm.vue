@@ -208,6 +208,28 @@
             placeholder="Précisions supplémentaires sur la composition familiale..."
           ></textarea>
         </div>
+        <!-- Visible pour (rôles) -->
+        <div class="flex items-center gap-4">
+          <label for="roles" class="font-semibold w-60">Visible pour</label>
+          <div class="flex flex-wrap gap-2 w-full">
+            <span v-if="rolesLoading" class="loading loading-spinner loading-sm"></span>
+            <template v-else>
+              <button
+                v-for="role in roles"
+                :key="role.id"
+                type="button"
+                class="badge badge-md"
+                :class="roleBadgeClass(role)"
+                :title="role.slug === 'admin' ? 'Toujours autorisé (automatique)' : ''"
+                @click="toggleRole(role)"
+              >
+                {{ role.name }}
+                <span v-if="role.slug === 'admin'" class="ml-1 i-fa6-solid-lock text-xs"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+
         <!-- Signe associé -->
         <div class="flex items-center gap-4">
           <label for="sign" class="font-semibold w-60">Signe associé</label>
@@ -503,6 +525,7 @@ import TabPanel from 'primevue/tabpanel';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { VMarkdownEditor } from 'vue3-markdown';
 import useSigns from '../composables/useSigns';
+import useRoles from '../composables/useRoles';
 import useVideos from '../composables/useVideos';
 import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
@@ -533,6 +556,37 @@ const birthdateModel = ref<Date | null>(null);
 const deathdateModel = ref<Date | null>(null);
 
 const { signs, loadSigns } = useSigns();
+const { roles, loadRoles } = useRoles();
+const rolesLoading = ref(false);
+const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '');
+
+watch(roles, () => {
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
+    return;
+  }
+  form.value.Roles = form.value.Roles.filter(roleId => roleId !== adminRoleId.value);
+});
+
+const isRoleSelected = (roleId: string) => {
+  if (!roleId) return false;
+  if (roleId === adminRoleId.value) return true;
+  return (form.value.Roles || []).includes(roleId);
+};
+
+const toggleRole = (role: { id: string; slug: string }) => {
+  if (role.slug === 'admin') return;
+  if ((form.value.Roles || []).includes(role.id)) {
+    form.value.Roles = (form.value.Roles || []).filter(roleId => roleId !== role.id);
+    return;
+  }
+  form.value.Roles = [...(form.value.Roles || []), role.id];
+};
+
+const roleBadgeClass = (role: { id: string; slug: string }) => {
+  if (role.slug === 'admin') return 'badge-primary opacity-60 cursor-not-allowed';
+  return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer';
+};
+
 const { addVideo, updateVideo, findVideoByUrl } = useVideos();
 const signOptions = computed(() =>
     signs.value.map((s: any) => ({ label: s.name, value: s.id }))
@@ -585,7 +639,13 @@ watch(() => form.value.timeline, (newVal) => {
     }
 }, { immediate: true });
 
-onMounted(loadSigns);
+onMounted(() => {
+  loadSigns();
+  rolesLoading.value = true;
+  loadRoles().finally(() => {
+    rolesLoading.value = false;
+  });
+});
 
 watch(() => form.value.birthdate, (newVal) => {
   if (!newVal) {

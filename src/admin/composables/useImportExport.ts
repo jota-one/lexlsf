@@ -35,7 +35,7 @@ export default function useImportExport(
   const exportToCSV = async () => {
     isExporting.value = true
     try {
-      const expand = collectionName === 'sign' ? 'Category,Roles' : 'Category'
+      const expand = ['sign', 'person'].includes(collectionName) ? 'Category,Roles' : 'Category'
       const records = await pb.collection(collectionName).getFullList({
         expand,
       })

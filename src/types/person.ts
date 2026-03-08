@@ -26,6 +26,7 @@ export type TRecord = {
   organism?: boolean
   deceased?: boolean
   deathdate?: string
+  Roles?: string[]
 }
 
 export type TForm = Omit<

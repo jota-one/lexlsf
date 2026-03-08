@@ -67,6 +67,11 @@
             {{ categories(slotProps.data.expand?.Category) }}
           </template>
         </Column>
+        <Column field="Roles" header="Roles">
+          <template #body="slotProps">
+            {{ roleNames(slotProps.data.expand?.Roles) }}
+          </template>
+        </Column>
         <!-- Dernière modif -->
         <Column field="updated" header="Dernière modif" sortable>
           <template #body="slotProps">
@@ -161,6 +166,11 @@ const deleteMessage = ref('');
 
 const categories = (category: any[]) => {
   return (category || []).map(c => c.tag).join(', ')
+};
+
+const roleNames = (roles: any[]) => {
+  if (!roles?.length) return '-';
+  return roles.map(r => r.name).join(', ');
 };
 
 const openAddModal = () => {

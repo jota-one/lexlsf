@@ -8,7 +8,8 @@ Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
 
 Liste des petites améliorations et refactorings potentiels.
 
-- Gérer un peu mieux la largeur des colonnes dans la liste des signes dans l'admin.
+- Culture, galerie photo des personnes: ne pas faire apparaître le nom dans la carte, juste la photo et faire apparaître le nom en blanc sur un overlay un peu foncé au survol de la photo
+- Culture: ajouter un mode "liste" en plus du mode (implicite) galerie actuel. Le mode liste va afficher une liste des personnes, bcp plus compacte, sans photo.
 
 ## Nouvelles fonctionnalités
 
@@ -32,6 +33,7 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ## Historique (fait)
 
+- [2026-03-08] Visibilité des personnes par rôles — ajout d'un champ `Roles` (relation) sur `person` + règles PocketBase identiques aux signes (`admin` voit tout, autres utilisateurs selon intersection de rôles) ; UI admin enrichie avec sélecteur de rôles dans `PersonForm`.
 - [2026-03-07] UX quiz — refonte de la carte : layout question/réponse côte à côte, suppression de l'animation flip, champs réduits à vidéo/image + terme, boutons en bas centrés, bouton "Ouvrir la fiche".
 - [2026-03-07] Retrait uni/m1 — suppression de la valeur `uni/m1` du champ `learning_source` (migration DB + labels UI admin et public).
 - [2026-03-07] Import des signes finalisé — import/export admin des signes validé avec prise en charge des rôles ; données réimportées et signes mis à jour (attribution du rôle `student` appliquée sur l'existant).
