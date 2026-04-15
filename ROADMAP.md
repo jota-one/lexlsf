@@ -33,6 +33,19 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
+### Migration SPA Vue — Lexique et Culture
+
+Les pages publiques actuelles (`/categories/`, `/signs/`, `/culture/`, `/persons/`) sont des pages Astro SSR qui font des requêtes PocketBase **non authentifiées**. Avec un auth JWT stocké en `sessionStorage` (pas de session serveur), il est impossible d'appliquer un role-gating cohérent côté SSR.
+
+Migrer en **2 SPAs Vue** (`client:only`), sur le modèle de l'admin et des pages Outils :
+
+- **SPA Lexique** : drill-down catégorie → liste de signes → détail d'un signe (`/categories/`, `/signs/`)
+- **SPA Culture** : galerie/liste de personnes et organismes → détail (`/culture/`, `/persons/`)
+
+Les deux SPAs utilisent le token JWT de l'utilisateur connecté, ce qui permet d'uniformiser le contrôle d'accès par rôles sur l'ensemble du site.
+
+Impact : retirer `@request.auth.id = ''` des `listRule`/`viewRule` des collections `sign`, `person`, `category` une fois la migration effectuée.
+
 ### Nouvelles sections "Outils": Champs lexicaux - Expressions françaises - Expressions pi-sourde
 
 Ajouter un menu principal au site nommé "Outils". Dans ce menu, on pourra trouver plusieurs outils dont les 3 cités en titre. Il s'agit essentiellement d'entités qui permettent de regrouper des signes dans un certain thème.

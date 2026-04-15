@@ -1,56 +1,12 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
-import PocketBase from 'pocketbase'
-import config from '../../../config'
-import { marked } from 'marked'
+import PiDeafExpressionDetail from '@components/outils/PiDeafExpressionDetail.vue'
 
 export const prerender = false
 
 const { slug } = Astro.params
-
-const pb = new PocketBase(config.apiBaseUrl)
-const expr = await pb.collection('pi_deaf_expression').getFirstListItem(`slug="${slug}"`, {
-  expand: 'Sign',
-})
-
-const sign = (expr as any).expand?.Sign
-const videoUrl = sign?.video
-  ? `${config.apiBaseUrl}/api/files/sign/${sign.id}/${sign.video}`
-  : null
-
-const strategiesHtml = (expr as any).strategies ? marked.parse(String((expr as any).strategies)) : ''
 ---
 
-<PageLayout title={(expr as any).name || sign?.name || 'Expression pi-sourde'}>
-  <div class="container mx-auto px-4 py-8 max-w-3xl">
-    <a href="/outils/expressions-pi-sourdes" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
-      ← Expressions pi-sourdes
-    </a>
-    <h1 class="text-3xl font-bold mb-6">{(expr as any).name || sign?.name}</h1>
-
-    {sign && (
-      <section class="mb-8">
-        <h2 class="text-lg font-semibold mb-3">
-          Signe : <a href={`/signs/${sign.slug}`} class="text-primary hover:underline">{sign.name}</a>
-        </h2>
-        {videoUrl && (
-          <video
-            src={videoUrl}
-            controls
-            class="rounded-xl max-w-md w-full"
-            preload="metadata"
-          />
-        )}
-      </section>
-    )}
-
-    {strategiesHtml && (
-      <section>
-        <h2 class="text-lg font-semibold mb-2">Stratégies de transcription</h2>
-        <div class="prose prose-sm md:prose-base max-w-none text-base-content prose-headings:text-base-content prose-strong:text-base-content prose-p:text-base-content/80">
-          <article set:html={strategiesHtml} />
-        </div>
-      </section>
-    )}
-  </div>
+<PageLayout>
+  <PiDeafExpressionDetail slug={slug!} client:only />
 </PageLayout>

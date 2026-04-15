@@ -1,48 +1,12 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro'
-import PocketBase from 'pocketbase'
-import config from '../../../config'
-import { marked } from 'marked'
+import FrenchExpressionDetail from '@components/outils/FrenchExpressionDetail.vue'
 
 export const prerender = false
 
 const { slug } = Astro.params
-
-const pb = new PocketBase(config.apiBaseUrl)
-const expr = await pb.collection('french_expression').getFirstListItem(`slug="${slug}"`, {
-  expand: 'Signs',
-})
-
-const strategiesHtml = (expr as any).strategies ? marked.parse(String((expr as any).strategies)) : ''
 ---
 
-<PageLayout title={expr.expression}>
-  <div class="container mx-auto px-4 py-8 max-w-3xl">
-    <a href="/outils/expressions-francaises" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
-      ← Expressions françaises
-    </a>
-    <h1 class="text-3xl font-bold mb-6">« {(expr as any).expression} »</h1>
-
-    {strategiesHtml && (
-      <section class="mb-8">
-        <h2 class="text-lg font-semibold mb-2">Stratégies</h2>
-        <div class="prose prose-sm md:prose-base max-w-none text-base-content prose-headings:text-base-content prose-strong:text-base-content prose-p:text-base-content/80">
-          <article set:html={strategiesHtml} />
-        </div>
-      </section>
-    )}
-
-    {(expr as any).expand?.Signs?.length > 0 && (
-      <section>
-        <h2 class="text-lg font-semibold mb-3">Signes utiles</h2>
-        <div class="flex flex-wrap gap-2">
-          {(expr as any).expand.Signs.map((sign: any) => (
-            <a href={`/signs/${sign.slug}`} class="badge badge-primary badge-lg">
-              {sign.name}
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-  </div>
+<PageLayout>
+  <FrenchExpressionDetail slug={slug!} client:only />
 </PageLayout>
