@@ -1,11 +1,10 @@
 import { ref } from 'vue'
-import config from '../../../config'
-import PocketBase from 'pocketbase'
+import config from '@config'
+import useAuth from '@admin/composables/useAuth'
 import type { TPerson } from '../../../types'
 
 const setFormData = (payload: TPerson.TForm) => {
   const formData = new FormData()
-  // set regular text field
   if (payload.illustration && payload.illustration instanceof File) {
     formData.append('illustration', payload.illustration)
   }
@@ -25,7 +24,7 @@ const setFormData = (payload: TPerson.TForm) => {
 }
 
 export default function usePersons() {
-  const pb = new PocketBase(config.apiBaseUrl)
+  const { pb } = useAuth()
 
   const persons = ref<TPerson.TRecord[]>([])
   const loadPersons = async (category: string) => {
@@ -47,15 +46,11 @@ export default function usePersons() {
 
   const addPerson = async (payload: TPerson.TForm) => {
     const formData = setFormData(payload)
-
-    // upload and create new record
     return pb.collection('person').create(formData)
   }
 
   const updatePerson = async (id: string, payload: TPerson.TForm) => {
     const formData = setFormData(payload)
-
-    // upload and update record
     return pb.collection('person').update(id, formData)
   }
 

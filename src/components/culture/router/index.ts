@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CategoriesGrid from '@components/categories/CategoriesGrid.vue'
-import Category from '@components/categories/Category.vue'
+import CategoriesGrid from '@components/lexique/CategoriesGrid.vue'
+import Category from '@components/lexique/Category.vue'
 import Persons from '@components/culture/Persons.vue'
+import PersonDetail from '@components/culture/PersonDetail.vue'
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
         ],
       },
     ],
+  },
+  {
+    path: '/person/:slug',
+    component: PersonDetail,
+    props: true,
   },
 ]
 
