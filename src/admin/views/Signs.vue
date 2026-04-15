@@ -13,14 +13,33 @@
           severity="secondary"
           @click="openImportExportModal"
         />
-        <Button
-          label="Ajouter un signe"
-          icon="i-fa-solid-plus"
-          size="small"
-          @click="openAddModal"
-        />
+        <div class="flex items-center gap-2">
+          <InputText
+            v-model="searchQuery"
+            placeholder="Rechercher (nom, catégorie…)"
+            size="small"
+            class="w-64"
+          />
+          <Button
+            label="Ajouter un signe"
+            icon="i-fa-solid-plus"
+            size="small"
+            @click="openAddModal"
+          />
+        </div>
       </div>
-      <DataTable :value="signs" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
+      <div class="text-sm text-base-content/60 mb-2">
+        <span v-if="debouncedQuery">{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span>
+        <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
+      </div>
+      <DataTable
+        :value="signs"
+        :sortField="sortField"
+        :sortOrder="sortOrder"
+        :lazy="true"
+        @sort="onSort"
+        tableStyle="min-width: 50rem"
+      >
         <Column style="width: 40px;" :header="''">
           <template #body="slotProps">
             <template v-if="getSignProblems(slotProps.data).length">
@@ -89,17 +108,20 @@
             </div>
           </template>
         </Column>
-        <template #footer> Nombre total de signes: {{ signs ? signs.length : 0 }}. </template>
+        <template #footer>
+          <span v-if="debouncedQuery">{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span>
+          <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
+        </template>
       </DataTable>
     </div>
-    <SignAddModal v-model="showAddModal" @saved="loadSigns" />
+    <SignAddModal v-model="showAddModal" @saved="reload" />
     <SignEditModal
       v-if="editedSign?.id"
       v-model="showEditModal"
       :sign-id="editedSign?.id"
-      @saved="loadSigns"
+      @saved="reload"
     />
-    <SignsImportExportModal v-model="showImportExportModal" @saved="loadSigns" />
+    <SignsImportExportModal v-model="showImportExportModal" @saved="reload" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer le signe ?"
@@ -109,13 +131,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { refDebounced } from '@vueuse/core';
 import dayjs from 'dayjs';
 import useSigns from '../composables/useSigns';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Rating from 'primevue/rating';
-import Button from 'primevue/button'
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
 import SignAddModal from '../components/SignAddModal.vue';
 import SignEditModal from '../components/SignEditModal.vue';
 import SignsImportExportModal from '../components/SignsImportExportModal.vue';
@@ -133,7 +157,24 @@ function getSignProblems(sign: TSign.TRecord): string[] {
   return problems;
 }
 
-const { signs, loadSigns, deleteSign, getNumericLevel, learningSourceOptions, primaryLanguageOptions } = useSigns();
+const { signs, totalSigns, loadSigns, deleteSign, getNumericLevel, learningSourceOptions, primaryLanguageOptions } = useSigns();
+
+const searchQuery = ref('')
+const debouncedQuery = refDebounced(searchQuery, 350)
+const sortField = ref('updated')
+const sortOrder = ref<1 | -1>(-1)
+
+const pbSort = () => `${sortOrder.value === -1 ? '-' : ''}${sortField.value}`
+
+const onSort = (event: { sortField: string; sortOrder: 1 | -1 }) => {
+  sortField.value = event.sortField
+  sortOrder.value = event.sortOrder
+  loadSigns(debouncedQuery.value, pbSort())
+}
+
+watch(debouncedQuery, q => loadSigns(q, pbSort()))
+
+const reload = () => loadSigns(debouncedQuery.value, pbSort())
 
 const getPrimaryLanguageLabel = (value: string) =>
   primaryLanguageOptions.find(o => o.value === value)?.label ?? value ?? ''
@@ -182,7 +223,7 @@ const confirmDelete = (sign: any) => {
 const deleteSignConfirmed = async () => {
   if (signToDelete.value) {
     await deleteSign(signToDelete.value.id);
-    await loadSigns();
+    await reload();
     showDeleteModal.value = false;
     signToDelete.value = null;
   }

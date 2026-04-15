@@ -73,13 +73,25 @@ export default function useSigns() {
   const pb = new PocketBase(config.apiBaseUrl)
 
   const signs = ref<TSign.TRecord[]>([])
-  const loadSigns = async () => {
-    signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
+  const totalSigns = ref(0)
+  const loadSigns = async (query?: string, sort = '-updated') => {
+    const options = {
       fields:
         'id, name, video, slug, definition, level, primary_language, learning_source, learning_source_detail, Roles, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*, expand.Roles.*',
       expand: 'Category,ConfigurationRight,ConfigurationLeft,Roles',
-      sort: '-updated',
-    })
+      sort,
+    }
+    if (query?.trim()) {
+      const q = query.trim().replace(/"/g, '\\"')
+      signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
+        ...options,
+        filter: `name ~ "${q}" || Category.tag ~ "${q}"`,
+      })
+    } else {
+      const result = await pb.collection<TSign.TRecord>('sign').getList(1, 100, options)
+      signs.value = result.items
+      totalSigns.value = result.totalItems
+    }
   }
 
   const loadSign = async (id: string) => {
@@ -110,6 +122,7 @@ export default function useSigns() {
 
   return {
     signs,
+    totalSigns,
     loadSigns,
     loadSign,
     addSign,
