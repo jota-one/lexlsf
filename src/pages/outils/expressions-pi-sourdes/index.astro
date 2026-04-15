@@ -1,0 +1,35 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PocketBase from 'pocketbase'
+import config from '../../../config'
+
+export const prerender = false
+
+const pb = new PocketBase(config.apiBaseUrl)
+const expressions = await pb.collection('pi_deaf_expression').getFullList({
+  expand: 'Sign',
+  sort: 'name',
+})
+---
+
+<PageLayout title="Expressions pi-sourdes">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-2">Expressions pi-sourdes</h1>
+    <p class="text-base-content/60 mb-8">Expressions en LSF et leurs stratégies de transcription en français.</p>
+
+    <div class="flex flex-col gap-3">
+      {(expressions as any[]).map((expr) => (
+        <a
+          href={`/outils/expressions-pi-sourdes/${expr.slug}`}
+          class="card card-border hover:shadow-md transition-shadow p-5"
+        >
+          <p class="font-medium text-lg">{expr.name || expr.expand?.Sign?.name}</p>
+        </a>
+      ))}
+    </div>
+
+    {expressions.length === 0 && (
+      <p class="text-center text-base-content/50 py-16">Aucune expression disponible.</p>
+    )}
+  </div>
+</PageLayout>

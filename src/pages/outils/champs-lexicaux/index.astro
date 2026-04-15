@@ -1,0 +1,37 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PocketBase from 'pocketbase'
+import config from '../../../config'
+
+export const prerender = false
+
+const pb = new PocketBase(config.apiBaseUrl)
+const fields = await pb.collection('lexical_field').getFullList({
+  sort: 'name',
+})
+---
+
+<PageLayout title="Champs lexicaux">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-2">Champs lexicaux</h1>
+    <p class="text-base-content/60 mb-8">Regroupements thématiques de termes en langue française.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {fields.map((field: any) => (
+        <a
+          href={`/outils/champs-lexicaux/${field.slug}`}
+          class="card card-border hover:shadow-md transition-shadow p-5"
+        >
+          <h2 class="text-xl font-semibold mb-2">{field.name}</h2>
+          {field.introduction && (
+            <p class="text-sm text-base-content/70 line-clamp-3">{field.introduction}</p>
+          )}
+        </a>
+      ))}
+    </div>
+
+    {fields.length === 0 && (
+      <p class="text-center text-base-content/50 py-16">Aucun champ lexical disponible.</p>
+    )}
+  </div>
+</PageLayout>

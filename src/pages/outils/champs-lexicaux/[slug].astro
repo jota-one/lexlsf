@@ -1,0 +1,50 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PocketBase from 'pocketbase'
+import config from '../../../config'
+
+export const prerender = false
+
+const { slug } = Astro.params
+
+const pb = new PocketBase(config.apiBaseUrl)
+const field = await pb.collection('lexical_field').getFirstListItem(`slug="${slug}"`)
+
+const terms = await pb.collection('lexical_term').getFullList({
+  filter: `LexicalField = "${field.id}"`,
+  expand: 'Sign',
+  sort: 'term',
+})
+---
+
+<PageLayout title={field.name}>
+  <div class="container mx-auto px-4 py-8">
+    <a href="/outils/champs-lexicaux" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
+      ← Champs lexicaux
+    </a>
+    <h1 class="text-3xl font-bold mb-2">{field.name}</h1>
+    {field.introduction && (
+      <p class="text-base-content/70 mb-8 max-w-2xl">{field.introduction}</p>
+    )}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {(terms as any[]).map((term) => (
+        <div class="card card-border p-4">
+          <span class="font-medium">{term.term}</span>
+          {term.expand?.Sign && (
+            <a
+              href={`/signs/${term.expand.Sign.slug}`}
+              class="text-sm text-primary hover:underline mt-1 block"
+            >
+              → Voir le signe : {term.expand.Sign.name}
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+
+    {terms.length === 0 && (
+      <p class="text-center text-base-content/50 py-16">Aucun terme dans ce champ lexical.</p>
+    )}
+  </div>
+</PageLayout>
