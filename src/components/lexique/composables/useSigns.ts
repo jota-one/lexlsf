@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-import config from '../../../config'
-import PocketBase from 'pocketbase'
+import useAuth from '@admin/composables/useAuth'
 import type { TSign } from '../../../types'
 
 const translateNumericLevel = (level: number) => {
@@ -37,7 +36,6 @@ const verificationStatusOptions = [
 
 const setFormData = (payload: TSign.TForm) => {
   const formData = new FormData()
-  // set regular text field
   if (payload.video && payload.video instanceof File) {
     formData.append('video', payload.video)
   }
@@ -67,7 +65,7 @@ const setFormData = (payload: TSign.TForm) => {
 }
 
 export default function useSigns() {
-  const pb = new PocketBase(config.apiBaseUrl)
+  const { pb } = useAuth()
 
   const signs = ref<TSign.TRecord[]>([])
   const loadSigns = async (category: string) => {
@@ -89,15 +87,11 @@ export default function useSigns() {
 
   const addSign = async (payload: any) => {
     const formData = setFormData(payload)
-
-    // upload and create new record
     return pb.collection('sign').create(formData)
   }
 
   const updateSign = async (id: string, payload: any) => {
     const formData = setFormData(payload)
-
-    // upload and update record
     return pb.collection('sign').update(id, formData)
   }
 

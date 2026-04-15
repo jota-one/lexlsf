@@ -24,29 +24,35 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
+import { useRouter } from 'vue-router'
 import type { TSign, TCategory } from '../../types'
-import useSigns from '@components/categories/composables/useSigns';
+import useSigns from '@components/lexique/composables/useSigns'
 
 const props = defineProps<{ subcategory: string; categories: TCategory.TRecord[] }>()
-const { loadSigns, signs } = useSigns();
+const { loadSigns, signs } = useSigns()
+const router = useRouter()
 
 function goToSign(slug: string) {
-    window.location.href = `/signs/${slug}`
+  router.push({ path: `/sign/${slug}` })
 }
 
-watch(() => props.subcategory, (value) => {
-    loadSigns(value);
-}, { immediate: true });
+watch(
+  () => props.subcategory,
+  value => {
+    loadSigns(value)
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.4s;
+  transition: opacity 0.4s;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 </style>
