@@ -15,7 +15,7 @@
           <span class="font-medium">{{ term.term }}</span>
           <a
             v-if="term.expand?.Sign"
-            :href="`/signs/${term.expand.Sign.slug}`"
+            :href="`/lexique/sign/${term.expand.Sign.slug}`"
             class="text-sm text-primary hover:underline mt-1 block"
           >
             → Voir le signe : {{ term.expand.Sign.name }}

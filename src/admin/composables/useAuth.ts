@@ -89,6 +89,7 @@ export default function useAuth() {
     isAuthenticated,
     isAdmin,
     isStudent,
+    roles,
     isImpersonating,
     login,
     logout,

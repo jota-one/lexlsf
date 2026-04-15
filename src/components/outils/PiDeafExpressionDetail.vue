@@ -11,7 +11,7 @@
 
       <section v-if="expr.expand?.Sign" class="mb-8">
         <h2 class="text-lg font-semibold mb-3">
-          Signe : <a :href="`/signs/${expr.expand.Sign.slug}`" class="text-primary hover:underline">{{ expr.expand.Sign.name }}</a>
+          Signe : <a :href="`/lexique/sign/${expr.expand.Sign.slug}`" class="text-primary hover:underline">{{ expr.expand.Sign.name }}</a>
         </h2>
         <video
           v-if="videoUrl"

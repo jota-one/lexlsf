@@ -23,7 +23,7 @@
           <a
             v-for="sign in expr.expand.Signs"
             :key="sign.id"
-            :href="`/signs/${sign.slug}`"
+            :href="`/lexique/sign/${sign.slug}`"
             class="badge badge-primary badge-lg"
           >
             {{ sign.name }}

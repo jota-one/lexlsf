@@ -104,9 +104,9 @@ const onSelect = (event: any) => {
     const selected = event.value;
     if (!selected?.slug) return;
     const routes: Record<string, string> = {
-        sign: '/signs',
-        organism: '/persons',
-        person: '/persons',
+        sign: '/lexique/sign',
+        organism: '/culture/person',
+        person: '/culture/person',
         lexical_field: '/outils/champs-lexicaux',
         french_expression: '/outils/expressions-francaises',
         pi_deaf_expression: '/outils/expressions-pi-sourdes',
