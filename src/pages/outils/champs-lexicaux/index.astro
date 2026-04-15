@@ -1,0 +1,10 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import LexicalFieldsList from '@components/outils/LexicalFieldsList.vue'
+
+export const prerender = false
+---
+
+<PageLayout title="Champs lexicaux">
+  <LexicalFieldsList client:only />
+</PageLayout>

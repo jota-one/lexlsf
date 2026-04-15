@@ -1,0 +1,10 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PiDeafExpressionsList from '@components/outils/PiDeafExpressionsList.vue'
+
+export const prerender = false
+---
+
+<PageLayout title="Expressions pi-sourdes">
+  <PiDeafExpressionsList client:only />
+</PageLayout>

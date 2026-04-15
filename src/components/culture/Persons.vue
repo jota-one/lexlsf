@@ -34,14 +34,16 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
+import { useRouter } from 'vue-router'
 import type { TCategory, TPerson } from '../../types'
-import usePersons from '@components/culture/composables/usePersons';
+import usePersons from '@components/culture/composables/usePersons'
 
 const props = defineProps<{ subcategory: string; categories: TCategory.TRecord[] }>()
-const { loadPersons, persons, getIllustrationUrl } = usePersons();
+const { loadPersons, persons, getIllustrationUrl } = usePersons()
+const router = useRouter()
 
 const goToPerson = (slug: string) => {
-    window.location.href = `/persons/${slug}`
+  router.push({ path: `/person/${slug}` })
 }
 
 const displayName = (person: TPerson.TRecord) => {

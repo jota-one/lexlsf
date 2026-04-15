@@ -44,6 +44,26 @@
             Quiz
           </RouterLink>
         </li>
+        <li class="menu-title mt-2 text-xs uppercase opacity-50">Outils</li>
+        <li>
+          <RouterLink to="/lexical-fields" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa6-solid-book-open text-xl"></span>
+            Champs lexicaux
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/french-expressions" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa6-solid-comment-dots text-xl"></span>
+            Expr. françaises
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/pi-deaf-expressions" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa6-solid-hands text-xl"></span>
+            Expr. pi-sourdes
+          </RouterLink>
+        </li>
+        <hr class="my-2 opacity-20" />
         <li>
           <RouterLink to="/users" class="flex items-center gap-3" active-class="menu-active">
             <span class="i-fa-solid-users text-xl"></span>

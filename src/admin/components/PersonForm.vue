@@ -232,17 +232,10 @@
 
         <!-- Signe associé -->
         <div class="flex items-center gap-4">
-          <label for="sign" class="font-semibold w-60">Signe associé</label>
-          <Select
-            v-model="form.Sign"
-            :options="signOptions"
-            id="sign"
-            class="w-full"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Sélectionner un signe"
-            show-clear
-          />
+          <label class="font-semibold w-60">Signe associé</label>
+          <div class="w-full">
+            <SignPicker mode="single" v-model="form.Sign" />
+          </div>
         </div>
       </TabPanel>
 
@@ -512,7 +505,6 @@ import { ref, onMounted, computed, watch } from 'vue';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
 import DatePicker from 'primevue/datepicker';
 import Button from 'primevue/button';
 
@@ -524,12 +516,12 @@ import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { VMarkdownEditor } from 'vue3-markdown';
-import useSigns from '../composables/useSigns';
 import useRoles from '../composables/useRoles';
 import useVideos from '../composables/useVideos';
 import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
+import SignPicker from './SignPicker.vue';
 import { createSlug } from '@admin/helpers/strings';
 
 // Internal type for timeline entries with mandatory ID for sorting
@@ -555,7 +547,6 @@ const birthdateModel = ref<Date | null>(null);
 // Calendar model for deathdate (Date)
 const deathdateModel = ref<Date | null>(null);
 
-const { signs, loadSigns } = useSigns();
 const { roles, loadRoles } = useRoles();
 const rolesLoading = ref(false);
 const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '');
@@ -588,9 +579,6 @@ const roleBadgeClass = (role: { id: string; slug: string }) => {
 };
 
 const { addVideo, updateVideo, findVideoByUrl } = useVideos();
-const signOptions = computed(() =>
-    signs.value.map((s: any) => ({ label: s.name, value: s.id }))
-);
 
 // Utiliser le composable useSortableList pour les vidéos
 const {
@@ -640,7 +628,6 @@ watch(() => form.value.timeline, (newVal) => {
 }, { immediate: true });
 
 onMounted(() => {
-  loadSigns();
   rolesLoading.value = true;
   loadRoles().finally(() => {
     rolesLoading.value = false;

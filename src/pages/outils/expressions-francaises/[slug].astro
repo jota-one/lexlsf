@@ -1,0 +1,12 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import FrenchExpressionDetail from '@components/outils/FrenchExpressionDetail.vue'
+
+export const prerender = false
+
+const { slug } = Astro.params
+---
+
+<PageLayout>
+  <FrenchExpressionDetail slug={slug!} client:only />
+</PageLayout>

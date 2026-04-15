@@ -1,0 +1,12 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import LexicalFieldDetail from '@components/outils/LexicalFieldDetail.vue'
+
+export const prerender = false
+
+const { slug } = Astro.params
+---
+
+<PageLayout>
+  <LexicalFieldDetail slug={slug!} client:only />
+</PageLayout>

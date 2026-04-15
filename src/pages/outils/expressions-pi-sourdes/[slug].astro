@@ -1,0 +1,12 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import PiDeafExpressionDetail from '@components/outils/PiDeafExpressionDetail.vue'
+
+export const prerender = false
+
+const { slug } = Astro.params
+---
+
+<PageLayout>
+  <PiDeafExpressionDetail slug={slug!} client:only />
+</PageLayout>

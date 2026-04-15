@@ -7,6 +7,9 @@ import Persons from '../views/Persons.vue'
 import Users from '../views/Users.vue'
 import Quizzes from '../views/Quizzes.vue'
 import QuizEdit from '../views/QuizEdit.vue'
+import LexicalFields from '../views/LexicalFields.vue'
+import FrenchExpressions from '../views/FrenchExpressions.vue'
+import PiDeafExpressions from '../views/PiDeafExpressions.vue'
 import useAuth from '../composables/useAuth'
 
 const routes = [
@@ -18,6 +21,9 @@ const routes = [
   { path: '/users', component: Users },
   { path: '/quizzes', component: Quizzes },
   { path: '/quizzes/:id/edit', component: QuizEdit },
+  { path: '/lexical-fields', component: LexicalFields },
+  { path: '/french-expressions', component: FrenchExpressions },
+  { path: '/pi-deaf-expressions', component: PiDeafExpressions },
 ]
 
 const baseUrl = (import.meta as any).env?.BASE_URL || '/'

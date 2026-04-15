@@ -1,0 +1,10 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import FrenchExpressionsList from '@components/outils/FrenchExpressionsList.vue'
+
+export const prerender = false
+---
+
+<PageLayout title="Expressions françaises">
+  <FrenchExpressionsList client:only />
+</PageLayout>
