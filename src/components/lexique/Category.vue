@@ -23,8 +23,8 @@
         >
           <div class="card-body items-center justify-center p-4 gap-2">
             <h2 class="card-title text-lg md:text-xl text-center">{{ subcat.tag }}</h2>
-            <span class="badge badge-sm bg-base-content/10 border-0">
-              {{ signLabel(props.categoryCounts[subcat.id] ?? 0) }}
+            <span v-if="categoryCounts" class="badge badge-sm bg-base-content/10 border-0">
+              {{ signLabel(props.categoryCounts?.[subcat.id] ?? 0) }}
             </span>
           </div>
         </div>
@@ -44,7 +44,7 @@ import { useRouter, useRoute } from 'vue-router'
 const props = defineProps<{
   category: string
   categories: TCategory.TRecord[]
-  categoryCounts: Record<string, number>
+  categoryCounts?: Record<string, number>
 }>()
 const router = useRouter()
 const route = useRoute()
@@ -61,11 +61,12 @@ const subcategoryRecord = computed(() =>
 
 const subCategories = computed(() => parent.value?.expand?.category_via_Parent ?? [])
 
-const visibleSubCategories = computed(() =>
-  subCategories.value.filter(
-    (subCat: TCategory.TRecord) => (props.categoryCounts[subCat.id] ?? 0) > 0,
-  ),
-)
+const visibleSubCategories = computed(() => {
+  if (!props.categoryCounts) return subCategories.value
+  return subCategories.value.filter(
+    (subCat: TCategory.TRecord) => (props.categoryCounts![subCat.id] ?? 0) > 0,
+  )
+})
 
 function toggleSubcategory(slug: string) {
   activeSubcategory.value = activeSubcategory.value === slug ? '' : slug

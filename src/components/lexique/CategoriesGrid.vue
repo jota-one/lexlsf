@@ -22,7 +22,7 @@
       >
         <div class="card-body items-center justify-center p-4 gap-2">
           <h2 class="card-title text-xl md:text-2xl text-center">{{ cat.tag }}</h2>
-          <span class="badge badge-sm bg-base-content/10 border-0">
+          <span v-if="categoryCounts" class="badge badge-sm bg-base-content/10 border-0">
             {{ signLabel(parentCount(cat)) }}
           </span>
         </div>
@@ -41,7 +41,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<{
   categories: TCategory.TRecord[]
-  categoryCounts: Record<string, number>
+  categoryCounts?: Record<string, number>
 }>()
 const router = useRouter()
 const route = useRoute()
@@ -54,13 +54,14 @@ const signLabel = (count: number) => `${count} ${count === 1 ? 'signe' : 'signes
 
 const parentCount = (cat: TCategory.TRecord): number =>
   (cat.expand?.category_via_Parent ?? []).reduce(
-    (sum: number, subCat: TCategory.TRecord) => sum + (props.categoryCounts[subCat.id] ?? 0),
+    (sum: number, subCat: TCategory.TRecord) => sum + (props.categoryCounts?.[subCat.id] ?? 0),
     0,
   )
 
-const visibleParentCategories = computed(() =>
-  parentCategories.value.filter(cat => parentCount(cat) > 0),
-)
+const visibleParentCategories = computed(() => {
+  if (!props.categoryCounts) return parentCategories.value
+  return parentCategories.value.filter(cat => parentCount(cat) > 0)
+})
 
 function toggleParent(slug: string) {
   activeParent.value = activeParent.value === slug ? '' : slug
