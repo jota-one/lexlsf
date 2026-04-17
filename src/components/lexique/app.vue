@@ -8,7 +8,7 @@ import router from './router'
 import useAuth from '@admin/composables/useAuth'
 import type { TCategory } from '../../types'
 
-const { pb, isAuthenticated, isAdmin, roles } = useAuth()
+const { pb, isAuthenticated, isAdmin, roles, refreshAuth } = useAuth()
 const categories = ref<TCategory.TRecord[]>([])
 const categoryCounts = ref<Record<string, number>>({})
 
@@ -25,6 +25,9 @@ onMounted(async () => {
     },
   })
   app.use(router)
+
+  // Ensure roles are fully loaded before branching on isAdmin.
+  await refreshAuth()
 
   const categoriesPromise = pb.collection<TCategory.TRecord>('category').getFullList({
     fields: 'id, tag, slug, expand.category_via_Parent.*',
