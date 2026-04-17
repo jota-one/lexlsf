@@ -1,5 +1,5 @@
 <template>
-  <router-view :categories="categories"></router-view>
+  <router-view :categories="categories" :category-counts="categoryCounts" entity-label="personne"></router-view>
 </template>
 
 <script setup lang="ts">
@@ -8,8 +8,9 @@ import router from './router'
 import useAuth from '@admin/composables/useAuth'
 import type { TCategory } from '../../types'
 
-const { pb, isAuthenticated } = useAuth()
+const { pb, isAuthenticated, isAdmin, roles } = useAuth()
 const categories = ref<TCategory.TRecord[]>([])
+const categoryCounts = ref<Record<string, number>>({})
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
@@ -25,12 +26,35 @@ onMounted(async () => {
   })
   app.use(router)
 
-  const raw = await pb.collection<TCategory.TRecord>('category').getFullList({
+  const categoriesPromise = pb.collection<TCategory.TRecord>('category').getFullList({
     fields: 'id, tag, slug, expand.category_via_Parent.*',
     sort: 'tag',
     filter: 'Parent = null',
     expand: 'category_via_Parent',
   })
+
+  const countsPromise = isAdmin.value
+    ? pb.collection('person').getFullList({ fields: 'Category', requestKey: null })
+    : pb.collection('person_count_per_category').getFullList({ requestKey: null })
+
+  const [raw, counts] = await Promise.all([categoriesPromise, countsPromise])
+
+  const countsMap: Record<string, number> = {}
+  if (isAdmin.value) {
+    ;(counts as any[]).forEach(person => {
+      ;(person.Category ?? []).forEach((catId: string) => {
+        countsMap[catId] = (countsMap[catId] ?? 0) + 1
+      })
+    })
+  } else {
+    const userRoleIds = roles.value.map((r: any) => r.id)
+    ;(counts as any[]).forEach(row => {
+      if (userRoleIds.includes(row.role_id)) {
+        countsMap[row.category_id] = (countsMap[row.category_id] ?? 0) + row.person_count
+      }
+    })
+  }
+  categoryCounts.value = countsMap
 
   categories.value = raw
     .map(parentCat => {
