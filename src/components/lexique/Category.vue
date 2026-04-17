@@ -45,13 +45,18 @@ const props = defineProps<{
   category: string
   categories: TCategory.TRecord[]
   categoryCounts?: Record<string, number>
+  entityLabel?: string
 }>()
 const router = useRouter()
 const route = useRoute()
 
 const activeSubcategory = ref()
 
-const signLabel = (count: number) => `${count} ${count === 1 ? 'signe' : 'signes'}`
+const signLabel = (count: number) => {
+  const label = props.entityLabel ?? 'signe'
+  const plural = props.entityLabel ? `${label}s` : 'signes'
+  return `${count} ${count === 1 ? label : plural}`
+}
 
 const parent = computed(() => props.categories.find(cat => cat.slug === props.category))
 

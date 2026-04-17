@@ -30,7 +30,7 @@
     </div>
 
     <!-- Grille des sous-catégories -->
-    <router-view :categories="categories" :category-counts="categoryCounts"></router-view>
+    <router-view :categories="categories" :category-counts="categoryCounts" :entity-label="entityLabel"></router-view>
   </div>
 </template>
 
@@ -42,6 +42,7 @@ import { useRoute, useRouter } from 'vue-router'
 const props = defineProps<{
   categories: TCategory.TRecord[]
   categoryCounts?: Record<string, number>
+  entityLabel?: string
 }>()
 const router = useRouter()
 const route = useRoute()
@@ -50,7 +51,11 @@ const activeParent = ref<string>(route.params.category as string)
 const parentCategories = computed(() => props.categories.filter(cat => !cat.Parent))
 const parent = computed(() => props.categories.find(cat => cat.slug === activeParent.value))
 
-const signLabel = (count: number) => `${count} ${count === 1 ? 'signe' : 'signes'}`
+const signLabel = (count: number) => {
+  const label = props.entityLabel ?? 'signe'
+  const plural = props.entityLabel ? `${label}s` : 'signes'
+  return `${count} ${count === 1 ? label : plural}`
+}
 
 const parentCount = (cat: TCategory.TRecord): number =>
   (cat.expand?.category_via_Parent ?? []).reduce(
