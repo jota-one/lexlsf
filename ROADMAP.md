@@ -12,6 +12,14 @@ Liste des petites améliorations et refactorings potentiels.
 - Culture: ajouter un mode "liste" en plus du mode (implicite) galerie actuel. Le mode liste va afficher une liste des personnes, bcp plus compacte, sans photo.
 - Quizz création: Mettre des cases à cocher et un bouton "save" au lieu du bouton "+" et du "ajouter tous"
 - Quizz exécution: Ajouter un champ "à réviser" dans un signe ou une personne (cochable par utilisateur et par quizz)
+- Expression pi-sourde: créer un signe, mais le lier à une catégorie spéciale qui l'exclut du lexique et qui le met que dans les expressions pi-sourde. Pourquoi? Parce qu'on ne peut pas traduire en français. D'où l'existence de ce menu spécifique. Cela implique d'avoir un nouveau groupe de catégories pour les expressions pi-sourde.
+
+- Champ lexicaux: Dans les termes de champ lexical, il faut qu'on puisse définir si le terme est une personne. Si c'est une personne, il faut un champ supplémentaire pour une description (markdown) et 2 dates (début activité, fin activité). Il faut aussi ajouter la possibilité de lier la personne à la personne correspondante dans Culture (si elle existe).
+- Champ lexicaux: Dans la partie publique, afficher les termes sur 2 colonnes et dans la 3ème colonne, on affiche les personnes, triées par dates d'activités (tjs actives en-haut).
+- Champ lexicaux: En plus du champ description, ajouter un champ stratégie et l'afficher écrit en bleu (code couleur LSF) dans la partie publique.
+- Champ lexicaux: Gérer des catégories spécifiques pour les champs lexicaux (nouveau type de catégories)
+- Masquer le menu outil complètement aux non-admin dans la partie publique du site
+
 
 ## Nouvelles fonctionnalités
 
@@ -33,34 +41,29 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
-### Migration SPA Vue — Lexique et Culture
+### Espace timeline culture générale
 
-Les pages publiques actuelles (`/categories/`, `/signs/`, `/culture/`, `/persons/`) sont des pages Astro SSR qui font des requêtes PocketBase **non authentifiées**. Avec un auth JWT stocké en `sessionStorage` (pas de session serveur), il est impossible d'appliquer un role-gating cohérent côté SSR.
+On veut un nouveau menu qui va synergiser avec tous les autres. Le but est de permettre à l'auteur du site de rentrer des informations de culture générale et de les classifier selon différents critères, notamment des dates de début et de fin si c'est un événement qui dure (2ème guerre mondiale) ou une période particulière (courant artistique) ou simplement une date d'occurrence si c'est un événement unique.
 
-Migrer en **2 SPAs Vue** (`client:only`), sur le modèle de l'admin et des pages Outils :
+On veut aussi pouvoir lier un item "culture générale" à un ou plusieurs champs lexicaux.
 
-- **SPA Lexique** : drill-down catégorie → liste de signes → détail d'un signe (`/categories/`, `/signs/`)
-- **SPA Culture** : galerie/liste de personnes et organismes → détail (`/culture/`, `/persons/`)
+On veut pouvoir y associer des signes et éventuellement des personnes/organismes de la section "culture" (qui est en fait la "culture sourde").
 
-Les deux SPAs utilisent le token JWT de l'utilisateur connecté, ce qui permet d'uniformiser le contrôle d'accès par rôles sur l'ensemble du site.
+Outre les informations de dates d'un item "culture générale", on va y trouver:
+- un nom/titre
+- une description markdown
+- des images, qu'on voudra pouvoir intégrer dans le markdown, mais qu'on uploadera séparément pour ne pas trop compliquer. Intégrées ou pas dans la descriptions, elles seront affichées en-dessous sous forme de vignettes avec la possibilité de les ouvrir en grand.
 
-Impact : retirer `@request.auth.id = ''` des `listRule`/`viewRule` des collections `sign`, `person`, `category` une fois la migration effectuée.
+Cette section "culture générale" devra s'afficher sous la forme d'une chronologie filtrable selon différent critères, à commencer les dates de début et de fin. On voudra aussi pouvoir afficher uniquement les événements à date fixe (verticalement, un peu comme la timeline d'une personne dans la rubrique "culture") ou uniquement les périodes (horizontalement, imaginer une ligne du temps avec des rectangles qui illustrent une durée et le nom de la période en-dessus). Au clic sur un élément, sa fiche détaillée apparaît sur la même page (en-dessous si on est en affichage horizontal, à droite si on est en affichage vertical).
 
-### Nouvelles sections "Outils": Champs lexicaux - Expressions françaises - Expressions pi-sourde
+On va vouloir également avoir un système d'import/export, similaire à celui qu'on a pour les signes.
 
-Ajouter un menu principal au site nommé "Outils". Dans ce menu, on pourra trouver plusieurs outils dont les 3 cités en titre. Il s'agit essentiellement d'entités qui permettent de regrouper des signes dans un certain thème.
-
-Un champ lexical se compose d'un nom (ex. "Politique"), d'un petit texte d'introduction et d'une liste de termes en français. Si un terme possède déjà un signe dans le lexique, il faudra pouvoir le lui associer.
-
-Une expression française se compose de l'expression en elle-même (ex: "Il l'a vraiment fait par dessus la jambe"), d'un champ texte "stratégies" dans lequel on peut écrire les différentes stratégies possibles pour signer cette expression et des liens vers les signes utiles.
-
-Une expression pi sourde se compose forcément d'un lien vers le signe ad-hoc (et donc sa vidéo), d'un champ texte "stratégies" dans lequel on peut écrire les différentes stratégies possibles pour retranscrire cette expression en français.
-
-Ces 3 nouvelles entités doivent apparaître dans les résultats de recherche du site.
+Les items de "culture générale" seront aussi "recherchables" via la recherche globale du site.
 
 
 ## Historique (fait)
 
+- [2026-04-17] Culture — affichage du nombre de personnes par catégorie avec filtrage selon les rôles (sur le modèle des badges "N signe(s)" du lexique).
 - [2026-04-15] Admin signes — chargement limité aux 100 derniers signes modifiés (au lieu d'un `getFullList`) ; champ de recherche debounced sur nom + catégorie (retourne tous les résultats) ; tri des colonnes délégué au backend (requête PocketBase à chaque changement de tri).
 - [2026-04-15] Migration SPA Vue Lexique & Culture — `/categories/` + `/signs/` fusionnés en `/lexique/` (SPA Vue `client:only`), `/culture/` + `/persons/` fusionnés en `/culture/` avec route `/culture/person/:slug` ; toutes les requêtes PocketBase passent désormais par le token JWT de l'utilisateur connecté (role-gating uniforme). Règles de visibilité `sign`/`person` durcies côté PocketBase, vue `sign_count_per_category` ajoutée. Catégories vides masquées dans le lexique ; badges "N signe(s)" ajoutés sur les cartes catégorie/sous-catégorie.
 - [2026-04-14] Section "Outils" — nouveau menu principal avec 3 entités : Champs lexicaux (nom + intro + liste de termes liables aux signes), Expressions françaises (expression + stratégies + signes utiles), Expressions pi-sourdes (signe ad-hoc + vidéo + stratégies) ; CRUD admin complet, pages publiques SSR, intégration dans la recherche globale. Correctif simultané : le picker de signe dans l'admin passe d'un dropdown chargé en masse à une recherche à la frappe (`SignPicker.vue`).
