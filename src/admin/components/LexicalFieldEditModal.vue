@@ -29,7 +29,7 @@ const { loadLexicalField, updateLexicalField } = useLexicalFields()
 const { loadTermsByField, addTerm, updateTerm, deleteTerm } = useLexicalTerms()
 const saving = ref(false)
 
-const form = ref<TLexicalField.TForm>({ name: '', introduction: '', Roles: [] })
+const form = ref<TLexicalField.TForm>({ name: '', introduction: '', Roles: [], Categories: [] })
 const terms = ref<LocalTerm[]>([])
 const originalTermIds = ref<string[]>([])
 
@@ -42,9 +42,20 @@ watch(visible, async (isVisible) => {
     slug: field.slug,
     introduction: field.introduction || '',
     Roles: field.Roles || [],
+    Categories: field.Categories || [],
   }
   const loaded = await loadTermsByField(props.fieldId)
-  terms.value = loaded.map(t => ({ id: t.id, term: t.term, Sign: t.Sign || '' }))
+  terms.value = loaded.map(t => ({
+    id: t.id,
+    term: t.term,
+    Sign: t.Sign || '',
+    is_person: t.is_person || false,
+    description: t.description || '',
+    strategy: t.strategy || '',
+    start_date: t.start_date || '',
+    end_date: t.end_date || '',
+    Person: t.Person || '',
+  }))
   originalTermIds.value = loaded.map(t => t.id)
 }, { immediate: true })
 
@@ -63,10 +74,21 @@ const save = async () => {
     // Create or update
     for (const t of terms.value) {
       if (!t.term.trim()) continue
+      const payload = {
+        term: t.term,
+        LexicalField: props.fieldId,
+        Sign: t.Sign || undefined,
+        is_person: t.is_person,
+        description: t.description,
+        strategy: t.strategy,
+        start_date: t.start_date,
+        end_date: t.end_date,
+        Person: t.Person || undefined,
+      }
       if (t.id) {
-        await updateTerm(t.id, { term: t.term, LexicalField: props.fieldId, Sign: t.Sign || undefined })
+        await updateTerm(t.id, payload)
       } else {
-        await addTerm({ term: t.term, LexicalField: props.fieldId, Sign: t.Sign || undefined })
+        await addTerm(payload)
       }
     }
 

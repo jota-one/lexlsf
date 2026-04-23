@@ -14,10 +14,6 @@ Liste des petites améliorations et refactorings potentiels.
 - Quizz exécution: Ajouter un champ "à réviser" dans un signe ou une personne (cochable par utilisateur et par quizz)
 - Expression pi-sourde: créer un signe, mais le lier à une catégorie spéciale qui l'exclut du lexique et qui le met que dans les expressions pi-sourde. Pourquoi? Parce qu'on ne peut pas traduire en français. D'où l'existence de ce menu spécifique. Cela implique d'avoir un nouveau groupe de catégories pour les expressions pi-sourde.
 
-- Champ lexicaux: Dans les termes de champ lexical, il faut qu'on puisse définir si le terme est une personne. Si c'est une personne, il faut un champ supplémentaire pour une description (markdown) et 2 dates (début activité, fin activité). Il faut aussi ajouter la possibilité de lier la personne à la personne correspondante dans Culture (si elle existe).
-- Champ lexicaux: Dans la partie publique, afficher les termes sur 2 colonnes et dans la 3ème colonne, on affiche les personnes, triées par dates d'activités (tjs actives en-haut).
-- Champ lexicaux: En plus du champ description, ajouter un champ stratégie et l'afficher écrit en bleu (code couleur LSF) dans la partie publique.
-- Champ lexicaux: Gérer des catégories spécifiques pour les champs lexicaux (nouveau type de catégories)
 - Masquer le menu outil complètement aux non-admin dans la partie publique du site
 
 
@@ -63,6 +59,7 @@ Les items de "culture générale" seront aussi "recherchables" via la recherche 
 
 ## Historique (fait)
 
+- [2026-04-23] Champs lexicaux — termes enrichis (flag personne, description markdown, stratégie en bleu, dates d'activité, lien Culture) ; layout public 3 colonnes (termes sur 2 col., personnes triées par activité dans la 3e) ; catégories dédiées `lexical_field` (nouvelle entité dans admin catégories + onglet Catégories dans le formulaire champ lexical).
 - [2026-04-17] Culture — affichage du nombre de personnes par catégorie avec filtrage selon les rôles (sur le modèle des badges "N signe(s)" du lexique).
 - [2026-04-15] Admin signes — chargement limité aux 100 derniers signes modifiés (au lieu d'un `getFullList`) ; champ de recherche debounced sur nom + catégorie (retourne tous les résultats) ; tri des colonnes délégué au backend (requête PocketBase à chaque changement de tri).
 - [2026-04-15] Migration SPA Vue Lexique & Culture — `/categories/` + `/signs/` fusionnés en `/lexique/` (SPA Vue `client:only`), `/culture/` + `/persons/` fusionnés en `/culture/` avec route `/culture/person/:slug` ; toutes les requêtes PocketBase passent désormais par le token JWT de l'utilisateur connecté (role-gating uniforme). Règles de visibilité `sign`/`person` durcies côté PocketBase, vue `sign_count_per_category` ajoutée. Catégories vides masquées dans le lexique ; badges "N signe(s)" ajoutés sur les cartes catégorie/sous-catégorie.
