@@ -15,6 +15,12 @@ const setFormData = (payload: TLexicalField.TForm) => {
   if ((payload.Roles || []).length === 0) {
     formData.append('Roles', '')
   }
+  ;(payload.Categories || []).forEach(catId => {
+    formData.append('Categories', catId)
+  })
+  if ((payload.Categories || []).length === 0) {
+    formData.append('Categories', '')
+  }
   return formData
 }
 
@@ -40,7 +46,7 @@ export default function useLexicalFields() {
 
   const loadLexicalField = async (id: string) => {
     return pb.collection<TLexicalField.TRecord>('lexical_field').getOne(id, {
-      expand: 'Roles',
+      expand: 'Roles,Categories',
     })
   }
 

@@ -27,7 +27,7 @@ const { addLexicalField } = useLexicalFields()
 const { addTerm } = useLexicalTerms()
 const saving = ref(false)
 
-const form = ref<TLexicalField.TForm>({ name: '', introduction: '', Roles: [] })
+const form = ref<TLexicalField.TForm>({ name: '', introduction: '', Roles: [], Categories: [] })
 const terms = ref<LocalTerm[]>([])
 
 const save = async () => {
@@ -36,12 +36,22 @@ const save = async () => {
     const field = await addLexicalField(form.value) as any
     for (const t of terms.value) {
       if (t.term.trim()) {
-        await addTerm({ term: t.term, LexicalField: field.id, Sign: t.Sign || undefined })
+        await addTerm({
+          term: t.term,
+          LexicalField: field.id,
+          Sign: t.Sign || undefined,
+          is_person: t.is_person,
+          description: t.description,
+          strategy: t.strategy,
+          start_date: t.start_date,
+          end_date: t.end_date,
+          Person: t.Person || undefined,
+        })
       }
     }
     emit('saved')
     visible.value = false
-    form.value = { name: '', introduction: '', Roles: [] }
+    form.value = { name: '', introduction: '', Roles: [], Categories: [] }
     terms.value = []
   } finally {
     saving.value = false
