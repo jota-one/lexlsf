@@ -11,6 +11,7 @@ import LexicalFields from '../views/LexicalFields.vue'
 import FrenchExpressions from '../views/FrenchExpressions.vue'
 import PiDeafExpressions from '../views/PiDeafExpressions.vue'
 import GeneralCulture from '../views/GeneralCulture.vue'
+import Roadmap from '../views/Roadmap.vue'
 import useAuth from '../composables/useAuth'
 
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
   { path: '/french-expressions', component: FrenchExpressions },
   { path: '/pi-deaf-expressions', component: PiDeafExpressions },
   { path: '/general-culture', component: GeneralCulture },
+  { path: '/roadmap', component: Roadmap },
 ]
 
 const baseUrl = (import.meta as any).env?.BASE_URL || '/'
