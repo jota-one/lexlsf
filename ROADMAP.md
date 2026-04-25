@@ -59,6 +59,7 @@ Les items de "culture générale" seront aussi "recherchables" via la recherche 
 
 ## Historique (fait)
 
+- [2026-04-24] Culture générale — timeline publique filtrable (événements ponctuels + périodes) avec fiche détail ; CRUD admin complet (dates partielles, images uploadables avec copie markdown, associations champs lexicaux / signes / personnes, visibilité par rôles) ; collection PocketBase + migrations.
 - [2026-04-23] Champs lexicaux — termes enrichis (flag personne, description markdown, stratégie en bleu, dates d'activité, lien Culture) ; layout public 3 colonnes (termes sur 2 col., personnes triées par activité dans la 3e) ; catégories dédiées `lexical_field` (nouvelle entité dans admin catégories + onglet Catégories dans le formulaire champ lexical).
 - [2026-04-17] Culture — affichage du nombre de personnes par catégorie avec filtrage selon les rôles (sur le modèle des badges "N signe(s)" du lexique).
 - [2026-04-15] Admin signes — chargement limité aux 100 derniers signes modifiés (au lieu d'un `getFullList`) ; champ de recherche debounced sur nom + catégorie (retourne tous les résultats) ; tri des colonnes délégué au backend (requête PocketBase à chaque changement de tri).

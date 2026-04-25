@@ -63,6 +63,13 @@
             Expr. pi-sourdes
           </RouterLink>
         </li>
+        <li class="menu-title mt-2 text-xs uppercase opacity-50">Culture générale</li>
+        <li>
+          <RouterLink to="/general-culture" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa6-solid-timeline text-xl"></span>
+            Timeline
+          </RouterLink>
+        </li>
         <hr class="my-2 opacity-20" />
         <li>
           <RouterLink to="/users" class="flex items-center gap-3" active-class="menu-active">
