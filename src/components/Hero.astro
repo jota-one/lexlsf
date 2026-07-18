@@ -26,8 +26,13 @@ import Search from './Search.vue';
 
 <script>
   // Masquer la recherche si l'utilisateur n'est pas authentifié
-  const userJwt = sessionStorage.getItem('userJwt')
-  const isAuthenticated = userJwt && userJwt.length > 0
+  let isAuthenticated = false
+  try {
+    const raw = localStorage.getItem('pocketbase_auth')
+    isAuthenticated = !!(raw && JSON.parse(raw).token)
+  } catch {
+    isAuthenticated = false
+  }
   
   if (!isAuthenticated) {
     const searchElement = document.getElementById('heroSearch')

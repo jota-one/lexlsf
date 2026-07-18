@@ -15,8 +15,13 @@
 <script is:inline>
   (function() {
     // Vérifier si l'utilisateur est authentifié
-    const userJwt = sessionStorage.getItem('userJwt')
-    const isAuthenticated = userJwt && userJwt.length > 0
+    let isAuthenticated = false
+    try {
+      const raw = localStorage.getItem('pocketbase_auth')
+      isAuthenticated = !!(raw && JSON.parse(raw).token)
+    } catch {
+      isAuthenticated = false
+    }
     
     // Si pas authentifié et pas sur la homepage
     if (!isAuthenticated && window.location.pathname !== '/') {

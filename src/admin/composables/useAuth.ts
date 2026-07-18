@@ -1,28 +1,33 @@
-import { useSessionStorage } from '@vueuse/core'
+import { useLocalStorage } from '@vueuse/core'
 import { pb } from '@lib/pb'
 import { ref, computed } from 'vue'
+import type { TUser } from '../../types'
 
+// Impersonation must survive reloads, so it lives in localStorage
+const impersonatorJwt = useLocalStorage('impersonatorJwt', '')
+const authValid = ref(pb.authStore.isValid)
+const user = ref<TUser.TRecord | null>(null)
 
-const userJwt = useSessionStorage('userJwt', '')
-const impersonatorJwt = useSessionStorage('impersonatorJwt', '')
-const user = ref<any>({})
 // Charge l'utilisateur avec expand:roles pour déterminer les slugs
-const loadUserWithRoles = async (model: any) => {
+const loadUserWithRoles = async (model: { id?: string }) => {
   if (!model?.id) return
   try {
-    const full = await pb.collection('users').getOne(model.id, {
+    const full = await pb.collection('users').getOne<TUser.TRecord>(model.id, {
       expand: 'roles',
     })
     user.value = full
   } catch (e) {
     console.error('Failed to load user with roles', e)
-    user.value = model // fallback minimal
+    user.value = model as TUser.TRecord // fallback minimal
   }
 }
 
 pb.authStore.onChange((_, model) => {
+  authValid.value = pb.authStore.isValid
   if (model !== null) {
     void loadUserWithRoles(model)
+  } else {
+    user.value = null
   }
 }, true)
 
@@ -32,8 +37,7 @@ export default function useAuth() {
       const authData = await pb.collection('users').authWithPassword(auth.email, auth.password, {
         expand: 'roles',
       })
-      userJwt.value = authData.token
-      user.value = authData.record
+      user.value = authData.record as unknown as TUser.TRecord
       return authData.token
     } catch (e: any) {
       return { error: true, message: e.message }
@@ -45,8 +49,7 @@ export default function useAuth() {
     if (!pb.authStore.isValid) return null
     try {
       const data = await pb.collection('users').authRefresh({ expand: 'roles' })
-      userJwt.value = data.token
-      user.value = data.record
+      user.value = data.record as unknown as TUser.TRecord
       return data
     } catch (e) {
       console.error('Auth refresh failed', e)
@@ -56,21 +59,18 @@ export default function useAuth() {
 
   const logout = () => {
     pb.authStore.clear()
-    userJwt.value = ''
-    user.value = {}
   }
 
-  const isAuthenticated = computed(() => !!userJwt.value && userJwt.value.length > 0)
+  const isAuthenticated = computed(() => authValid.value)
   const roles = computed(() => user.value?.expand?.roles ?? [])
-  const isAdmin = computed(() => roles.value.some((r: any) => r?.slug === 'admin'))
-  const isStudent = computed(() => roles.value.some((r: any) => r?.slug === 'student'))
+  const isAdmin = computed(() => roles.value.some(r => r?.slug === 'admin'))
+  const isStudent = computed(() => roles.value.some(r => r?.slug === 'student'))
   const isImpersonating = computed(() => !!impersonatorJwt.value)
 
   const impersonate = async (userId: string) => {
     const authData = await pb.send(`/api/custom/impersonate/${userId}`, { method: 'POST' })
-    impersonatorJwt.value = userJwt.value
+    impersonatorJwt.value = pb.authStore.token
     pb.authStore.save(authData.token, authData.record)
-    userJwt.value = authData.token
     window.location.href = '/'
   }
 
@@ -78,7 +78,6 @@ export default function useAuth() {
     const adminJwt = impersonatorJwt.value
     impersonatorJwt.value = ''
     pb.authStore.save(adminJwt, null)
-    userJwt.value = adminJwt
     await refreshAuth()
     window.location.href = '/admin'
   }
@@ -96,6 +95,5 @@ export default function useAuth() {
     exitImpersonation,
     pb,
     user,
-    userJwt,
   }
 }
