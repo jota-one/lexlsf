@@ -76,14 +76,14 @@ const selectedItems = ref<SelectedItem[]>([])
 const searching = ref(false)
 
 const getSelectedIds = (): string[] => {
-  if (!model.value) return []
-  if (props.mode === 'single') return (model.value as string) ? [model.value as string] : []
+  if (!model.value) {return []}
+  if (props.mode === 'single') {return (model.value as string) ? [model.value as string] : []}
   return (model.value as string[]) || []
 }
 
 onMounted(async () => {
   const ids = getSelectedIds()
-  if (ids.length === 0) return
+  if (ids.length === 0) {return}
   const filter = idFilter(ids)
   const res = await pb.collection('sign').getList(1, ids.length, { filter, fields: 'id,name' })
   selectedItems.value = res.items.map((s: any) => ({ id: s.id, name: s.name }))

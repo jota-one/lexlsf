@@ -43,7 +43,7 @@ const { showPbError } = usePbErrorToast()
 const form = ref<TFrenchExpression.TForm>({ expression: '', strategies: '', Signs: [], Roles: [] })
 
 watch(visible, async (isVisible) => {
-  if (!isVisible) return
+  if (!isVisible) {return}
   if (!props.expressionId) {
     // Reset form when modal is opened in create mode
     form.value = { expression: '', strategies: '', Signs: [], Roles: [] }

@@ -20,7 +20,7 @@ export default function usePbErrorToast() {
 
   function showPbError(e: any) {
     try {
-      if (!e) return
+      if (!e) {return}
 
       // Accept simple strings or errors without response
       if (typeof e === 'string') {
@@ -47,8 +47,8 @@ export default function usePbErrorToast() {
           let detail = ''
           if (errVal.message) {
             detail = errVal.message
-            if (errVal.params?.file) detail += ` (${errVal.params.file})`
-            if (errVal.code) detail += ` [${errVal.code}]`
+            if (errVal.params?.file) {detail += ` (${errVal.params.file})`}
+            if (errVal.code) {detail += ` [${errVal.code}]`}
           } else {
             // fallback to JSON
             try {

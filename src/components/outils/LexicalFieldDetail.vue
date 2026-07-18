@@ -109,25 +109,25 @@ const personTerms = computed(() => {
   return persons.sort((a: any, b: any) => {
     const aActive = isActive(a)
     const bActive = isActive(b)
-    if (aActive !== bActive) return aActive ? -1 : 1
+    if (aActive !== bActive) {return aActive ? -1 : 1}
     // Both active or both inactive: sort by start_date desc
-    if (a.start_date && b.start_date) return b.start_date.localeCompare(a.start_date)
-    if (a.start_date) return -1
-    if (b.start_date) return 1
+    if (a.start_date && b.start_date) {return b.start_date.localeCompare(a.start_date)}
+    if (a.start_date) {return -1}
+    if (b.start_date) {return 1}
     return a.term.localeCompare(b.term)
   })
 })
 
 const isActive = (term: any) => {
-  if (!term.end_date) return true
+  if (!term.end_date) {return true}
   return new Date(term.end_date) >= new Date()
 }
 
 const formatDateRange = (start: string, end: string) => {
   const parts = []
-  if (start) parts.push(new Date(start).getFullYear())
-  if (end) parts.push(new Date(end).getFullYear())
-  else if (start) parts.push('présent')
+  if (start) {parts.push(new Date(start).getFullYear())}
+  if (end) {parts.push(new Date(end).getFullYear())}
+  else if (start) {parts.push('présent')}
   return parts.join(' – ')
 }
 </script>

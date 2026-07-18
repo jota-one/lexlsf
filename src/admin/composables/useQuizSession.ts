@@ -38,12 +38,12 @@ export default function useQuizSession() {
   const loadingBatch = ref(false)
 
   const currentCard = computed(() => {
-    if (currentIndex.value >= deck.value.length) return null
+    if (currentIndex.value >= deck.value.length) {return null}
     return deck.value[currentIndex.value]
   })
 
   const progress = computed(() => {
-    if (!currentSession.value) return { current: 0, total: 0, percentage: 0 }
+    if (!currentSession.value) {return { current: 0, total: 0, percentage: 0 }}
     const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
     const answered = stats.known + stats.unknown
     return {
@@ -54,7 +54,7 @@ export default function useQuizSession() {
   })
 
   const isComplete = computed(() => {
-    if (!currentSession.value) return false
+    if (!currentSession.value) {return false}
     const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
     return stats.known + stats.unknown >= stats.total
   })
@@ -176,12 +176,12 @@ export default function useQuizSession() {
    * Load the next batch of items (lazy loading for videos)
    */
   const loadNextBatch = async () => {
-    if (!currentSession.value) return
+    if (!currentSession.value) {return}
 
     loadingBatch.value = true
     try {
       const mode = getQuizMode(currentSession.value.config_key)
-      if (!mode) return
+      if (!mode) {return}
 
       // Derive collection name from item type
       const collectionName = mode.itemType === 'sign' ? 'sign' : 'person'
@@ -193,7 +193,7 @@ export default function useQuizSession() {
         .slice(startIdx, endIdx)
         .filter(item => !item.itemData && item.itemType === mode.itemType)
 
-      if (itemsToLoad.length === 0) return
+      if (itemsToLoad.length === 0) {return}
 
       // Fetch all items in batch
       const itemIds = itemsToLoad.map(item => item.itemId)
@@ -221,7 +221,7 @@ export default function useQuizSession() {
    * Log an attempt for the current card
    */
   const logAttempt = async (result: QuizResult, timeSpent?: number) => {
-    if (!currentSession.value || !currentCard.value) return
+    if (!currentSession.value || !currentCard.value) {return}
 
     // Create attempt record
     await pb.collection<QuizAttemptRecord>('quiz_attempt').create({
@@ -263,7 +263,7 @@ export default function useQuizSession() {
    * Complete the session
    */
   const completeSession = async () => {
-    if (!currentSession.value) return
+    if (!currentSession.value) {return}
 
     currentSession.value = await pb
       .collection<QuizSessionRecord>('quiz_session')
@@ -334,7 +334,7 @@ export default function useQuizSession() {
    * Get file URL for media (video, illustration)
    */
   const getFileUrl = (collectionName: string, recordId: string, filename: string) => {
-    if (!filename) return ''
+    if (!filename) {return ''}
     return `${config.apiBaseUrl}/api/files/${collectionName}/${recordId}/${filename}`
   }
 

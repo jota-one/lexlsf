@@ -153,13 +153,13 @@ const selectedContexts = ref<Set<string>>(new Set(['sign']));
 // Check if a child matches all selected contexts (AND logic, excluding implicit 'sign')
 const isChildMatch = (child: any) => {
   const hasFilter = selectedContexts.value.size > 0;
-  if (!hasFilter) return false;
+  if (!hasFilter) {return false;}
   // entities is now an array (from select field with maxSelect: 2)
   const entsRaw = Array.isArray(child.entities) ? (child.entities as string[]) : [];
   // Required contexts = selected contexts minus the implicit 'sign'
   const requiredContexts = Array.from(selectedContexts.value).filter(ctx => ctx !== 'sign');
   for (const req of requiredContexts) {
-    if (!entsRaw.includes(req)) return false;
+    if (!entsRaw.includes(req)) {return false;}
   }
   return true;
 };
@@ -167,7 +167,7 @@ const isChildMatch = (child: any) => {
 const toggleContext = (ctx: string) => {
   // Don't allow toggling disabled contexts
   const entity = filterEntities.find(e => e.id === ctx);
-  if (entity?.disabled) return;
+  if (entity?.disabled) {return;}
 
   if (selectedContexts.value.has(ctx)) {
     selectedContexts.value.delete(ctx);
@@ -183,8 +183,8 @@ const toggleContext = (ctx: string) => {
 // Helper to set popover ref for each child
 function setPopoverRef(id: string) {
   return (el: any) => {
-    if (el) popoverRefs.value[id] = el;
-    else delete popoverRefs.value[id];
+    if (el) {popoverRefs.value[id] = el;}
+    else {delete popoverRefs.value[id];}
   };
 }
 
@@ -211,7 +211,7 @@ const openEditModalChild = (category: any) => {
 const togglePopover = (id: string, event: Event) => {
   // Hide any open popover except the one being toggled
   Object.entries(popoverRefs.value).forEach(([key, refPopover]) => {
-    if (key !== id && refPopover?.hide) refPopover.hide();
+    if (key !== id && refPopover?.hide) {refPopover.hide();}
   });
   // Toggle the clicked popover
   const refPopover = popoverRefs.value[id];
@@ -230,7 +230,7 @@ const confirmDeleteChild = (category: any) => {
 
 const confirmDeleteParent = (category: any) => {
   // Only allow if no children
-  if (category.expand && category.expand.category_via_Parent && category.expand.category_via_Parent.length) return;
+  if (category.expand && category.expand.category_via_Parent && category.expand.category_via_Parent.length) {return;}
   categoryToDelete.value = category;
   deleteMessage.value = `Voulez-vous vraiment supprimer la catégorie "${category.tag}" ? Cette action est irréversible.`;
   showDeleteModal.value = true;

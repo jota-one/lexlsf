@@ -47,7 +47,7 @@ const form = ref(emptyForm())
 const existingImageFilenames = ref<string[]>([])
 
 watch(visible, async (isVisible) => {
-  if (!isVisible) return
+  if (!isVisible) {return}
   if (!props.itemId) {
     // Reset form when modal is opened in create mode
     form.value = emptyForm()

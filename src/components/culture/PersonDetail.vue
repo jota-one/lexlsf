@@ -209,7 +209,7 @@ onMounted(async () => {
 })
 
 const displayName = computed(() => {
-  if (!record.value) return ''
+  if (!record.value) {return ''}
   if (!record.value.organism && record.value.firstname) {
     return `${record.value.firstname} ${record.value.name}`
   }
@@ -233,7 +233,7 @@ const descriptionHtml = computed(() =>
 )
 
 const activitiesList = computed(() => {
-  if (!record.value) return []
+  if (!record.value) {return []}
   if (Array.isArray(record.value.expand?.Activities)) {
     return record.value.expand.Activities.map(
       (a: any) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a),

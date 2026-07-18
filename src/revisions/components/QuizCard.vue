@@ -11,13 +11,13 @@ type Props = {
 const props = defineProps<Props>()
 
 const renderFieldValue = (field: string | undefined) => {
-  if (!field || !props.card?.itemData) return ''
+  if (!field || !props.card?.itemData) {return ''}
   return props.card.itemData[field] ?? ''
 }
 
 const mediaUrl = (fieldKey: string) => {
   const file = props.card?.itemData?.[fieldKey]
-  if (!file) return ''
+  if (!file) {return ''}
   return props.getFileUrl(props.mode.itemType === 'sign' ? 'sign' : 'person', props.card.itemId, file)
 }
 </script>

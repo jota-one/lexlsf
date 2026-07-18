@@ -59,7 +59,7 @@ const termPayload = (t: LocalTerm, fieldId: string) => ({
 })
 
 watch(visible, async (isVisible) => {
-  if (!isVisible) return
+  if (!isVisible) {return}
   if (!props.fieldId) {
     // Reset form when modal is opened in create mode
     form.value = { name: '', introduction: '', Roles: [], Categories: [] }
@@ -106,7 +106,7 @@ const save = async () => {
       }
       // Create or update
       for (const t of terms.value) {
-        if (!t.term.trim()) continue
+        if (!t.term.trim()) {continue}
         if (t.id) {
           await updateTerm(t.id, termPayload(t, props.fieldId))
         } else {

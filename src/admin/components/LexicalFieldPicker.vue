@@ -66,7 +66,7 @@ const selectedItems = ref<Item[]>([])
 const searching = ref(false)
 
 onMounted(async () => {
-  if (!model.value?.length) return
+  if (!model.value?.length) {return}
   const filter = idFilter(model.value)
   const res = await pb.collection('lexical_field').getList(1, model.value.length, {
     filter,

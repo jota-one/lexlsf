@@ -108,7 +108,7 @@ export default function usePersons() {
   }
 
   const getIllustrationUrl = (person: TPerson.TRecord): string => {
-    if (!person.illustration) return ''
+    if (!person.illustration) {return ''}
     return `${config.apiBaseUrl}/api/files/person/${person.id}/${person.illustration}`
   }
 

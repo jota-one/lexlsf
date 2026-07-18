@@ -146,7 +146,7 @@ const confirmDelete = (user: TUser) => {
 };
 
 const deleteUserConfirmed = async () => {
-  if (!editedUser.value) return;
+  if (!editedUser.value) {return;}
 
   try {
     await deleteUser(editedUser.value.id);

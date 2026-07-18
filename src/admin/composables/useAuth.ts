@@ -10,7 +10,7 @@ const user = ref<TUser.TRecord | null>(null)
 
 // Charge l'utilisateur avec expand:roles pour déterminer les slugs
 const loadUserWithRoles = async (model: { id?: string }) => {
-  if (!model?.id) return
+  if (!model?.id) {return}
   try {
     const full = await pb.collection('users').getOne<TUser.TRecord>(model.id, {
       expand: 'roles',
@@ -46,7 +46,7 @@ export default function useAuth() {
 
   // Rafraîchit la session et recharge les rôles (utile au rechargement de page)
   const refreshAuth = async () => {
-    if (!pb.authStore.isValid) return null
+    if (!pb.authStore.isValid) {return null}
     try {
       const data = await pb.collection('users').authRefresh({ expand: 'roles' })
       user.value = data.record as unknown as TUser.TRecord

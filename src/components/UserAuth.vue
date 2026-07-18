@@ -82,7 +82,7 @@ const { isAuthenticated, isAdmin, isStudent, isImpersonating, user, logout, exit
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const avatarUrl = computed(() => {
-  if (!user.value?.avatar) return ''
+  if (!user.value?.avatar) {return ''}
   return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
 })
 

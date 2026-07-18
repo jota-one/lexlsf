@@ -45,8 +45,8 @@ const durationAvg = computed(() =>
 const formatDuration = (seconds: number) => {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
-  if (m === 0) return `${s}s`
-  if (m < 60) return s > 0 ? `${m}m ${s}s` : `${m} min`
+  if (m === 0) {return `${s}s`}
+  if (m < 60) {return s > 0 ? `${m}m ${s}s` : `${m} min`}
   const h = Math.floor(m / 60)
   const rem = m % 60
   return rem > 0 ? `${h}h ${rem}min` : `${h}h`
@@ -86,8 +86,8 @@ const successAvg = computed(() =>
 )
 
 const successBarClass = (rate: number) => {
-  if (rate >= 80) return 'progress-success'
-  if (rate >= 50) return 'progress-warning'
+  if (rate >= 80) {return 'progress-success'}
+  if (rate >= 50) {return 'progress-warning'}
   return 'progress-error'
 }
 

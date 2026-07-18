@@ -211,7 +211,7 @@ const configurationLeftUrl = computed(() => {
 })
 
 const signCategories = computed(() => {
-  if (!record.value || !mainCategories.value.length) return []
+  if (!record.value || !mainCategories.value.length) {return []}
   return mainCategories.value
     .map(mainCat => ({
       ...mainCat,

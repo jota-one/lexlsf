@@ -161,7 +161,7 @@ const categories = (category: any[]) => {
 };
 
 const roleNames = (roles: any[]) => {
-  if (!roles?.length) return '-';
+  if (!roles?.length) {return '-';}
   return roles.map(r => r.name).join(', ');
 };
 
@@ -195,7 +195,7 @@ const deletePersonConfirmed = async () => {
 };
 
 const formatDate = (date: string) => {
-  if (!date) return '';
+  if (!date) {return '';}
   return dayjs(date).format('DD/MM/YYYY HH:mm');
 };
 

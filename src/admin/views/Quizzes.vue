@@ -47,7 +47,7 @@ const openShareModal = (quiz: QuizRecord) => {
 }
 
 const confirmDelete = async () => {
-  if (!quizToDelete.value) return
+  if (!quizToDelete.value) {return}
 
   try {
     await deleteQuiz(quizToDelete.value.id)

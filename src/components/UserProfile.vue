@@ -173,7 +173,7 @@ const handleAvatarChange = (event: Event) => {
 }
 
 const getAvatarUrl = (): string => {
-  if (!user.value?.avatar) return ''
+  if (!user.value?.avatar) {return ''}
   return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
 }
 

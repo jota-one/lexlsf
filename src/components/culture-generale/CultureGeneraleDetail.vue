@@ -137,7 +137,7 @@ const close = () => router.push('/')
 watch(
   () => props.slug,
   async (slug) => {
-    if (!slug) return
+    if (!slug) {return}
     item.value = null
     item.value = await loadItem(slug)
   },

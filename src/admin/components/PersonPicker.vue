@@ -71,7 +71,7 @@ const buildLabel = (p: any) =>
   p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value) return
+  if (!model.value) {return}
   const res = await pb.collection('person').getOne(model.value, { fields: 'id,name,firstname' })
   selectedItem.value = { id: res.id, label: buildLabel(res) }
 })

@@ -38,7 +38,7 @@ const userOptionLabel = (user: TUser) =>
   user.name ? `${user.name} (${user.email})` : user.email
 
 watch(visible, async (val) => {
-  if (!val) return
+  if (!val) {return}
   loading.value = true
   try {
     const [{ quiz }] = await Promise.all([

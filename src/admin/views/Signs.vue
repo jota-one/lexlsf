@@ -223,7 +223,7 @@ const deleteSignConfirmed = async () => {
 };
 
 const formatDate = (date: string) => {
-  if (!date) return '';
+  if (!date) {return '';}
   return dayjs(date).format('DD/MM/YYYY HH:mm');
 };
 

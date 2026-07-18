@@ -79,7 +79,7 @@ const loadItems = async () => {
 }
 
 const deleteItem = async (itemId: string) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) return
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) {return}
 
   try {
     await pb.collection('quiz_item').delete(itemId)

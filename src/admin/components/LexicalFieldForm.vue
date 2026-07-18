@@ -220,8 +220,8 @@ const categoriesInitialized = ref(false)
 
 // When categories load, initialize selectedCategories from form.Categories (edit mode)
 watch([categories, () => form.value.Categories], () => {
-  if (categoriesInitialized.value) return
-  if (!categories.value.length) return
+  if (categoriesInitialized.value) {return}
+  if (!categories.value.length) {return}
   categoriesInitialized.value = true
   const flatIds = form.value.Categories || []
   const result: { [parentId: string]: string[] } = {}
@@ -234,25 +234,25 @@ watch([categories, () => form.value.Categories], () => {
 
 // Sync selectedCategories → form.Categories
 watch(selectedCategories, (val) => {
-  if (!categoriesInitialized.value) return
+  if (!categoriesInitialized.value) {return}
   form.value.Categories = Object.values(val).flat()
 }, { deep: true })
 
 const adminRoleId = ref('')
 watch(roles, () => {
   adminRoleId.value = roles.value.find(r => r.slug === 'admin')?.id || ''
-  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) return
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {return}
   form.value.Roles = form.value.Roles.filter(id => id !== adminRoleId.value)
 })
 
 const isRoleSelected = (roleId: string) => {
-  if (!roleId) return false
-  if (roleId === adminRoleId.value) return true
+  if (!roleId) {return false}
+  if (roleId === adminRoleId.value) {return true}
   return (form.value.Roles || []).includes(roleId)
 }
 
 const toggleRole = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') return
+  if (role.slug === 'admin') {return}
   if ((form.value.Roles || []).includes(role.id)) {
     form.value.Roles = (form.value.Roles || []).filter(id => id !== role.id)
     return
@@ -261,7 +261,7 @@ const toggleRole = (role: { id: string; slug: string }) => {
 }
 
 const roleBadgeClass = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') return 'badge-primary opacity-60 cursor-not-allowed'
+  if (role.slug === 'admin') {return 'badge-primary opacity-60 cursor-not-allowed'}
   return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
 }
 

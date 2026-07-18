@@ -1,1 +1,8 @@
-{}
+{
+  "rules": {
+    "eqeqeq": "error",
+    "curly": "error",
+    "typescript/no-explicit-any": "warn",
+    "no-console": "off"
+  }
+}

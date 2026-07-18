@@ -461,8 +461,8 @@ migrate((app) => {
   const quizItem = app.findCollectionByNameOrId("quiz_item");
   const quiz = app.findCollectionByNameOrId("quiz");
   
-  if (quizAttempt) app.delete(quizAttempt);
-  if (quizSession) app.delete(quizSession);
-  if (quizItem) app.delete(quizItem);
-  if (quiz) app.delete(quiz);
+  if (quizAttempt) {app.delete(quizAttempt);}
+  if (quizSession) {app.delete(quizSession);}
+  if (quizItem) {app.delete(quizItem);}
+  if (quiz) {app.delete(quiz);}
 })

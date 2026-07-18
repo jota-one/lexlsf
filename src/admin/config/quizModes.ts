@@ -56,7 +56,7 @@ export const QUIZ_MODES: QuizMode[] = [
 ]
 
 export function getQuizModes(itemType?: Exclude<ItemType, 'mixed'>): QuizMode[] {
-  if (!itemType) return QUIZ_MODES
+  if (!itemType) {return QUIZ_MODES}
   return QUIZ_MODES.filter(mode => mode.itemType === itemType)
 }
 

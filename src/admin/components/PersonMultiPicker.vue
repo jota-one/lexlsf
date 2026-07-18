@@ -68,7 +68,7 @@ const searching = ref(false)
 const buildLabel = (p: any) => p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value?.length) return
+  if (!model.value?.length) {return}
   const filter = idFilter(model.value)
   const res = await pb.collection('person').getList(1, model.value.length, {
     filter,
