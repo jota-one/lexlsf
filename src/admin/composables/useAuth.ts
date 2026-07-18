@@ -1,9 +1,7 @@
 import { useSessionStorage } from '@vueuse/core'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import { ref, computed } from 'vue'
-import config from '../../config'
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 const userJwt = useSessionStorage('userJwt', '')
 const impersonatorJwt = useSessionStorage('impersonatorJwt', '')

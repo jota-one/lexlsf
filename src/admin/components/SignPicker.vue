@@ -59,8 +59,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 
 type SelectedItem = { id: string; name: string }
 
@@ -70,7 +69,6 @@ const props = defineProps<{
 
 const model = defineModel<string | string[]>()
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 const searchTerm = ref('')
 const searchResults = ref<SelectedItem[]>([])

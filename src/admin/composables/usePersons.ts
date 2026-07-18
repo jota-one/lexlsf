@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TPerson } from '../../types'
 import { createSlug } from '@admin/helpers/strings'
 
@@ -71,7 +71,6 @@ const setFormData = (payload: TPerson.TForm) => {
 }
 
 export default function usePersons() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const persons = ref<TPerson.TRecord[]>([])
   const loadPersons = async () => {

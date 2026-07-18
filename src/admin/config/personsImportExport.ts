@@ -2,12 +2,10 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { createSlug } from '@admin/helpers/strings'
 import type { TImportExport } from '../types'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 
 dayjs.extend(customParseFormat)
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 let rolesMapsPromise: Promise<{
   slugToId: Map<string, string>

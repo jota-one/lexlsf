@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TFrenchExpression } from '../../types'
 import { createSlug } from '@admin/helpers/strings'
 
@@ -25,7 +24,6 @@ const setFormData = (payload: TFrenchExpression.TForm) => {
 }
 
 export default function useFrenchExpressions() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const frenchExpressions = ref<TFrenchExpression.TRecord[]>([])
 

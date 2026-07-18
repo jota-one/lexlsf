@@ -1,9 +1,7 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 
 export default function useHandMovements() {
-  const pb = new PocketBase(config.apiBaseUrl)
   const handMovements = ref([])
   const loadingHandMovements = ref(false)
 

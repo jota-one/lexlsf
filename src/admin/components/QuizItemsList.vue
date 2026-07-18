@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 import Button from 'primevue/button'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 
@@ -26,7 +25,6 @@ const emit = defineEmits<{
   loaded: [string[]]
 }>()
 
-const pb = new PocketBase(config.apiBaseUrl)
 const { showPbError } = usePbErrorToast()
 
 const items = ref<QuizItemDisplay[]>([])

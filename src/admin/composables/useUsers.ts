@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 
 export interface TUser {
   id: string
@@ -32,7 +32,6 @@ export interface TUserForm {
 }
 
 export default function useUsers() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const users = ref<TUser[]>([])
 

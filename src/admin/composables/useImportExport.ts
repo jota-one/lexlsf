@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TImportExport } from '../types'
 
 type TGetFieldsConfig = () => TImportExport.FieldConfig[]
@@ -12,7 +12,6 @@ export default function useImportExport(
   getImportableFields: TGetFieldsConfig,
   getFieldConfig: TGetFieldConfig,
 ) {
-  const pb = new PocketBase(config.apiBaseUrl)
   const isExporting = ref(false)
   const isImporting = ref(false)
 

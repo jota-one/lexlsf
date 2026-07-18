@@ -35,8 +35,7 @@
 import { ref } from 'vue';
 import AutoComplete from 'primevue/autocomplete';
 import FloatLabel from 'primevue/floatlabel';
-import config from '../config';
-import PocketBase from 'pocketbase';
+import { pb } from '@lib/pb';
 
 type Props = {
     mode?: 'hero' | 'inline';
@@ -45,7 +44,6 @@ const props = withDefaults(defineProps<Props>(), {
     mode: 'inline',
 });
 
-const pb = new PocketBase(config.apiBaseUrl);
 
 const selectedSign = ref<any>(null);
 const suggestions = ref<any[]>([]);

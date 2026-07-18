@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { QuizSession, QuizAttempt, QuizResult, QuizSessionStats } from '../types/quiz'
 import { getQuizMode } from '../config/quizModes'
 
@@ -37,8 +37,6 @@ const shuffle = <T>(arr: T[]): T[] => {
 }
 
 export default function useQuizSession() {
-  const pb = new PocketBase(config.apiBaseUrl)
-  pb.autoCancellation(false)
 
   const currentSession = ref<QuizSessionRecord | null>(null)
   const deck = ref<DeckItem[]>([])

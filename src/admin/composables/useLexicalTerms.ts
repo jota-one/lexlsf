@@ -1,10 +1,8 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TLexicalTerm } from '../../types'
 
 export default function useLexicalTerms() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const terms = ref<TLexicalTerm.TRecord[]>([])
 

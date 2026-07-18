@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TSign } from '../../types'
 import { createSlug } from '@admin/helpers/strings'
 
@@ -70,7 +69,6 @@ const setFormData = (payload: TSign.TForm) => {
 }
 
 export default function useSigns() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const signs = ref<TSign.TRecord[]>([])
   const totalSigns = ref(0)
