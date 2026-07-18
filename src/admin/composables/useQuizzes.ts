@@ -64,7 +64,7 @@ export default function useQuizzes() {
   const loadQuiz = async (id: string) => {
     const quiz = await pb.collection<QuizRecord>('quiz').getOne(id)
     const items = await pb.collection<QuizItemRecord>('quiz_item').getFullList({
-      filter: `Quiz = "${id}"`,
+      filter: pb.filter('Quiz = {:id}', { id }),
       sort: 'position',
     })
     return { quiz, items }
@@ -134,7 +134,7 @@ export default function useQuizzes() {
   ) => {
     // Get current max position
     const existingItems = await pb.collection<QuizItemRecord>('quiz_item').getFullList({
-      filter: `Quiz = "${quizId}"`,
+      filter: pb.filter('Quiz = {:quizId}', { quizId }),
       sort: '-position',
       fields: 'position',
     })

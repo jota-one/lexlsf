@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import { pb } from '@lib/pb'
+import { pb, idFilter } from '@lib/pb'
 
 type Item = { id: string; name: string }
 
@@ -67,7 +67,7 @@ const searching = ref(false)
 
 onMounted(async () => {
   if (!model.value?.length) return
-  const filter = model.value.map(id => `id = "${id}"`).join(' || ')
+  const filter = idFilter(model.value)
   const res = await pb.collection('lexical_field').getList(1, model.value.length, {
     filter,
     fields: 'id,name',
@@ -87,7 +87,7 @@ watch(searchTerm, (val) => {
     try {
       const selectedIds = new Set(selectedItems.value.map(s => s.id))
       const res = await pb.collection('lexical_field').getList(1, 10, {
-        filter: `name~"${val}"`,
+        filter: pb.filter('name ~ {:val}', { val }),
         fields: 'id,name',
         sort: 'name',
       })

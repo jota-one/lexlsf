@@ -358,7 +358,9 @@ export default function useImportExport(
 
     for (const field of uniqueFields) {
       try {
-        await pb.collection(collectionName).getFirstListItem(`${field.key}="${record[field.key]}"`)
+        await pb
+          .collection(collectionName)
+          .getFirstListItem(pb.filter(`${field.key} = {:value}`, { value: record[field.key] }))
         throw new Error(`${field.label} "${record[field.key]}" existe déjà`)
       } catch (e: any) {
         if (e?.status === 404) continue

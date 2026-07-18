@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import { pb } from '@lib/pb'
+import { pb, idFilter } from '@lib/pb'
 
 type SelectedItem = { id: string; name: string }
 
@@ -84,7 +84,7 @@ const getSelectedIds = (): string[] => {
 onMounted(async () => {
   const ids = getSelectedIds()
   if (ids.length === 0) return
-  const filter = ids.map(id => `id = "${id}"`).join(' || ')
+  const filter = idFilter(ids)
   const res = await pb.collection('sign').getList(1, ids.length, { filter, fields: 'id,name' })
   selectedItems.value = res.items.map((s: any) => ({ id: s.id, name: s.name }))
 })
@@ -101,7 +101,7 @@ watch(searchTerm, (val) => {
     try {
       const selectedIds = new Set(selectedItems.value.map(s => s.id))
       const res = await pb.collection('sign').getList(1, 10, {
-        filter: `name~"${val}"`,
+        filter: pb.filter('name ~ {:val}', { val }),
         fields: 'id,name',
         sort: 'name',
       })

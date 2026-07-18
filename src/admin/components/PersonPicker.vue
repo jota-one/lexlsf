@@ -87,7 +87,7 @@ watch(searchTerm, (val) => {
     searching.value = true
     try {
       const res = await pb.collection('person').getList(1, 10, {
-        filter: `name~"${val}" || firstname~"${val}"`,
+        filter: pb.filter('name ~ {:val} || firstname ~ {:val}', { val }),
         fields: 'id,name,firstname',
         sort: 'name,firstname',
       })

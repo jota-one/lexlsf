@@ -55,10 +55,10 @@ export default function useSigns() {
       sort,
     }
     if (query?.trim()) {
-      const q = query.trim().replace(/"/g, '\\"')
+      const q = query.trim()
       signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
         ...options,
-        filter: `name ~ "${q}" || Category.tag ~ "${q}"`,
+        filter: pb.filter('name ~ {:q} || Category.tag ~ {:q}', { q }),
       })
     } else {
       const result = await pb.collection<TSign.TRecord>('sign').getList(1, 100, options)

@@ -170,7 +170,7 @@ onMounted(async () => {
 
   try {
     const [signRecord, cats] = await Promise.all([
-      pb.collection('sign').getFirstListItem(`slug="${props.slug}"`, {
+      pb.collection('sign').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
         expand: 'Category,ConfigurationRight,ConfigurationLeft,person_via_Sign',
       }),
       pb.collection<TCategory.TRecord>('category').getFullList({

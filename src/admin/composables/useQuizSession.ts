@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 import config from '../../config'
-import { pb } from '@lib/pb'
+import { pb, idFilter } from '@lib/pb'
 import type { QuizSession, QuizAttempt, QuizResult, QuizSessionStats } from '../types/quiz'
 import { getQuizMode } from '../config/quizModes'
 
@@ -75,7 +75,7 @@ export default function useQuizSession() {
       // Get quiz and its items
       const quiz = await pb.collection('quiz').getOne(quizId)
       const quizItems = await pb.collection('quiz_item').getFullList({
-        filter: `Quiz = "${quizId}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId }),
         sort: 'position',
       })
 
@@ -148,13 +148,13 @@ export default function useQuizSession() {
 
       // Get quiz items
       const quizItems = await pb.collection('quiz_item').getFullList({
-        filter: `Quiz = "${currentSession.value.Quiz}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId: currentSession.value.Quiz }),
         sort: 'position',
       })
 
       // Get existing attempts for this session
       const attempts = await pb.collection<QuizAttemptRecord>('quiz_attempt').getFullList({
-        filter: `Session = "${sessionId}"`,
+        filter: pb.filter('Session = {:sessionId}', { sessionId }),
       })
 
       const definitivelyAnswered = new Set(
@@ -222,7 +222,7 @@ export default function useQuizSession() {
         .map(field => field.key)
 
       const records = await pb.collection(collectionName).getFullList({
-        filter: itemIds.map(id => `id = "${id}"`).join(' || '),
+        filter: idFilter(itemIds),
         expand: expandFields.join(','),
       })
 
@@ -355,7 +355,7 @@ export default function useQuizSession() {
    */
   const loadSessionAttempts = async (sessionId: string) => {
     return pb.collection<QuizAttemptRecord>('quiz_attempt').getFullList({
-      filter: `Session = "${sessionId}"`,
+      filter: pb.filter('Session = {:sessionId}', { sessionId }),
       expand: 'QuizItem',
       sort: 'created',
     })

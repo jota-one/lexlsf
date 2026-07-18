@@ -200,7 +200,7 @@ onMounted(async () => {
   }
 
   try {
-    record.value = await pb.collection('person').getFirstListItem(`slug="${props.slug}"`, {
+    record.value = await pb.collection('person').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
       expand: 'Category,Category.Parent,Sign,Videos,Activities',
     })
   } catch {

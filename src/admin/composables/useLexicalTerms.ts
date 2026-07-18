@@ -8,7 +8,7 @@ export default function useLexicalTerms() {
 
   const loadTermsByField = async (lexicalFieldId: string) => {
     terms.value = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
-      filter: `LexicalField = "${lexicalFieldId}"`,
+      filter: pb.filter('LexicalField = {:id}', { id: lexicalFieldId }),
       expand: 'Sign,Person',
       sort: 'term',
     })

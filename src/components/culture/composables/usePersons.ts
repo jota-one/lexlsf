@@ -12,7 +12,7 @@ export default function usePersons() {
       fields:
         'id, name, firstname, organism, illustration, slug, updated, expand.Category.*, expand.Sign.*',
       expand: 'Category,Sign',
-      filter: `Category.slug ?= "${category}"`,
+      filter: pb.filter('Category.slug ?= {:category}', { category }),
       sort: 'name,firstname',
     })
   }

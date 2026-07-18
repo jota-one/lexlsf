@@ -58,7 +58,7 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb.collection('pi_deaf_expression').getFirstListItem(`slug="${props.slug}"`, {
+    expr.value = await pb.collection('pi_deaf_expression').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
       expand: 'Sign',
     })
     if (expr.value.strategies) {

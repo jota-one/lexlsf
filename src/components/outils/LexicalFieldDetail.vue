@@ -89,9 +89,11 @@ onMounted(async () => {
     return
   }
   try {
-    field.value = await pb.collection('lexical_field').getFirstListItem(`slug="${props.slug}"`)
+    field.value = await pb
+      .collection('lexical_field')
+      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }))
     terms.value = await pb.collection('lexical_term').getFullList({
-      filter: `LexicalField = "${field.value.id}"`,
+      filter: pb.filter('LexicalField = {:id}', { id: field.value.id }),
       expand: 'Sign,Person',
       sort: 'term',
     })

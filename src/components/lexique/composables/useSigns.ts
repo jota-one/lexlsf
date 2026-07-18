@@ -18,7 +18,7 @@ export default function useSigns() {
       fields:
         'id, name, video, slug, definition, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
       expand: 'Category,ConfigurationRight,ConfigurationLeft',
-      filter: `Category.slug ?= "${category}"`,
+      filter: pb.filter('Category.slug ?= {:category}', { category }),
       sort: '-updated',
     })
   }

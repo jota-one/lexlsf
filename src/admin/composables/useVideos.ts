@@ -13,7 +13,9 @@ export default function useVideos() {
 
   const findVideoByUrl = async (url: string) => {
     try {
-      return await pb.collection<TVideo.TRecord>('video').getFirstListItem(`url="${url}"`)
+      return await pb
+        .collection<TVideo.TRecord>('video')
+        .getFirstListItem(pb.filter('url = {:url}', { url }))
     } catch {
       return null
     }

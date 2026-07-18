@@ -40,7 +40,7 @@ const loadItems = async () => {
     const quizItems = await pb
       .collection('quiz_item')
       .getFullList({
-        filter: `Quiz = "${props.quizId}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId: props.quizId }),
         expand: 'Quiz,Item',
         sort: '+position',
       })
