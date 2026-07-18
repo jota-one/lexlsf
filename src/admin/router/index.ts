@@ -37,12 +37,8 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (_to, _from, next) => {
-  const { isAuthenticated, isAdmin, refreshAuth } = useAuth()
-
-  if (isAuthenticated.value) {
-    await refreshAuth()
-  }
+router.beforeEach((_to, _from, next) => {
+  const { isAuthenticated, isAdmin } = useAuth()
 
   if (!isAuthenticated.value || !isAdmin.value) {
     window.location.href = '/'
