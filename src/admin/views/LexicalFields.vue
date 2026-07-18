@@ -6,7 +6,7 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter un champ lexical" icon="i-fa-solid-plus" size="small" @click="showAddModal = true" />
+        <Button label="Ajouter un champ lexical" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="lexicalFields" sortField="name" :sortOrder="1" tableStyle="min-width: 40rem">
         <Column field="name" header="Nom" sortable />
@@ -39,13 +39,7 @@
       </DataTable>
     </div>
 
-    <LexicalFieldAddModal v-model="showAddModal" @saved="load" />
-    <LexicalFieldEditModal
-      v-if="editedField?.id"
-      v-model="showEditModal"
-      :field-id="editedField.id"
-      @saved="load"
-    />
+    <LexicalFieldModal v-model="showFieldModal" :field-id="editedFieldId" @saved="load" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer le champ lexical ?"
@@ -62,22 +56,21 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import useLexicalFields from '../composables/useLexicalFields'
-import LexicalFieldAddModal from '../components/LexicalFieldAddModal.vue'
-import LexicalFieldEditModal from '../components/LexicalFieldEditModal.vue'
+import LexicalFieldModal from '../components/LexicalFieldModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
 
 const { lexicalFields, loadLexicalFields, deleteLexicalField } = useLexicalFields()
-const showAddModal = ref(false)
-const showEditModal = ref(false)
+const showFieldModal = ref(false)
+const editedFieldId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
-const editedField = ref<any>(null)
 const fieldToDelete = ref<any>(null)
 const deleteMessage = ref('')
 
 const roleNames = (roles: any[]) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
 const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
 
-const editField = (field: any) => { editedField.value = field; showEditModal.value = true }
+const openAddModal = () => { editedFieldId.value = undefined; showFieldModal.value = true }
+const editField = (field: any) => { editedFieldId.value = field.id; showFieldModal.value = true }
 const confirmDelete = (field: any) => {
   fieldToDelete.value = field
   deleteMessage.value = `Voulez-vous vraiment supprimer "${field.name}" et tous ses termes ?`
