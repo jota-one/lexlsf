@@ -33,7 +33,7 @@ describe('createSlug', () => {
     })
 
     it('should handle various accent types', () => {
-      expect(createSlug('àâäéèêëïîôùûüÿ')).toBe('aaaeeeeiioouuuy')
+      expect(createSlug('àâäéèêëïîôùûüÿ')).toBe('aaaeeeeiiouuuy')
     })
   })
 
@@ -54,9 +54,9 @@ describe('createSlug', () => {
   })
 
   describe('punctuation and special characters', () => {
-    it('should handle apostrophes', () => {
-      expect(createSlug("L'enfant")).toBe('lenfant')
-      expect(createSlug("aujourd'hui")).toBe('aujourdhui')
+    it('should convert apostrophes to hyphens', () => {
+      expect(createSlug("L'enfant")).toBe('l-enfant')
+      expect(createSlug("aujourd'hui")).toBe('aujourd-hui')
     })
 
     it('should handle hyphens correctly', () => {
@@ -89,7 +89,7 @@ describe('createSlug', () => {
     })
 
     it('should handle special characters in both names', () => {
-      expect(createSlug("O'Connor", 'Seán')).toBe('sean-oconnor')
+      expect(createSlug("O'Connor", 'Seán')).toBe('sean-o-connor')
     })
   })
 
