@@ -56,10 +56,12 @@ export default function useSigns() {
     }
     if (query?.trim()) {
       const q = query.trim()
-      signs.value = await pb.collection<TSign.TRecord>('sign').getFullList({
+      const result = await pb.collection<TSign.TRecord>('sign').getList(1, 200, {
         ...options,
         filter: pb.filter('name ~ {:q} || Category.tag ~ {:q}', { q }),
       })
+      signs.value = result.items
+      totalSigns.value = result.totalItems
     } else {
       const result = await pb.collection<TSign.TRecord>('sign').getList(1, 100, options)
       signs.value = result.items
