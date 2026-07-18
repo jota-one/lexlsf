@@ -14,11 +14,16 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
+// Limite à une seule optimisation ffmpeg à la fois pour ne pas saturer le serveur
+var videoOptimizeSlots = make(chan struct{}, 1)
+
 // SetupVideoOptimizationHooks configure les hooks pour compresser les vidéos
 func SetupVideoOptimizationHooks(app *pocketbase.PocketBase) {
 	// Après succès de création (transaction déjà commit)
 	app.OnRecordAfterCreateSuccess("sign").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
+			videoOptimizeSlots <- struct{}{}
+			defer func() { <-videoOptimizeSlots }()
 			if err := optimizeVideoRecord(app, e.Record); err != nil {
 				log.Printf("❌ optimizeVideoRecord (create) failed: %v", err)
 			}
@@ -29,6 +34,8 @@ func SetupVideoOptimizationHooks(app *pocketbase.PocketBase) {
 	// Après succès de mise à jour (transaction déjà commit)
 	app.OnRecordAfterUpdateSuccess("sign").BindFunc(func(e *core.RecordEvent) error {
 		go func() {
+			videoOptimizeSlots <- struct{}{}
+			defer func() { <-videoOptimizeSlots }()
 			if err := optimizeVideoRecord(app, e.Record); err != nil {
 				log.Printf("❌ optimizeVideoRecord (update) failed: %v", err)
 			}
