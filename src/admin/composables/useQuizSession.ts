@@ -4,6 +4,7 @@ import config from '../../config'
 import { pb, idFilter } from '@lib/pb'
 import type { QuizSession, QuizAttempt, QuizResult, QuizSessionStats } from '../types/quiz'
 import { getQuizMode } from '../config/quizModes'
+import { shuffle, partitionResumedItems, computeSkipInsertIndex } from '../helpers/quizDeck'
 
 type QuizSessionRecord = QuizSession & {
   id: string
@@ -27,14 +28,6 @@ type DeckItem = {
 }
 
 const BATCH_SIZE = 20 // Load 20 items at a time for video optimization
-
-const shuffle = <T>(arr: T[]): T[] => {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
 
 export default function useQuizSession() {
 
@@ -157,29 +150,17 @@ export default function useQuizSession() {
         filter: pb.filter('Session = {:sessionId}', { sessionId }),
       })
 
-      const definitivelyAnswered = new Set(
-        attempts.filter(a => a.result === 'known' || a.result === 'unknown').map(a => a.QuizItem),
-      )
-      const skippedOnly = new Set(
-        attempts
-          .filter(a => a.result === 'skip')
-          .map(a => a.QuizItem)
-          .filter(id => !definitivelyAnswered.has(id)),
+      const { unattempted, skippedOnly } = partitionResumedItems(
+        quizItems.map(item => ({
+          id: item.id,
+          item_type: item.item_type as string,
+          item_id: item.item_id as string,
+          position: item.position as number,
+        })),
+        attempts,
       )
 
-      const allDeckItems = quizItems.map(item => ({
-        quizItemId: item.id,
-        itemType: item.item_type as 'sign' | 'person',
-        itemId: item.item_id as string,
-        position: item.position as number,
-      }))
-
-      const unattempted = allDeckItems.filter(
-        item => !definitivelyAnswered.has(item.quizItemId) && !skippedOnly.has(item.quizItemId),
-      )
-      const skippedOnlyItems = allDeckItems.filter(item => skippedOnly.has(item.quizItemId))
-
-      deck.value = [...shuffle(unattempted), ...shuffle(skippedOnlyItems)]
+      deck.value = [...shuffle(unattempted), ...shuffle(skippedOnly)]
       currentIndex.value = 0
 
       // Load batch around current position
@@ -254,20 +235,8 @@ export default function useQuizSession() {
     const stats = currentSession.value.stats as QuizSessionStats
     if (result === 'skip') {
       stats.skipped++
-      // Find the start of the "skipped zone" (first re-queued card after current position)
-      let skippedZoneStart = -1
-      for (let i = currentIndex.value + 1; i < deck.value.length; i++) {
-        if (deck.value[i].isSkipRequeue) {
-          skippedZoneStart = i
-          break
-        }
-      }
-      // Insert at a random position within the skipped zone (or append if none yet)
-      const insertAt =
-        skippedZoneStart === -1
-          ? deck.value.length
-          : skippedZoneStart +
-            Math.floor(Math.random() * (deck.value.length - skippedZoneStart + 1))
+      // Re-insert the card at a random position within the skipped zone
+      const insertAt = computeSkipInsertIndex(deck.value, currentIndex.value)
       deck.value.splice(insertAt, 0, { ...deck.value[currentIndex.value], isSkipRequeue: true })
     } else {
       stats[result]++
