@@ -113,7 +113,8 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { marked } from 'marked'
-import useGeneralCulture, { formatDateRange, isPeriod } from './composables/useGeneralCulture'
+import useGeneralCulture from './composables/useGeneralCulture'
+import { formatDateRange, isPeriod } from '@lib/dates'
 import type { TGeneralCulture } from '../../types'
 
 const props = defineProps<{ slug: string }>()

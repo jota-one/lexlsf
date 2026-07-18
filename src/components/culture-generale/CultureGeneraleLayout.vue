@@ -112,7 +112,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter, RouterView } from 'vue-router'
-import useGeneralCulture, { formatDateRange, isPeriod } from './composables/useGeneralCulture'
+import useGeneralCulture from './composables/useGeneralCulture'
+import { formatDateRange, isPeriod } from '@lib/dates'
 import type { TGeneralCulture } from '../../types'
 
 const { loadItems } = useGeneralCulture()
