@@ -6,7 +6,7 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter un item" icon="i-fa-solid-plus" size="small" @click="showAddModal = true" />
+        <Button label="Ajouter un item" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="items" sortField="start_date" :sortOrder="1" tableStyle="min-width: 40rem">
         <Column field="name" header="Nom" sortable />
@@ -42,13 +42,7 @@
       </DataTable>
     </div>
 
-    <GeneralCultureAddModal v-model="showAddModal" @saved="loadItems" />
-    <GeneralCultureEditModal
-      v-if="editedItem?.id"
-      v-model="showEditModal"
-      :item-id="editedItem.id"
-      @saved="loadItems"
-    />
+    <GeneralCultureModal v-model="showItemModal" :item-id="editedItemId" @saved="loadItems" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer l'item ?"
@@ -66,15 +60,13 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import useGeneralCulture from '../composables/useGeneralCulture'
 import type { TGeneralCulture } from '../../types'
-import GeneralCultureAddModal from '../components/GeneralCultureAddModal.vue'
-import GeneralCultureEditModal from '../components/GeneralCultureEditModal.vue'
+import GeneralCultureModal from '../components/GeneralCultureModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
 
 const { items, loadItems, deleteItem } = useGeneralCulture()
-const showAddModal = ref(false)
-const showEditModal = ref(false)
+const showItemModal = ref(false)
+const editedItemId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
-const editedItem = ref<TGeneralCulture.TRecord | null>(null)
 const itemToDelete = ref<TGeneralCulture.TRecord | null>(null)
 const deleteMessage = computed(() =>
   itemToDelete.value ? `Voulez-vous vraiment supprimer "${itemToDelete.value.name}" ?` : ''
@@ -84,7 +76,8 @@ type RoleExpand = NonNullable<TGeneralCulture.TRecord['expand']>['Roles']
 const roleNames = (roles: RoleExpand) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
 const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
 
-const editItem = (item: TGeneralCulture.TRecord) => { editedItem.value = item; showEditModal.value = true }
+const openAddModal = () => { editedItemId.value = undefined; showItemModal.value = true }
+const editItem = (item: TGeneralCulture.TRecord) => { editedItemId.value = item.id; showItemModal.value = true }
 const confirmDelete = (item: TGeneralCulture.TRecord) => {
   itemToDelete.value = item
   showDeleteModal.value = true
