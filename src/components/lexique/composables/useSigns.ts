@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import { createSlug } from '@lib/slug'
 import type { TSign } from '../../../types'
 
 const translateNumericLevel = (level: number) => {
@@ -41,7 +42,7 @@ const setFormData = (payload: TSign.TForm) => {
   }
   formData.append('name', payload.name)
   formData.append('definition', payload.definition)
-  formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'))
+  formData.append('slug', createSlug(payload.name))
   formData.append('level', translateNumericLevel(payload.level))
   ;(payload.Category || []).forEach(cat => {
     formData.append('Category', cat)
