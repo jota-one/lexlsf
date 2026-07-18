@@ -10,7 +10,7 @@ export default function usePersons() {
   const loadPersons = async (category: string) => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
       fields:
-        'id, name, firstname, organism, illustration, slug, updated, expand.Category.*, expand.Sign.*',
+        'id, collectionId, collectionName, name, firstname, organism, illustration, slug, updated, expand.Category.*, expand.Sign.*',
       expand: 'Category,Sign',
       filter: pb.filter('Category.slug ?= {:category}', { category }),
       sort: 'name,firstname',
