@@ -222,7 +222,7 @@ import SignPicker from './SignPicker.vue'
 import PersonMultiPicker from './PersonMultiPicker.vue'
 import LexicalFieldPicker from './LexicalFieldPicker.vue'
 import DatePartInput from './DatePartInput.vue'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const form = defineModel<TGeneralCulture.TForm>({ required: true })
 

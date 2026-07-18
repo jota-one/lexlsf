@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { pb } from '@lib/pb'
 import type { TLexicalField } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TLexicalField.TForm) => {
   const formData = new FormData()

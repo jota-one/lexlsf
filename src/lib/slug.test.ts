@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { createSlug } from './strings'
+import { createSlug } from './slug'
 
 describe('createSlug', () => {
   describe('basic text', () => {

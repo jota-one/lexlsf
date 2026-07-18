@@ -1,4 +1,4 @@
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 import type { TImportExport } from '../types'
 import { pb } from '@lib/pb'
 

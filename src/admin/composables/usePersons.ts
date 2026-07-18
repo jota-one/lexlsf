@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import config from '../../config'
 import { pb } from '@lib/pb'
 import type { TPerson } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TPerson.TForm) => {
   const formData = new FormData()

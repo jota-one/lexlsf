@@ -192,7 +192,7 @@ import type { TLexicalField } from '../../types'
 import SignPicker from './SignPicker.vue'
 import PersonPicker from './PersonPicker.vue'
 import CategoriesPickerForm from './CategoriesPickerForm.vue'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 export type LocalTerm = {
   id?: string

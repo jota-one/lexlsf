@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { pb } from '@lib/pb'
 import type { TSign } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const translateNumericLevel = (level: number) => {
   const levels = ['a1', 'a2', 'b1', 'b2', 'c1']

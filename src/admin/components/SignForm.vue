@@ -297,7 +297,7 @@ import FaceZonesOverlay from './FaceZonesOverlay.vue';
 import BodyZonesOverlay from './BodyZonesOverlay.vue';
 import type { TSign, Ui } from '../../types';
 import HandMovementForm from './HandMovementForm.vue';
-import { createSlug } from '@admin/helpers/strings';
+import { createSlug } from '@lib/slug';
 
 const form = defineModel<TSign.TForm>({ required: true });
 const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });

@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { pb } from '@lib/pb'
 import type { TFrenchExpression } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TFrenchExpression.TForm) => {
   const formData = new FormData()

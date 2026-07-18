@@ -84,7 +84,7 @@ import Button from 'primevue/button'
 import useRoles from '../composables/useRoles'
 import type { TFrenchExpression } from '../../types'
 import SignPicker from './SignPicker.vue'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const form = defineModel<TFrenchExpression.TForm>({ required: true })
 

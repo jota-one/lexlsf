@@ -522,7 +522,7 @@ import { useSortableList } from '../composables/useSortableList';
 import type { TPerson, TVideo } from '../../types';
 import CategoriesPickerForm from './CategoriesPickerForm.vue';
 import SignPicker from './SignPicker.vue';
-import { createSlug } from '@admin/helpers/strings';
+import { createSlug } from '@lib/slug';
 
 // Internal type for timeline entries with mandatory ID for sorting
 type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string };
