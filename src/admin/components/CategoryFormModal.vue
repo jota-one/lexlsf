@@ -59,9 +59,11 @@
           severity="secondary"
           @click="visible = false"
         ></Button>
-        <Button type="submit" label="Enregistrer"></Button>
+        <Button type="submit" label="Enregistrer" :loading="saving"></Button>
       </div>
     </form>
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
   </Dialog>
 </template>
 <script setup lang="ts">
@@ -73,6 +75,8 @@ import Select from 'primevue/select';
 import Button from 'primevue/button';
 import useCategories from '../composables/useCategories';
 import { ALL_ENTITIES } from '../config/entities';
+import PbErrorToast from './PbErrorToast.vue';
+import usePbErrorToast from '../composables/usePbErrorToast';
 
 type Events = {
     saved: []
@@ -96,6 +100,8 @@ const allEntities = ALL_ENTITIES;
 const tagElement = useTemplateRef<{ $el: HTMLInputElement }>('tagInput');
 
 const { categories, loadCategories, saveCategory } = useCategories();
+const saving = ref(false);
+const { showPbError } = usePbErrorToast();
 
 const parentOptions = computed(() =>
     categories.value.map((cat: any) => ({
@@ -142,8 +148,16 @@ watch(visible, (v) => {
 });
 
 const save = async () => {
-    await saveCategory(form.value);
-    emit('saved');
-    visible.value = false;
+    saving.value = true;
+    try {
+        await saveCategory(form.value);
+        emit('saved');
+        visible.value = false;
+    } catch (err) {
+        // show formatted PocketBase error(s)
+        showPbError(err);
+    } finally {
+        saving.value = false;
+    }
 };
 </script>
