@@ -148,6 +148,7 @@ import FaceZonesOverlay from '@admin/components/FaceZonesOverlay.vue'
 import BodyZonesOverlay from '@admin/components/BodyZonesOverlay.vue'
 import config from '@config'
 import type { TCategory } from '../../types'
+import { verificationStatusOptions, learningSourceOptions } from '@lib/signOptions'
 
 const props = defineProps<{ slug: string }>()
 
@@ -158,18 +159,6 @@ const record = ref<any>(null)
 const mainCategories = ref<TCategory.TRecord[]>([])
 const error = ref(false)
 
-const verificationStatusOptions = [
-  { label: 'À vérifier', value: 'unverified' },
-  { label: 'Officiel', value: 'verified' },
-  { label: 'Contesté', value: 'disputed' },
-]
-const learningSourceOptions = [
-  { label: 'Dictionnaire', value: 'dictionary' },
-  { label: 'Enseignant', value: 'teacher' },
-  { label: 'Communauté', value: 'community' },
-  { label: 'Média', value: 'media' },
-  { label: 'Autre', value: 'other' },
-]
 
 const colors = { right: '#f4309865', left: '#00bafe74' }
 
