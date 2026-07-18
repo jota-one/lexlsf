@@ -1,48 +1,40 @@
-# Astro Starter Kit: Basics
+# Lexique LSF
 
-```sh
-pnpm create astro@latest -- --template basics
+Plateforme d'apprentissage et de documentation de la langue des signes française
+(LSF) : lexique de signes en vidéo, culture sourde, culture générale, outils
+lexicaux et module de révision par quiz, avec une interface d'administration
+complète.
+
+## Stack
+
+- **Frontend** : [Astro](https://astro.build) + îlots [Vue 3](https://vuejs.org)
+  (PrimeVue, Tailwind CSS 4, daisyUI). Cinq mini-SPA indépendantes (admin,
+  lexique, culture, culture générale, révisions) — voir
+  [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+- **Backend** : [PocketBase](https://pocketbase.io) avec binaire Go custom
+  (hooks d'optimisation vidéo ffmpeg, validation des slugs) — voir
+  [pb/README.md](./pb/README.md).
+
+## Développement
+
+```bash
+pnpm install
+pnpm db        # terminal 1 — PocketBase sur http://127.0.0.1:8090
+pnpm dev       # terminal 2 — Astro sur http://localhost:4321
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Build & vérifications
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+pnpm build     # astro check + astro build
+pnpm build:db  # compile le binaire PocketBase custom (pb/)
+pnpm lint      # oxlint (type-aware)
+pnpm test      # vitest
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Documentation
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — architecture multi-SPA et frontières
+- [docs/ARCHITECTURE-ANALYSIS.md](./docs/ARCHITECTURE-ANALYSIS.md) — analyse détaillée
+- [docs/IMPLEMENTATION-PLAN.md](./docs/IMPLEMENTATION-PLAN.md) — plan d'amélioration
+- [pb/README.md](./pb/README.md) — backend PocketBase custom et déploiement
