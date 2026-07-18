@@ -103,13 +103,7 @@
         </template>
       </DataTable>
     </div>
-    <PersonAddModal v-model="showAddModal" @saved="loadPersons" />
-    <PersonEditModal
-      v-if="editedPerson?.id"
-      v-model="showEditModal"
-      :sign-id="editedPerson?.id"
-      @saved="loadPersons"
-    />
+    <PersonModal v-model="showPersonModal" :person-id="editedPersonId" @saved="loadPersons" />
     <PersonsImportExportModal v-model="showImportExportModal" @saved="loadPersons" />
     <ConfirmModal
       v-model="showDeleteModal"
@@ -126,8 +120,7 @@ import usePersons from '../composables/usePersons';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button'
-import PersonAddModal from '../components/PersonAddModal.vue';
-import PersonEditModal from '../components/PersonEditModal.vue';
+import PersonModal from '../components/PersonModal.vue';
 import PersonsImportExportModal from '../components/PersonsImportExportModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import type { TPerson } from '../../types';
@@ -155,13 +148,12 @@ function getPersonProblems(person: TPerson.TRecord): string[] {
 }
 
 const { persons, loadPersons, deletePerson, getIllustrationUrl } = usePersons();
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const showPersonModal = ref(false);
+const editedPersonId = ref<string | undefined>(undefined);
 const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
 const personToDelete = ref<any>(null);
-const editedPerson = ref<any>(null);
 const deleteMessage = ref('');
 
 const categories = (category: any[]) => {
@@ -174,7 +166,8 @@ const roleNames = (roles: any[]) => {
 };
 
 const openAddModal = () => {
-  showAddModal.value = true;
+  editedPersonId.value = undefined;
+  showPersonModal.value = true;
 };
 
 const openImportExportModal = () => {
@@ -182,8 +175,8 @@ const openImportExportModal = () => {
 };
 
 const editPerson = (person: any) => {
-  editedPerson.value = person;
-  showEditModal.value = true;
+  editedPersonId.value = person.id;
+  showPersonModal.value = true;
 };
 
 const confirmDelete = (person: any) => {
