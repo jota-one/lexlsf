@@ -1,6 +1,13 @@
 <template>
-  <Dialog v-model:visible="visible" modal header="Modifier l'expression pi-sourde" class="w-[55%]">
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :header="expressionId ? `Modifier l'expression pi-sourde` : 'Ajouter une expression pi-sourde'"
+    class="w-[55%]"
+  >
     <PiDeafExpressionForm v-model="form" />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
     <template #footer>
       <div class="flex justify-end gap-2 pt-4">
         <Button type="button" label="Annuler" severity="secondary" @click="visible = false" />
@@ -16,22 +23,33 @@ import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import PiDeafExpressionForm from './PiDeafExpressionForm.vue'
 import usePiDeafExpressions from '../composables/usePiDeafExpressions'
+import PbErrorToast from './PbErrorToast.vue'
+import usePbErrorToast from '../composables/usePbErrorToast'
 import { pb } from '@lib/pb'
 import type { TPiDeafExpression } from '../../types'
 
-type Props = { expressionId: string }
+type Props = {
+  // undefined = create mode
+  expressionId?: string
+}
 type Events = { saved: [] }
 const props = defineProps<Props>()
 const emit = defineEmits<Events>()
 const visible = defineModel<boolean>({ required: true })
 
-const { loadPiDeafExpression, updatePiDeafExpression } = usePiDeafExpressions()
+const { addPiDeafExpression, loadPiDeafExpression, updatePiDeafExpression } = usePiDeafExpressions()
 const saving = ref(false)
+const { showPbError } = usePbErrorToast()
 
 const form = ref<TPiDeafExpression.TForm>({ Sign: '', strategies: '', Roles: [] })
 
 watch(visible, async (isVisible) => {
   if (!isVisible) return
+  if (!props.expressionId) {
+    // Reset form when modal is opened in create mode
+    form.value = { Sign: '', strategies: '', Roles: [] }
+    return
+  }
   const record = await loadPiDeafExpression(props.expressionId)
   form.value = {
     id: record.id,
@@ -43,7 +61,7 @@ watch(visible, async (isVisible) => {
   }
 }, { immediate: true })
 
-// Auto-populate name when sign changes
+// Auto-populate name from selected sign
 watch(() => form.value.Sign, async (signId) => {
   if (!signId) return
   const sign = await pb.collection('sign').getOne(signId, { fields: 'id,name' }) as any
@@ -53,9 +71,16 @@ watch(() => form.value.Sign, async (signId) => {
 const save = async () => {
   saving.value = true
   try {
-    await updatePiDeafExpression(props.expressionId, form.value)
+    if (props.expressionId) {
+      await updatePiDeafExpression(props.expressionId, form.value)
+    } else {
+      await addPiDeafExpression(form.value)
+    }
     emit('saved')
     visible.value = false
+  } catch (err) {
+    // show formatted PocketBase error(s)
+    showPbError(err)
   } finally {
     saving.value = false
   }
