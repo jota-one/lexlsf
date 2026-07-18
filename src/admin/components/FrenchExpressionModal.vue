@@ -1,6 +1,13 @@
 <template>
-  <Dialog v-model:visible="visible" modal header="Modifier l'expression française" class="w-[55%]">
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :header="expressionId ? `Modifier l'expression française` : 'Ajouter une expression française'"
+    class="w-[55%]"
+  >
     <FrenchExpressionForm v-model="form" />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
     <template #footer>
       <div class="flex justify-end gap-2 pt-4">
         <Button type="button" label="Annuler" severity="secondary" @click="visible = false" />
@@ -16,21 +23,32 @@ import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import FrenchExpressionForm from './FrenchExpressionForm.vue'
 import useFrenchExpressions from '../composables/useFrenchExpressions'
+import PbErrorToast from './PbErrorToast.vue'
+import usePbErrorToast from '../composables/usePbErrorToast'
 import type { TFrenchExpression } from '../../types'
 
-type Props = { expressionId: string }
+type Props = {
+  // undefined = create mode
+  expressionId?: string
+}
 type Events = { saved: [] }
 const props = defineProps<Props>()
 const emit = defineEmits<Events>()
 const visible = defineModel<boolean>({ required: true })
 
-const { loadFrenchExpression, updateFrenchExpression } = useFrenchExpressions()
+const { addFrenchExpression, loadFrenchExpression, updateFrenchExpression } = useFrenchExpressions()
 const saving = ref(false)
+const { showPbError } = usePbErrorToast()
 
 const form = ref<TFrenchExpression.TForm>({ expression: '', strategies: '', Signs: [], Roles: [] })
 
 watch(visible, async (isVisible) => {
   if (!isVisible) return
+  if (!props.expressionId) {
+    // Reset form when modal is opened in create mode
+    form.value = { expression: '', strategies: '', Signs: [], Roles: [] }
+    return
+  }
   const record = await loadFrenchExpression(props.expressionId)
   form.value = {
     id: record.id,
@@ -45,9 +63,16 @@ watch(visible, async (isVisible) => {
 const save = async () => {
   saving.value = true
   try {
-    await updateFrenchExpression(props.expressionId, form.value)
+    if (props.expressionId) {
+      await updateFrenchExpression(props.expressionId, form.value)
+    } else {
+      await addFrenchExpression(form.value)
+    }
     emit('saved')
     visible.value = false
+  } catch (err) {
+    // show formatted PocketBase error(s)
+    showPbError(err)
   } finally {
     saving.value = false
   }
