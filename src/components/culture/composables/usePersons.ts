@@ -1,27 +1,7 @@
 import { ref } from 'vue'
-import config from '@config'
 import useAuth from '@admin/composables/useAuth'
+import { fileUrl } from '@lib/pb'
 import type { TPerson } from '../../../types'
-
-const setFormData = (payload: TPerson.TForm) => {
-  const formData = new FormData()
-  if (payload.illustration && payload.illustration instanceof File) {
-    formData.append('illustration', payload.illustration)
-  }
-  formData.append('name', payload.name)
-  formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'))
-  if (payload.description) {
-    formData.append('description', payload.description)
-  }
-  if (payload.Sign) {
-    formData.append('Sign', payload.Sign)
-  }
-  ;(payload.Category || []).forEach(cat => {
-    formData.append('Category', cat)
-  })
-
-  return formData
-}
 
 export default function usePersons() {
   const { pb } = useAuth()
@@ -44,32 +24,14 @@ export default function usePersons() {
     })
   }
 
-  const addPerson = async (payload: TPerson.TForm) => {
-    const formData = setFormData(payload)
-    return pb.collection('person').create(formData)
-  }
-
-  const updatePerson = async (id: string, payload: TPerson.TForm) => {
-    const formData = setFormData(payload)
-    return pb.collection('person').update(id, formData)
-  }
-
-  const deletePerson = async (id: string) => {
-    return pb.collection('person').delete(id)
-  }
-
   const getIllustrationUrl = (person: TPerson.TRecord): string => {
-    if (!person.illustration) return ''
-    return `${config.apiBaseUrl}/api/files/person/${person.id}/${person.illustration}`
+    return fileUrl(person, person.illustration)
   }
 
   return {
     persons,
     loadPersons,
     loadPerson,
-    addPerson,
-    deletePerson,
-    updatePerson,
     getIllustrationUrl,
   }
 }
