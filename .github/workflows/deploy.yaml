@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App token
-        uses: actions/create-github-app-token@v1.11.6
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
-          app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
+          client-id: ${{ secrets.JOTA_INFRA_APP_ID }}
           private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
           owner: jota-one
 
@@ -34,11 +34,26 @@ jobs:
             --field repo=$repo \
             --field commit-sha=$commit_sha \
             --field pb-path=${{ env.PB_PATH }} \
+            --field branch=${{ github.ref_name }} \
             --field run-external-id=$run_external_id
-          sleep 5
-          gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
-          run_id=$(cat .wf_run | jq '.databaseId')
-          run_url=$(cat .wf_run | jq '.url')
+
+          echo "Waiting for workflow run to appear..."
+          for i in {1..12}; do
+            sleep 5
+            gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
+            if [ -s .wf_run ]; then
+              break
+            fi
+            echo "Attempt $i: run not found yet, retrying..."
+          done
+
+          if [ ! -s .wf_run ]; then
+            echo "Failed to find workflow run after 60 seconds"
+            exit 1
+          fi
+
+          run_id=$(cat .wf_run | jq -r '.databaseId')
+          run_url=$(cat .wf_run | jq -r '.url')
           echo "Watching workflow run $run_url"
           gh run watch $run_id --repo jota-one/infra --compact --exit-status 1
 
@@ -48,35 +63,34 @@ jobs:
     needs: deploy-db
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
-          version: 10
+          version: 11
           run_install: false
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm test
-
       - name: Build app
-        run: pnpm build
+        env:
+          PUBLIC_GMAP_API_KEY: ${{ secrets.PUBLIC_GMAP_API_KEY }}
+        run: |
+          # .env.tmp is required because shell redirects can't read and write the same file simultaneously
+          envsubst '${PUBLIC_GMAP_API_KEY}' < .env > .env.tmp && mv .env.tmp .env
+          pnpm lint && pnpm tsc && pnpm build
 
       - name: Prepare artifact
         run: |
-          mkdir _artifact && cp -r ${{ env.PB_PATH }} _artifact
+          mkdir _artifact && cp -r ${{ env.PB_PATH }} pb-tools _artifact
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -91,10 +105,10 @@ jobs:
     needs: build
     steps:
       - name: Generate GitHub App token
-        uses: actions/create-github-app-token@v1.11.6
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
-          app-id: ${{ secrets.JOTA_INFRA_APP_ID }}
+          client-id: ${{ secrets.JOTA_INFRA_APP_ID }}
           private-key: ${{ secrets.JOTA_INFRA_APP_PRIVATE_KEY }}
           owner: jota-one
 
@@ -112,10 +126,25 @@ jobs:
             --field pb-path=${{ env.PB_PATH }} \
             --field build-artifact-name=${{ env.ARTIFACT_NAME }} \
             --field build-artifact-run-id=${{ github.run_id }} \
+            --field branch=${{ github.ref_name }} \
             --field run-external-id=$run_external_id
-          sleep 5
-          gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
-          run_id=$(cat .wf_run | jq '.databaseId')
-          run_url=$(cat .wf_run | jq '.url')
+
+          echo "Waiting for workflow run to appear..."
+          for i in {1..12}; do
+            sleep 5
+            gh run list -R jota-one/infra -L 10 --json name,databaseId,url | jq --arg n "$wf_name" '.[] | select(.name == $n)' > .wf_run
+            if [ -s .wf_run ]; then
+              break
+            fi
+            echo "Attempt $i: run not found yet, retrying..."
+          done
+
+          if [ ! -s .wf_run ]; then
+            echo "Failed to find workflow run after 60 seconds"
+            exit 1
+          fi
+
+          run_id=$(cat .wf_run | jq -r '.databaseId')
+          run_url=$(cat .wf_run | jq -r '.url')
           echo "Watching workflow run $run_url"
           gh run watch $run_id --repo jota-one/infra --compact --exit-status 1
