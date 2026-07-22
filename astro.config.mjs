@@ -10,6 +10,20 @@ import node from '@astrojs/node'
 export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      rolldownOptions: {
+        plugins: [
+          {
+            name: 'fix-pocketbase-import-method',
+            transform(code, id) {
+              if (id.includes('pocketbase')) {
+                return code.replace(/\basync import\(/g, 'async _pb_import(')
+              }
+            },
+          },
+        ],
+      },
+    },
     ...(process.env.NODE_ENV === 'production'
       ? {
           ssr: {
