@@ -210,7 +210,7 @@ const handleExportCSV = async () => {
 }
 
 const handleImport = async () => {
-  if (!selectedFile.value) return
+  if (!selectedFile.value) {return}
 
   try {
     if (!selectedFile.value.name.endsWith('.csv')) {

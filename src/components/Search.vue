@@ -35,8 +35,7 @@
 import { ref } from 'vue';
 import AutoComplete from 'primevue/autocomplete';
 import FloatLabel from 'primevue/floatlabel';
-import config from '../config';
-import PocketBase from 'pocketbase';
+import { pb } from '@lib/pb';
 
 type Props = {
     mode?: 'hero' | 'inline';
@@ -45,7 +44,6 @@ const props = withDefaults(defineProps<Props>(), {
     mode: 'inline',
 });
 
-const pb = new PocketBase(config.apiBaseUrl);
 
 const selectedSign = ref<any>(null);
 const suggestions = ref<any[]>([]);
@@ -68,8 +66,8 @@ const onSearch = async (event: any) => {
             pb.collection('sign').getList(1, 10, { filter: signFilter, fields: 'id,name,definition,slug', sort: 'name' }),
             pb.collection('person').getList(1, 10, { filter: cultureFilter, fields: 'id,name,firstname,organism,definition,slug', sort: 'name,firstname' }),
             pb.collection('lexical_field').getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
-            pb.collection('lexical_term').getList(1, 10, { filter: `term~"${query}"`, expand: 'LexicalField', fields: 'id,term,expand.LexicalField.id,expand.LexicalField.name,expand.LexicalField.slug', sort: 'term' }),
-            pb.collection('french_expression').getList(1, 5, { filter: `expression~"${query}"`, fields: 'id,expression,slug', sort: 'expression' }),
+            pb.collection('lexical_term').getList(1, 10, { filter: pb.filter('term ~ {:query}', { query }), expand: 'LexicalField', fields: 'id,term,expand.LexicalField.id,expand.LexicalField.name,expand.LexicalField.slug', sort: 'term' }),
+            pb.collection('french_expression').getList(1, 5, { filter: pb.filter('expression ~ {:query}', { query }), fields: 'id,expression,slug', sort: 'expression' }),
             pb.collection('pi_deaf_expression').getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
         ]);
 
@@ -102,7 +100,7 @@ const onSearch = async (event: any) => {
 
 const onSelect = (event: any) => {
     const selected = event.value;
-    if (!selected?.slug) return;
+    if (!selected?.slug) {return;}
     const routes: Record<string, string> = {
         sign: '/lexique/sign',
         organism: '/culture/person',

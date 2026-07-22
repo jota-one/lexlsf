@@ -1,16 +1,14 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TLexicalTerm } from '../../types'
 
 export default function useLexicalTerms() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const terms = ref<TLexicalTerm.TRecord[]>([])
 
   const loadTermsByField = async (lexicalFieldId: string) => {
     terms.value = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
-      filter: `LexicalField = "${lexicalFieldId}"`,
+      filter: pb.filter('LexicalField = {:id}', { id: lexicalFieldId }),
       expand: 'Sign,Person',
       sort: 'term',
     })

@@ -13,8 +13,9 @@ Liste des petites améliorations et refactorings potentiels.
 - Quizz création: Mettre des cases à cocher et un bouton "save" au lieu du bouton "+" et du "ajouter tous"
 - Quizz exécution: Ajouter un champ "à réviser" dans un signe ou une personne (cochable par utilisateur et par quizz)
 - Expression pi-sourde: créer un signe, mais le lier à une catégorie spéciale qui l'exclut du lexique et qui le met que dans les expressions pi-sourde. Pourquoi? Parce qu'on ne peut pas traduire en français. D'où l'existence de ce menu spécifique. Cela implique d'avoir un nouveau groupe de catégories pour les expressions pi-sourde.
-
-- Masquer le menu outil complètement aux non-admin dans la partie publique du site
+- Culture générale — affichage visuel distinct selon le mode : événements ponctuels en vue verticale (comme la timeline d'une personne dans Culture), périodes en vue horizontale avec des rectangles illustrant la durée et le nom au-dessus. La fiche détail s'ouvre en-dessous en mode horizontal, à droite en mode vertical.
+- Culture générale — import/export des items (sur le même modèle que les signes).
+- Culture générale — intégration dans la recherche globale du site.
 
 
 ## Nouvelles fonctionnalités
@@ -37,28 +38,10 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
-### Espace timeline culture générale
-
-On veut un nouveau menu qui va synergiser avec tous les autres. Le but est de permettre à l'auteur du site de rentrer des informations de culture générale et de les classifier selon différents critères, notamment des dates de début et de fin si c'est un événement qui dure (2ème guerre mondiale) ou une période particulière (courant artistique) ou simplement une date d'occurrence si c'est un événement unique.
-
-On veut aussi pouvoir lier un item "culture générale" à un ou plusieurs champs lexicaux.
-
-On veut pouvoir y associer des signes et éventuellement des personnes/organismes de la section "culture" (qui est en fait la "culture sourde").
-
-Outre les informations de dates d'un item "culture générale", on va y trouver:
-- un nom/titre
-- une description markdown
-- des images, qu'on voudra pouvoir intégrer dans le markdown, mais qu'on uploadera séparément pour ne pas trop compliquer. Intégrées ou pas dans la descriptions, elles seront affichées en-dessous sous forme de vignettes avec la possibilité de les ouvrir en grand.
-
-Cette section "culture générale" devra s'afficher sous la forme d'une chronologie filtrable selon différent critères, à commencer les dates de début et de fin. On voudra aussi pouvoir afficher uniquement les événements à date fixe (verticalement, un peu comme la timeline d'une personne dans la rubrique "culture") ou uniquement les périodes (horizontalement, imaginer une ligne du temps avec des rectangles qui illustrent une durée et le nom de la période en-dessus). Au clic sur un élément, sa fiche détaillée apparaît sur la même page (en-dessous si on est en affichage horizontal, à droite si on est en affichage vertical).
-
-On va vouloir également avoir un système d'import/export, similaire à celui qu'on a pour les signes.
-
-Les items de "culture générale" seront aussi "recherchables" via la recherche globale du site.
-
 
 ## Historique (fait)
 
+- [2026-04-25] Admin — page "Feuille de route" : nouvelles fonctionnalités en cartes (clic → modal détail markdown), améliorations en liste avec badges par catégorie, historique en timeline DaisyUI.
 - [2026-04-24] Culture générale — timeline publique filtrable (événements ponctuels + périodes) avec fiche détail ; CRUD admin complet (dates partielles, images uploadables avec copie markdown, associations champs lexicaux / signes / personnes, visibilité par rôles) ; collection PocketBase + migrations.
 - [2026-04-23] Champs lexicaux — termes enrichis (flag personne, description markdown, stratégie en bleu, dates d'activité, lien Culture) ; layout public 3 colonnes (termes sur 2 col., personnes triées par activité dans la 3e) ; catégories dédiées `lexical_field` (nouvelle entité dans admin catégories + onglet Catégories dans le formulaire champ lexical).
 - [2026-04-17] Culture — affichage du nombre de personnes par catégorie avec filtrage selon les rôles (sur le modèle des badges "N signe(s)" du lexique).

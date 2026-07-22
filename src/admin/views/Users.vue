@@ -95,13 +95,7 @@
         <template #footer> Nombre total d'utilisateurs: {{ users ? users.length : 0 }}. </template>
       </DataTable>
     </div>
-    <UserAddModal v-model="showAddModal" @saved="loadUsers" />
-    <UserEditModal
-      v-if="editedUser?.id"
-      v-model="showEditModal"
-      :user-id="editedUser?.id"
-      @saved="loadUsers"
-    />
+    <UserModal v-model="showUserModal" :user-id="editedUserId" @saved="loadUsers" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer l'utilisateur ?"
@@ -120,14 +114,13 @@ import type { TUser } from '../composables/useUsers';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import UserAddModal from '../components/UserAddModal.vue';
-import UserEditModal from '../components/UserEditModal.vue';
+import UserModal from '../components/UserModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 
 const { users, loadUsers, deleteUser, getAvatarUrl } = useUsers();
 const { user: currentUser, impersonate } = useAuth();
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const showUserModal = ref(false);
+const editedUserId = ref<string | undefined>(undefined);
 const showDeleteModal = ref(false);
 const editedUser = ref<TUser | null>(null);
 const deleteMessage = ref('');
@@ -137,12 +130,13 @@ const formatDate = (dateString: string) => {
 };
 
 const openAddModal = () => {
-  showAddModal.value = true;
+  editedUserId.value = undefined;
+  showUserModal.value = true;
 };
 
 const editUser = (user: TUser) => {
-  editedUser.value = user;
-  showEditModal.value = true;
+  editedUserId.value = user.id;
+  showUserModal.value = true;
 };
 
 const confirmDelete = (user: TUser) => {
@@ -152,7 +146,7 @@ const confirmDelete = (user: TUser) => {
 };
 
 const deleteUserConfirmed = async () => {
-  if (!editedUser.value) return;
+  if (!editedUser.value) {return;}
 
   try {
     await deleteUser(editedUser.value.id);

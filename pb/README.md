@@ -42,46 +42,19 @@ Le workflow App de ce repo : `.github/workflows/deploy.yaml`
 
 Par défaut, le bundle « pb » inclut : `.nodeversion`, `.pbversion`, `pb_hooks`, `pb_migrations`, `pb_public`, `pb_assets` (mais pas le binaire).
 
-### Recommandation (simple et fiable)
+### Mécanisme effectif de déploiement du binaire custom
 
-1. Construire le binaire custom dans ce repo AVANT la création de l’artefact :
+Vérifié sur `jota-one/infra` (2026-07-14) — aucun changement n'est requis dans ce repo :
 
-Ajouter dans `lexlsf/.github/workflows/deploy.yaml` (job `build`, après `Install dependencies` et avant `Prepare artifact`) :
-
-```yaml
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24.x'
-
-      - name: Build custom PocketBase (linux amd64)
-        working-directory: pb
-        run: |
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o pocketbase .
-          chmod +x pocketbase
-```
-
-2. Faire inclure le binaire dans le bundle « pb » côté infra :
-
-- Dans `infra/.github/workflows/deploy-pb-db.yaml`, étendre la boucle de packaging :
-
-```diff
-- for p in .nodeversion .pbversion pb_hooks pb_migrations pb_public pb_assets; do
-+ for p in .nodeversion .pbversion pb_hooks pb_migrations pb_public pb_assets pocketbase; do
-```
-
-- Le script de déploiement `infra/bin/pb_deploy` n’a pas besoin de logique spéciale : le fichier `pocketbase` sera déposé dans le répertoire de l’app et utilisé par le service existant (lance toujours `./pocketbase serve`).
-
-3. Versionnage upstream :
-
-- Conserver `.pbversion` dans ce repo synchronisé avec la version PocketBase cible (ex. `v0.34.2`).
-- Le script `pb_install` de l’infra n’écrasera pas notre binaire si la version courante correspond à `.pbversion` (no-op). Si besoin de rollback vers l’officiel : modifier `.pbversion` → relancer un déploiement (il téléchargera l’upstream correspondant).
-
-### Pourquoi cette approche ?
-
-- Elle ne change pas les contrats existants (bundles .pb / .app, scripts `pb_deploy`, restart via `pb_watch_check`).
-- Elle documente explicitement l’arrivée d’un binaire dans le bundle « pb » sans coupler l’infra à un dépôt privé externe.
-- Le rollback est trivial via `.pbversion`.
+1. `infra/.github/workflows/deploy-pb-db.yaml` détecte la présence de `go.mod`
+   dans le bundle « pb » et **construit le binaire depuis les sources** (`main.go`,
+   `hooks.go`) au déploiement.
+2. `infra/bin/pb_install` ne remplace jamais un binaire construit depuis les
+   sources : celui-ci se signale avec la version `(untracked)`, que le script
+   saute systématiquement.
+3. `.pbversion` ne sert qu'au rollback vers un binaire upstream officiel : le
+   modifier puis relancer un déploiement télécharge la version upstream
+   correspondante.
 
 ## Prérequis côté serveur
 
@@ -104,7 +77,7 @@ Tester un upload/édition d’un « sign » : la taille de la vidéo dans `pb_
 ## Notes d’exploitation
 
 - Les hooks tournent en asynchrone post-commit et n’entravent pas les sauvegardes.
-- Les paramètres ffmpeg par défaut : `scale=640:-2:force_divisible_by=2`, `libx264`, `crf=23`, `preset=veryfast`, `aac 128k`, `-movflags faststart`.
+- Les paramètres ffmpeg par défaut : `crop=ih*4/3:ih,scale=720:-2:flags=lanczos:force_divisible_by=2,fps=24`, `libx265` (tag `hvc1`), `crf=24`, `preset=slow`, pas de piste audio (`-an`), `-movflags +faststart`. Les vidéos déjà en HEVC sont ignorées (probe `ffprobe`).
 - On peut retuner `crf`/`preset` ultérieurement sans impacter les schémas.
 
 ## Plan de rollback

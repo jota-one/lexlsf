@@ -1,10 +1,8 @@
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 import { ref } from 'vue'
 import type { TCategory } from '../../types'
 
 export default function useCategories() {
-  const pb = new PocketBase(config.apiBaseUrl)
   const categories = ref<TCategory.TRecord[]>([])
   const loadingCategories = ref(false)
 

@@ -5,59 +5,19 @@
  * avec la nouvelle fonction createSlug améliorée.
  *
  * Usage:
- *   node scripts/migrate-slugs.js
+ *   node --experimental-strip-types scripts/migrate-slugs.js
  *
  * IMPORTANT: Faire un backup de la base de données avant d'exécuter ce script!
  *   cp -r pb/pb_data pb/pb_data.backup.$(date +%Y%m%d)
  */
 
 import PocketBase from 'pocketbase'
+import { createSlug } from '../src/lib/slug.ts'
 
 // Configuration - à adapter selon votre environnement
 const PB_URL = process.env.PB_URL || 'http://127.0.0.1:8090'
 const PB_ADMIN_EMAIL = process.env.PB_ADMIN_EMAIL
 const PB_ADMIN_PASSWORD = process.env.PB_ADMIN_PASSWORD
-
-// Fonction createSlug (copie de src/admin/helpers/strings.ts)
-function createSlug(name, firstname) {
-  // Build full name string (firstname + name for persons)
-  let text = name.trim()
-  if (firstname) {
-    text = `${firstname.trim()} ${text}`
-  }
-
-  // Step 1: Normalize accented characters using String.normalize()
-  // NFKD = decompose accented characters (é → e + accent)
-  // Then use regex to remove combining diacritical marks
-  text = text.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
-
-  // Step 2: Convert to lowercase
-  text = text.toLowerCase()
-
-  // Step 3: Replace special French characters that normalize() doesn't handle
-  const specialChars = {
-    œ: 'oe',
-    æ: 'ae',
-    ç: 'c',
-  }
-  for (const [char, replacement] of Object.entries(specialChars)) {
-    text = text.replace(new RegExp(char, 'g'), replacement)
-  }
-
-  // Step 4: Replace spaces and special characters with hyphens
-  text = text.replace(/[\s_''""`´]+/g, '-')
-
-  // Step 5: Remove all non-alphanumeric characters except hyphens
-  text = text.replace(/[^a-z0-9-]/g, '')
-
-  // Step 6: Collapse multiple consecutive hyphens
-  text = text.replace(/--+/g, '-')
-
-  // Step 7: Remove leading/trailing hyphens
-  text = text.replace(/^-+|-+$/g, '')
-
-  return text || 'untitled' // Fallback if empty after processing
-}
 
 // Statistiques de migration
 const stats = {

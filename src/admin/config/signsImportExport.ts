@@ -1,9 +1,7 @@
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 import type { TImportExport } from '../types'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 let rolesMapsPromise: Promise<{
   slugToId: Map<string, string>

@@ -91,7 +91,7 @@ const onDayInput = (e: Event) => {
 }
 
 watch(month, (val) => {
-  if (!val) day.value = ''
+  if (!val) {day.value = ''}
   buildValue()
 })
 </script>

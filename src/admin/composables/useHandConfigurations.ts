@@ -1,9 +1,8 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 
 export default function useHandConfigurations() {
-  const pb = new PocketBase(config.apiBaseUrl)
   const handConfigurations = ref([])
   const loadingHandConfigurations = ref(false)
 

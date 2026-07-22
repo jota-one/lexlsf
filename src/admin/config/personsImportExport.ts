@@ -1,13 +1,11 @@
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 import type { TImportExport } from '../types'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 
 dayjs.extend(customParseFormat)
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 let rolesMapsPromise: Promise<{
   slugToId: Map<string, string>
@@ -57,11 +55,11 @@ const getCategoryMaps = async () => {
 // Formatters pour les champs spécifiques
 const birthdateFormatter: TImportExport.FieldFormatter = {
   export: (value: string | undefined) => {
-    if (!value) return ''
+    if (!value) {return ''}
     return dayjs(value).format('DD.MM.YYYY')
   },
   import: (value: string) => {
-    if (!value) return ''
+    if (!value) {return ''}
     const parsed = dayjs(value, 'DD.MM.YYYY', true)
     return parsed.isValid() ? parsed.format('YYYY-MM-DD') : value
   },
@@ -69,11 +67,11 @@ const birthdateFormatter: TImportExport.FieldFormatter = {
 
 const booleanFormatter: TImportExport.FieldFormatter = {
   export: (value: boolean | undefined) => {
-    if (value === undefined || value === null) return 'non'
+    if (value === undefined || value === null) {return 'non'}
     return value ? 'oui' : 'non'
   },
   import: (value: string) => {
-    if (!value) return false
+    if (!value) {return false}
     const normalized = value.toLowerCase().trim()
     return normalized === 'oui' || normalized === '1' || normalized === 'true'
   },
@@ -128,7 +126,7 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
             .join(',')
         }
         const categoryIds = Array.isArray(value) ? value : []
-        if (!categoryIds.length) return ''
+        if (!categoryIds.length) {return ''}
         const { idToSlug } = await getCategoryMaps()
         return categoryIds
           .map(id => idToSlug.get(id))
@@ -136,7 +134,7 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
           .join(',')
       },
       import: async (value: string) => {
-        if (!value?.trim()) return []
+        if (!value?.trim()) {return []}
         const { slugToId } = await getCategoryMaps()
         const requestedSlugs = value
           .split(/[;,]/)
@@ -165,7 +163,7 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
             .join(',')
         }
         const roleIds = Array.isArray(value) ? value : []
-        if (!roleIds.length) return ''
+        if (!roleIds.length) {return ''}
         const { idToSlug } = await getRolesMaps()
         return roleIds
           .map(id => idToSlug.get(id))
@@ -173,7 +171,7 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
           .join(',')
       },
       import: async (value: string) => {
-        if (!value?.trim()) return []
+        if (!value?.trim()) {return []}
         const { slugToId } = await getRolesMaps()
         const requestedSlugs = value
           .split(',')

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TImportExport } from '../types'
 
 type TGetFieldsConfig = () => TImportExport.FieldConfig[]
@@ -12,7 +12,6 @@ export default function useImportExport(
   getImportableFields: TGetFieldsConfig,
   getFieldConfig: TGetFieldConfig,
 ) {
-  const pb = new PocketBase(config.apiBaseUrl)
   const isExporting = ref(false)
   const isImporting = ref(false)
 
@@ -119,7 +118,7 @@ export default function useImportExport(
       // Process each line
       for (let i = 1; i < rows.length; i++) {
         const values = rows[i]
-        if (!values || values.every(v => v === '')) continue
+        if (!values || values.every(v => v === '')) {continue}
 
         try {
           const record: any = {}
@@ -252,7 +251,7 @@ export default function useImportExport(
 
   // Utility functions
   const escapeCSV = (value: string): string => {
-    if (!value) return ''
+    if (!value) {return ''}
     const stringValue = String(value)
     if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
       return `"${stringValue.replace(/"/g, '""')}"`
@@ -261,7 +260,7 @@ export default function useImportExport(
   }
 
   const unescapeCSV = (value: string): string => {
-    if (!value) return ''
+    if (!value) {return ''}
     if (value.startsWith('"') && value.endsWith('"')) {
       return value.slice(1, -1).replace(/""/g, '"')
     }
@@ -359,10 +358,12 @@ export default function useImportExport(
 
     for (const field of uniqueFields) {
       try {
-        await pb.collection(collectionName).getFirstListItem(`${field.key}="${record[field.key]}"`)
+        await pb
+          .collection(collectionName)
+          .getFirstListItem(pb.filter(`${field.key} = {:value}`, { value: record[field.key] }))
         throw new Error(`${field.label} "${record[field.key]}" existe déjà`)
       } catch (e: any) {
-        if (e?.status === 404) continue
+        if (e?.status === 404) {continue}
         throw e
       }
     }
@@ -372,7 +373,7 @@ export default function useImportExport(
     const canonicalize = (value: any, fieldKey?: string) => {
       const config = fieldKey ? getFieldConfig(fieldKey) : undefined
 
-      if (value === '') value = null
+      if (value === '') {value = null}
 
       if (Array.isArray(value)) {
         return fieldKey === 'Category' || fieldKey === 'Roles'
@@ -397,7 +398,7 @@ export default function useImportExport(
     const normB = canonicalize(b, key)
 
     if (Array.isArray(normA) && Array.isArray(normB)) {
-      if (normA.length !== normB.length) return false
+      if (normA.length !== normB.length) {return false}
       return normA.every((item, idx) => item === normB[idx])
     }
 

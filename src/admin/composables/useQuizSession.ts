@@ -1,9 +1,10 @@
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb, idFilter } from '@lib/pb'
 import type { QuizSession, QuizAttempt, QuizResult, QuizSessionStats } from '../types/quiz'
 import { getQuizMode } from '../config/quizModes'
+import { shuffle, partitionResumedItems, computeSkipInsertIndex } from '../helpers/quizDeck'
 
 type QuizSessionRecord = QuizSession & {
   id: string
@@ -28,17 +29,7 @@ type DeckItem = {
 
 const BATCH_SIZE = 20 // Load 20 items at a time for video optimization
 
-const shuffle = <T>(arr: T[]): T[] => {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
-
 export default function useQuizSession() {
-  const pb = new PocketBase(config.apiBaseUrl)
-  pb.autoCancellation(false)
 
   const currentSession = ref<QuizSessionRecord | null>(null)
   const deck = ref<DeckItem[]>([])
@@ -47,12 +38,12 @@ export default function useQuizSession() {
   const loadingBatch = ref(false)
 
   const currentCard = computed(() => {
-    if (currentIndex.value >= deck.value.length) return null
+    if (currentIndex.value >= deck.value.length) {return null}
     return deck.value[currentIndex.value]
   })
 
   const progress = computed(() => {
-    if (!currentSession.value) return { current: 0, total: 0, percentage: 0 }
+    if (!currentSession.value) {return { current: 0, total: 0, percentage: 0 }}
     const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
     const answered = stats.known + stats.unknown
     return {
@@ -63,7 +54,7 @@ export default function useQuizSession() {
   })
 
   const isComplete = computed(() => {
-    if (!currentSession.value) return false
+    if (!currentSession.value) {return false}
     const stats = currentSession.value.stats || { total: 0, known: 0, unknown: 0, skipped: 0 }
     return stats.known + stats.unknown >= stats.total
   })
@@ -77,7 +68,7 @@ export default function useQuizSession() {
       // Get quiz and its items
       const quiz = await pb.collection('quiz').getOne(quizId)
       const quizItems = await pb.collection('quiz_item').getFullList({
-        filter: `Quiz = "${quizId}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId }),
         sort: 'position',
       })
 
@@ -150,38 +141,26 @@ export default function useQuizSession() {
 
       // Get quiz items
       const quizItems = await pb.collection('quiz_item').getFullList({
-        filter: `Quiz = "${currentSession.value.Quiz}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId: currentSession.value.Quiz }),
         sort: 'position',
       })
 
       // Get existing attempts for this session
       const attempts = await pb.collection<QuizAttemptRecord>('quiz_attempt').getFullList({
-        filter: `Session = "${sessionId}"`,
+        filter: pb.filter('Session = {:sessionId}', { sessionId }),
       })
 
-      const definitivelyAnswered = new Set(
-        attempts.filter(a => a.result === 'known' || a.result === 'unknown').map(a => a.QuizItem),
-      )
-      const skippedOnly = new Set(
-        attempts
-          .filter(a => a.result === 'skip')
-          .map(a => a.QuizItem)
-          .filter(id => !definitivelyAnswered.has(id)),
+      const { unattempted, skippedOnly } = partitionResumedItems(
+        quizItems.map(item => ({
+          id: item.id,
+          item_type: item.item_type as string,
+          item_id: item.item_id as string,
+          position: item.position as number,
+        })),
+        attempts,
       )
 
-      const allDeckItems = quizItems.map(item => ({
-        quizItemId: item.id,
-        itemType: item.item_type as 'sign' | 'person',
-        itemId: item.item_id as string,
-        position: item.position as number,
-      }))
-
-      const unattempted = allDeckItems.filter(
-        item => !definitivelyAnswered.has(item.quizItemId) && !skippedOnly.has(item.quizItemId),
-      )
-      const skippedOnlyItems = allDeckItems.filter(item => skippedOnly.has(item.quizItemId))
-
-      deck.value = [...shuffle(unattempted), ...shuffle(skippedOnlyItems)]
+      deck.value = [...shuffle(unattempted), ...shuffle(skippedOnly)]
       currentIndex.value = 0
 
       // Load batch around current position
@@ -197,12 +176,12 @@ export default function useQuizSession() {
    * Load the next batch of items (lazy loading for videos)
    */
   const loadNextBatch = async () => {
-    if (!currentSession.value) return
+    if (!currentSession.value) {return}
 
     loadingBatch.value = true
     try {
       const mode = getQuizMode(currentSession.value.config_key)
-      if (!mode) return
+      if (!mode) {return}
 
       // Derive collection name from item type
       const collectionName = mode.itemType === 'sign' ? 'sign' : 'person'
@@ -214,7 +193,7 @@ export default function useQuizSession() {
         .slice(startIdx, endIdx)
         .filter(item => !item.itemData && item.itemType === mode.itemType)
 
-      if (itemsToLoad.length === 0) return
+      if (itemsToLoad.length === 0) {return}
 
       // Fetch all items in batch
       const itemIds = itemsToLoad.map(item => item.itemId)
@@ -224,7 +203,7 @@ export default function useQuizSession() {
         .map(field => field.key)
 
       const records = await pb.collection(collectionName).getFullList({
-        filter: itemIds.map(id => `id = "${id}"`).join(' || '),
+        filter: idFilter(itemIds),
         expand: expandFields.join(','),
       })
 
@@ -242,7 +221,7 @@ export default function useQuizSession() {
    * Log an attempt for the current card
    */
   const logAttempt = async (result: QuizResult, timeSpent?: number) => {
-    if (!currentSession.value || !currentCard.value) return
+    if (!currentSession.value || !currentCard.value) {return}
 
     // Create attempt record
     await pb.collection<QuizAttemptRecord>('quiz_attempt').create({
@@ -256,20 +235,8 @@ export default function useQuizSession() {
     const stats = currentSession.value.stats as QuizSessionStats
     if (result === 'skip') {
       stats.skipped++
-      // Find the start of the "skipped zone" (first re-queued card after current position)
-      let skippedZoneStart = -1
-      for (let i = currentIndex.value + 1; i < deck.value.length; i++) {
-        if (deck.value[i].isSkipRequeue) {
-          skippedZoneStart = i
-          break
-        }
-      }
-      // Insert at a random position within the skipped zone (or append if none yet)
-      const insertAt =
-        skippedZoneStart === -1
-          ? deck.value.length
-          : skippedZoneStart +
-            Math.floor(Math.random() * (deck.value.length - skippedZoneStart + 1))
+      // Re-insert the card at a random position within the skipped zone
+      const insertAt = computeSkipInsertIndex(deck.value, currentIndex.value)
       deck.value.splice(insertAt, 0, { ...deck.value[currentIndex.value], isSkipRequeue: true })
     } else {
       stats[result]++
@@ -296,7 +263,7 @@ export default function useQuizSession() {
    * Complete the session
    */
   const completeSession = async () => {
-    if (!currentSession.value) return
+    if (!currentSession.value) {return}
 
     currentSession.value = await pb
       .collection<QuizSessionRecord>('quiz_session')
@@ -357,7 +324,7 @@ export default function useQuizSession() {
    */
   const loadSessionAttempts = async (sessionId: string) => {
     return pb.collection<QuizAttemptRecord>('quiz_attempt').getFullList({
-      filter: `Session = "${sessionId}"`,
+      filter: pb.filter('Session = {:sessionId}', { sessionId }),
       expand: 'QuizItem',
       sort: 'created',
     })
@@ -367,7 +334,7 @@ export default function useQuizSession() {
    * Get file URL for media (video, illustration)
    */
   const getFileUrl = (collectionName: string, recordId: string, filename: string) => {
-    if (!filename) return ''
+    if (!filename) {return ''}
     return `${config.apiBaseUrl}/api/files/${collectionName}/${recordId}/${filename}`
   }
 

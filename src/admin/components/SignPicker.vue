@@ -59,8 +59,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb, idFilter } from '@lib/pb'
 
 type SelectedItem = { id: string; name: string }
 
@@ -70,7 +69,6 @@ const props = defineProps<{
 
 const model = defineModel<string | string[]>()
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 const searchTerm = ref('')
 const searchResults = ref<SelectedItem[]>([])
@@ -78,15 +76,15 @@ const selectedItems = ref<SelectedItem[]>([])
 const searching = ref(false)
 
 const getSelectedIds = (): string[] => {
-  if (!model.value) return []
-  if (props.mode === 'single') return (model.value as string) ? [model.value as string] : []
+  if (!model.value) {return []}
+  if (props.mode === 'single') {return (model.value as string) ? [model.value as string] : []}
   return (model.value as string[]) || []
 }
 
 onMounted(async () => {
   const ids = getSelectedIds()
-  if (ids.length === 0) return
-  const filter = ids.map(id => `id = "${id}"`).join(' || ')
+  if (ids.length === 0) {return}
+  const filter = idFilter(ids)
   const res = await pb.collection('sign').getList(1, ids.length, { filter, fields: 'id,name' })
   selectedItems.value = res.items.map((s: any) => ({ id: s.id, name: s.name }))
 })
@@ -103,7 +101,7 @@ watch(searchTerm, (val) => {
     try {
       const selectedIds = new Set(selectedItems.value.map(s => s.id))
       const res = await pb.collection('sign').getList(1, 10, {
-        filter: `name~"${val}"`,
+        filter: pb.filter('name ~ {:val}', { val }),
         fields: 'id,name',
         sort: 'name',
       })

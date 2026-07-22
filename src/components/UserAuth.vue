@@ -19,7 +19,7 @@
           <div v-if="avatarUrl" class="flex-shrink-0">
             <img
               :src="avatarUrl"
-              :alt="user.name"
+              :alt="user?.name"
               class="w-10 h-10 rounded-full object-cover border border-white/30"
             />
           </div>
@@ -27,7 +27,7 @@
             <span class="text-xs font-medium text-white/70 uppercase tracking-wide"
               >Connecté(e)</span
             >
-            <span class="text-sm font-semibold text-white">{{ user.name }}</span>
+            <span class="text-sm font-semibold text-white">{{ user?.name }}</span>
           </div>
           <span class="i-fa-solid-chevron-down text-xs text-white/70"></span>
         </button>
@@ -82,7 +82,7 @@ const { isAuthenticated, isAdmin, isStudent, isImpersonating, user, logout, exit
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const avatarUrl = computed(() => {
-  if (!user.value?.avatar) return ''
+  if (!user.value?.avatar) {return ''}
   return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
 })
 

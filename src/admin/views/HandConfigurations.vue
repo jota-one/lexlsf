@@ -6,7 +6,7 @@
     </h2>
     <div class="card mt-4">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter" icon="i-fa-solid-plus" size="small" @click="showAddModal = true" />
+        <Button label="Ajouter" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="handConfigurations" tableStyle="min-width: 40rem">
         <Column field="name" header="Nom"></Column>
@@ -43,12 +43,9 @@
         </Column>
       </DataTable>
     </div>
-    <HandConfigurationAddModal v-model="showAddModal" @saved="loadHandConfigurations" />
-    <!-- Modal d'édition -->
-    <HandConfigurationEditModal
-      v-if="editedHandConfig?.id"
-      v-model="showEditModal"
-      :id="editedHandConfig?.id"
+    <HandConfigurationModal
+      v-model="showConfigModal"
+      :configuration-id="editedConfigId"
       @saved="loadHandConfigurations"
     />
     <!-- Modal de confirmation suppression -->
@@ -66,16 +63,14 @@ import useHandConfigurations from '../composables/useHandConfigurations';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-import HandConfigurationAddModal from '../components/HandConfigurationAddModal.vue';
-import HandConfigurationEditModal from '../components/HandConfigurationEditModal.vue';
+import HandConfigurationModal from '../components/HandConfigurationModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import config from '../../config';
 
 const { handConfigurations, loadHandConfigurations, deleteHandConfiguration } = useHandConfigurations();
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const showConfigModal = ref(false);
+const editedConfigId = ref<string | undefined>(undefined);
 const showDeleteModal = ref(false);
-const editedHandConfig = ref<any>(null);
 const handConfigToDelete = ref<any>(null);
 const deleteMessage = ref('');
 
@@ -87,9 +82,14 @@ const getIllustrationUrl = (filename: string, id: string) => {
 
 onMounted(loadHandConfigurations);
 
+const openAddModal = () => {
+    editedConfigId.value = undefined;
+    showConfigModal.value = true;
+};
+
 const editHandConfig = (config: any) => {
-    editedHandConfig.value = config;
-    showEditModal.value = true;
+    editedConfigId.value = config.id;
+    showConfigModal.value = true;
 };
 
 const confirmDelete = (config: any) => {

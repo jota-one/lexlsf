@@ -55,14 +55,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 
 type PersonItem = { id: string; label: string }
 
 const model = defineModel<string>()
 
-const pb = new PocketBase(config.apiBaseUrl)
 
 const searchTerm = ref('')
 const searchResults = ref<PersonItem[]>([])
@@ -73,7 +71,7 @@ const buildLabel = (p: any) =>
   p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value) return
+  if (!model.value) {return}
   const res = await pb.collection('person').getOne(model.value, { fields: 'id,name,firstname' })
   selectedItem.value = { id: res.id, label: buildLabel(res) }
 })
@@ -89,7 +87,7 @@ watch(searchTerm, (val) => {
     searching.value = true
     try {
       const res = await pb.collection('person').getList(1, 10, {
-        filter: `name~"${val}" || firstname~"${val}"`,
+        filter: pb.filter('name ~ {:val} || firstname ~ {:val}', { val }),
         fields: 'id,name,firstname',
         sort: 'name,firstname',
       })

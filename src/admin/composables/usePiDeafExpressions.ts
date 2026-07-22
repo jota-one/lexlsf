@@ -1,8 +1,7 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TPiDeafExpression } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TPiDeafExpression.TForm) => {
   const formData = new FormData()
@@ -22,7 +21,6 @@ const setFormData = (payload: TPiDeafExpression.TForm) => {
 }
 
 export default function usePiDeafExpressions() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const piDeafExpressions = ref<TPiDeafExpression.TRecord[]>([])
 

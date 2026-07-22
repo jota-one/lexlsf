@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 import type { ItemType } from '@admin/types/quiz'
 
 type SearchItem = {
@@ -21,7 +20,6 @@ export type QuizItemSearchQuery = {
 }
 
 export default function useQuizItemSearch() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const results = ref<SearchItem[]>([])
   const loading = ref(false)

@@ -1,68 +1,13 @@
 import { ref } from 'vue'
 import useAuth from '@admin/composables/useAuth'
 import type { TSign } from '../../../types'
-
-const translateNumericLevel = (level: number) => {
-  const levels = ['a1', 'a2', 'b1', 'b2', 'c1']
-  return levels[level - 1] || ''
-}
-
-const getNumericLevel = (level: string) => {
-  return ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(level) + 1
-}
-
-const learningSourceOptions = [
-  { label: 'Dictionnaire', value: 'dictionary' },
-  { label: 'Enseignant', value: 'teacher' },
-  { label: 'Communauté', value: 'community' },
-  { label: 'Média', value: 'media' },
-  { label: 'Autre', value: 'other' },
-]
-const primaryLanguageOptions = [
-  { label: 'LSF', value: 'LSF' },
-  { label: 'LSR', value: 'LSR' },
-  { label: 'ASL', value: 'ASL' },
-  { label: 'LSI', value: 'LSI' },
-  { label: 'BSL', value: 'BSL' },
-  { label: 'ISL', value: 'ISL' },
-  { label: 'Autre', value: 'other' },
-]
-
-const verificationStatusOptions = [
-  { label: 'À vérifier', value: 'unverified' },
-  { label: 'Officiel', value: 'verified' },
-  { label: 'Contesté', value: 'disputed' },
-]
-
-const setFormData = (payload: TSign.TForm) => {
-  const formData = new FormData()
-  if (payload.video && payload.video instanceof File) {
-    formData.append('video', payload.video)
-  }
-  formData.append('name', payload.name)
-  formData.append('definition', payload.definition)
-  formData.append('slug', payload.name.toLowerCase().replace(/\s+/g, '-'))
-  formData.append('level', translateNumericLevel(payload.level))
-  ;(payload.Category || []).forEach(cat => {
-    formData.append('Category', cat)
-  })
-  formData.append('verification_status', payload.verification_status)
-  if (payload.ConfigurationRight?.id) {
-    formData.append('ConfigurationRight', payload.ConfigurationRight.id)
-  }
-  if (payload.ConfigurationLeft?.id) {
-    formData.append('ConfigurationLeft', payload.ConfigurationLeft.id)
-  }
-  formData.append('learning_source', payload.learning_source)
-  formData.append('learning_source_detail', payload.learning_source_detail)
-  formData.append('primary_language', payload.primary_language)
-  ;(payload.Roles || []).forEach(roleId => {
-    formData.append('Roles', roleId)
-  })
-  formData.append('placement', JSON.stringify(payload.placement))
-
-  return formData
-}
+import {
+  translateNumericLevel,
+  getNumericLevel,
+  learningSourceOptions,
+  primaryLanguageOptions,
+  verificationStatusOptions,
+} from '@lib/signOptions'
 
 export default function useSigns() {
   const { pb } = useAuth()
@@ -73,7 +18,7 @@ export default function useSigns() {
       fields:
         'id, name, video, slug, definition, level, updated, expand.ConfigurationRight.*, expand.ConfigurationLeft.*, expand.Category.*',
       expand: 'Category,ConfigurationRight,ConfigurationLeft',
-      filter: `Category.slug ?= "${category}"`,
+      filter: pb.filter('Category.slug ?= {:category}', { category }),
       sort: '-updated',
     })
   }
@@ -85,30 +30,14 @@ export default function useSigns() {
     })
   }
 
-  const addSign = async (payload: any) => {
-    const formData = setFormData(payload)
-    return pb.collection('sign').create(formData)
-  }
-
-  const updateSign = async (id: string, payload: any) => {
-    const formData = setFormData(payload)
-    return pb.collection('sign').update(id, formData)
-  }
-
-  const deleteSign = async (id: string) => {
-    return pb.collection('sign').delete(id)
-  }
-
   return {
     signs,
     loadSigns,
     loadSign,
-    addSign,
+    translateNumericLevel,
     getNumericLevel,
     learningSourceOptions,
     primaryLanguageOptions,
     verificationStatusOptions,
-    deleteSign,
-    updateSign,
   }
 }

@@ -6,7 +6,7 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter une expression" icon="i-fa-solid-plus" size="small" @click="showAddModal = true" />
+        <Button label="Ajouter une expression" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
       </div>
       <DataTable :value="piDeafExpressions" sortField="name" :sortOrder="1" tableStyle="min-width: 40rem">
         <Column field="name" header="Nom" sortable />
@@ -37,13 +37,7 @@
       </DataTable>
     </div>
 
-    <PiDeafExpressionAddModal v-model="showAddModal" @saved="load" />
-    <PiDeafExpressionEditModal
-      v-if="editedExpression?.id"
-      v-model="showEditModal"
-      :expression-id="editedExpression.id"
-      @saved="load"
-    />
+    <PiDeafExpressionModal v-model="showExpressionModal" :expression-id="editedExpressionId" @saved="load" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer l'expression pi-sourde ?"
@@ -60,22 +54,21 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import usePiDeafExpressions from '../composables/usePiDeafExpressions'
-import PiDeafExpressionAddModal from '../components/PiDeafExpressionAddModal.vue'
-import PiDeafExpressionEditModal from '../components/PiDeafExpressionEditModal.vue'
+import PiDeafExpressionModal from '../components/PiDeafExpressionModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
 
 const { piDeafExpressions, loadPiDeafExpressions, deletePiDeafExpression } = usePiDeafExpressions()
-const showAddModal = ref(false)
-const showEditModal = ref(false)
+const showExpressionModal = ref(false)
+const editedExpressionId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
-const editedExpression = ref<any>(null)
 const expressionToDelete = ref<any>(null)
 const deleteMessage = ref('')
 
 const roleNames = (roles: any[]) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
 const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
 
-const editExpression = (expr: any) => { editedExpression.value = expr; showEditModal.value = true }
+const openAddModal = () => { editedExpressionId.value = undefined; showExpressionModal.value = true }
+const editExpression = (expr: any) => { editedExpressionId.value = expr.id; showExpressionModal.value = true }
 const confirmDelete = (expr: any) => {
   expressionToDelete.value = expr
   deleteMessage.value = `Voulez-vous vraiment supprimer "${expr.name || 'cette expression'}" ?`

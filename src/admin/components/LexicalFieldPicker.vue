@@ -54,22 +54,20 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb, idFilter } from '@lib/pb'
 
 type Item = { id: string; name: string }
 
 const model = defineModel<string[]>({ default: () => [] })
 
-const pb = new PocketBase(config.apiBaseUrl)
 const searchTerm = ref('')
 const searchResults = ref<Item[]>([])
 const selectedItems = ref<Item[]>([])
 const searching = ref(false)
 
 onMounted(async () => {
-  if (!model.value?.length) return
-  const filter = model.value.map(id => `id = "${id}"`).join(' || ')
+  if (!model.value?.length) {return}
+  const filter = idFilter(model.value)
   const res = await pb.collection('lexical_field').getList(1, model.value.length, {
     filter,
     fields: 'id,name',
@@ -89,7 +87,7 @@ watch(searchTerm, (val) => {
     try {
       const selectedIds = new Set(selectedItems.value.map(s => s.id))
       const res = await pb.collection('lexical_field').getList(1, 10, {
-        filter: `name~"${val}"`,
+        filter: pb.filter('name ~ {:val}', { val }),
         fields: 'id,name',
         sort: 'name',
       })

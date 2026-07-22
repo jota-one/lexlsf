@@ -3,8 +3,7 @@ import { ref, computed, watch } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import MultiSelect from 'primevue/multiselect'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 import useUsers from '@admin/composables/useUsers'
 import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
@@ -25,7 +24,6 @@ const { users, loadUsers } = useUsers()
 const { loadQuiz, shareQuiz } = useQuizzes()
 const { showPbError } = usePbErrorToast()
 
-const pb = new PocketBase(config.apiBaseUrl)
 const currentUserId = computed(() => pb.authStore.record?.id)
 
 const sharedUserIds = ref<string[]>([])
@@ -40,7 +38,7 @@ const userOptionLabel = (user: TUser) =>
   user.name ? `${user.name} (${user.email})` : user.email
 
 watch(visible, async (val) => {
-  if (!val) return
+  if (!val) {return}
   loading.value = true
   try {
     const [{ quiz }] = await Promise.all([

@@ -44,7 +44,7 @@ const completedSessions = ref<any[]>([])
 const deletingSessionId = ref<string | null>(null)
 
 const availableModes = computed(() => {
-  if (quizItemType.value === 'mixed') return getQuizModes()
+  if (quizItemType.value === 'mixed') {return getQuizModes()}
   return getQuizModes(quizItemType.value as 'sign' | 'person')
 })
 
@@ -79,7 +79,7 @@ watch(currentCard, () => {
 })
 
 const start = async () => {
-  if (!selectedMode.value) return
+  if (!selectedMode.value) {return}
   starting.value = true
   try {
     const quizId = route.params.id as string
@@ -110,7 +110,7 @@ const currentMode = computed(() => modes.value.find(m => m.key === selectedMode.
 
 const handleResume = async (sessionId: string) => {
   const session = incompleteSessions.value.find(s => s.id === sessionId)
-  if (!session) return
+  if (!session) {return}
   starting.value = true
   try {
     await resumeSession(session.id)
@@ -132,10 +132,10 @@ const dismissSessions = () => {
 
 const handleDeleteSession = async (sessionId: string) => {
   const session = incompleteSessions.value.find(s => s.id === sessionId)
-  if (!session) return
+  if (!session) {return}
 
   const confirmed = window.confirm('Supprimer cette session en cours ?')
-  if (!confirmed) return
+  if (!confirmed) {return}
 
   deletingSessionId.value = sessionId
   try {

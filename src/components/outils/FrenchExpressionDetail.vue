@@ -53,7 +53,7 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb.collection('french_expression').getFirstListItem(`slug="${props.slug}"`, {
+    expr.value = await pb.collection('french_expression').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
       expand: 'Signs',
     })
     if (expr.value.strategies) {

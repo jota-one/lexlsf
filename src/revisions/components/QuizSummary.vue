@@ -26,7 +26,7 @@ const emit = defineEmits<{
 
 const accuracy = computed(() => {
   const total = props.stats.known + props.stats.unknown
-  if (total === 0) return 0
+  if (total === 0) {return 0}
   return Math.round((props.stats.known / total) * 100)
 })
 
@@ -40,7 +40,7 @@ const score = computed(() =>
 const hasErrors = computed(() => props.stats.unknown > 0)
 
 const formatDuration = (ms?: number) => {
-  if (!ms) return '-'
+  if (!ms) {return '-'}
 
   return dayjs.duration(ms, 'millisecond').humanize()
 }

@@ -47,7 +47,7 @@ const goToPerson = (slug: string) => {
 }
 
 const displayName = (person: TPerson.TRecord) => {
-  if (person.organism) return person.name
+  if (person.organism) {return person.name}
   return [person.firstname, person.name].filter(Boolean).join(' ')
 }
 

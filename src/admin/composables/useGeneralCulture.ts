@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import useAuth from './useAuth'
 import type { TGeneralCulture } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const COLLECTION = 'general_culture'
 

@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { Quiz, QuizItem } from '../types/quiz'
 
 export type QuizRecord = Quiz & {
@@ -28,8 +27,6 @@ export type QuizFormData = {
 }
 
 export default function useQuizzes() {
-  const pb = new PocketBase(config.apiBaseUrl)
-  pb.autoCancellation(false)
 
   const quizzes = ref<QuizRecord[]>([])
   const loading = ref(false)
@@ -67,7 +64,7 @@ export default function useQuizzes() {
   const loadQuiz = async (id: string) => {
     const quiz = await pb.collection<QuizRecord>('quiz').getOne(id)
     const items = await pb.collection<QuizItemRecord>('quiz_item').getFullList({
-      filter: `Quiz = "${id}"`,
+      filter: pb.filter('Quiz = {:id}', { id }),
       sort: 'position',
     })
     return { quiz, items }
@@ -137,7 +134,7 @@ export default function useQuizzes() {
   ) => {
     // Get current max position
     const existingItems = await pb.collection<QuizItemRecord>('quiz_item').getFullList({
-      filter: `Quiz = "${quizId}"`,
+      filter: pb.filter('Quiz = {:quizId}', { quizId }),
       sort: '-position',
       fields: 'position',
     })

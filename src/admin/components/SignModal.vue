@@ -1,6 +1,13 @@
 <template>
-  <Dialog v-model:visible="visible" modal header="Modifier un signe" class="w-[60%]">
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :header="signId ? 'Modifier un signe' : 'Ajouter un signe'"
+    class="w-[60%]"
+  >
     <SignForm v-model="form" v-model:categories="selectedCategories" />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
     <template #footer>
       <div class="flex justify-end gap-2 pt-4">
         <Button
@@ -20,10 +27,13 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import SignForm from './SignForm.vue';
 import useSigns from '../composables/useSigns';
+import PbErrorToast from './PbErrorToast.vue';
+import usePbErrorToast from '../composables/usePbErrorToast';
 import type { TSign } from '../../types';
 
 type Props = {
-    signId: string
+    // undefined = create mode
+    signId?: string
 }
 type Events = {
     saved: []
@@ -33,13 +43,15 @@ const emit = defineEmits<Events>();
 
 const visible = defineModel<boolean>({ required: true });
 
-const { updateSign, loadSign, getNumericLevel } = useSigns();
+const { addSign, updateSign, loadSign, getNumericLevel } = useSigns();
 const saving = ref(false)
+const { showPbError } = usePbErrorToast();
 
 // Store selected category for each parent
 const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 
-const form = ref<TSign.TForm>({
+const emptyForm = (): TSign.TForm => ({
+    video: null,
     Category: [],
     name: '',
     definition: '',
@@ -55,8 +67,13 @@ const form = ref<TSign.TForm>({
         right: [] as string[],
         left: [] as string[]
     },
-    movements: { right: {}, left: {} }
+    movements: {
+        right: {},
+        left: {}
+    }
 });
+
+const form = ref<TSign.TForm>(emptyForm());
 
 const save = async () => {
     saving.value = true;
@@ -72,14 +89,30 @@ const save = async () => {
         ...form.value,
         Category: selectedCategoryIds,
     };
-    await updateSign(props.signId, payload);
-    emit('saved');
-    visible.value = false;
-    saving.value = false;
+    try {
+        if (props.signId) {
+            await updateSign(props.signId, payload);
+        } else {
+            await addSign(payload);
+        }
+        emit('saved');
+        visible.value = false;
+    } catch (err) {
+        // show formatted PocketBase error(s)
+        showPbError(err);
+    } finally {
+        saving.value = false;
+    }
 };
 
 watch(visible, async (isVisible) => {
     if (!isVisible) {
+        return;
+    }
+    if (!props.signId) {
+        // Reset form when modal is opened in create mode
+        form.value = emptyForm();
+        selectedCategories.value = {};
         return;
     }
     const sign = await loadSign(props.signId);

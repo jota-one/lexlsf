@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb } from '@lib/pb'
 import Button from 'primevue/button'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 
@@ -26,7 +25,6 @@ const emit = defineEmits<{
   loaded: [string[]]
 }>()
 
-const pb = new PocketBase(config.apiBaseUrl)
 const { showPbError } = usePbErrorToast()
 
 const items = ref<QuizItemDisplay[]>([])
@@ -42,7 +40,7 @@ const loadItems = async () => {
     const quizItems = await pb
       .collection('quiz_item')
       .getFullList({
-        filter: `Quiz = "${props.quizId}"`,
+        filter: pb.filter('Quiz = {:quizId}', { quizId: props.quizId }),
         expand: 'Quiz,Item',
         sort: '+position',
       })
@@ -81,7 +79,7 @@ const loadItems = async () => {
 }
 
 const deleteItem = async (itemId: string) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) return
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) {return}
 
   try {
     await pb.collection('quiz_item').delete(itemId)

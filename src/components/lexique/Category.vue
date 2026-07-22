@@ -67,7 +67,7 @@ const subcategoryRecord = computed(() =>
 const subCategories = computed(() => parent.value?.expand?.category_via_Parent ?? [])
 
 const visibleSubCategories = computed(() => {
-  if (!props.categoryCounts) return subCategories.value
+  if (!props.categoryCounts) {return subCategories.value}
   return subCategories.value.filter(
     (subCat: TCategory.TRecord) => (props.categoryCounts![subCat.id] ?? 0) > 0,
   )

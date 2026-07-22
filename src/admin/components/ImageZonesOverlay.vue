@@ -59,7 +59,7 @@ function selectionOrder(id: string) {
     const leftIdx = activeLocalLeft.value.indexOf(id);
     const right = rightIdx !== -1 ? (rightIdx + 1).toString() : '';
     const left = leftIdx !== -1 ? (leftIdx + 1).toString() : '';
-    if (right && left) return `${right}/${left}`;
+    if (right && left) {return `${right}/${left}`;}
     return right || left;
 }
 import { computed, ref, watch } from 'vue';
@@ -106,7 +106,7 @@ watch(() => props.activeZonesLeft, (v) => {
 function onImageLoad() { imageLoaded.value = true; }
 
 function transformFor(zone: any) {
-    if (!zone.rotate || zone.rotate === 0) return undefined;
+    if (!zone.rotate || zone.rotate === 0) {return undefined;}
     // rotate(angle cx cy)
     return `rotate(${zone.rotate} ${zone.cx} ${zone.cy})`;
 }
@@ -140,14 +140,14 @@ function strokeFor(id: string) {
 function zoneOpacity(id: string) {
     const right = activeLocalRight.value.includes(id);
     const left = activeLocalLeft.value.includes(id);
-    if (right && left) return 0.95;
-    if (right || left) return 0.85;
+    if (right && left) {return 0.95;}
+    if (right || left) {return 0.85;}
     return 0.6;
 }
 
 
 function toggleZone(id: string) {
-    if (!props.interactive) return;
+    if (!props.interactive) {return;}
     if (props.activeHand === 'right') {
         const rightSelected = activeLocalRight.value.includes(id);
         if (rightSelected) {

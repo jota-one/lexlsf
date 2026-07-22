@@ -20,7 +20,7 @@ export const computeQuizScore = ({
   skipped,
   durationSeconds,
 }: ScoreInput): number => {
-  if (total === 0) return 0
+  if (total === 0) {return 0}
 
   const accuracy = known / total
   const skipDeduction = Math.min(skipped / total, 1) * 20
@@ -33,7 +33,7 @@ export const computeQuizScore = ({
 }
 
 export const scoreColorClass = (score: number): string => {
-  if (score >= 80) return 'text-success'
-  if (score >= 50) return 'text-warning'
+  if (score >= 80) {return 'text-success'}
+  if (score >= 50) {return 'text-warning'}
   return 'text-error'
 }

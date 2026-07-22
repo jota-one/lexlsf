@@ -112,7 +112,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter, RouterView } from 'vue-router'
-import useGeneralCulture, { formatDateRange, isPeriod } from './composables/useGeneralCulture'
+import useGeneralCulture from './composables/useGeneralCulture'
+import { formatDateRange, isPeriod } from '@lib/dates'
 import type { TGeneralCulture } from '../../types'
 
 const { loadItems } = useGeneralCulture()
@@ -140,11 +141,11 @@ const isFiltered = computed(
 
 const filteredItems = computed(() => {
   return items.value.filter(item => {
-    if (filterType.value === 'event' && isPeriod(item)) return false
-    if (filterType.value === 'period' && !isPeriod(item)) return false
+    if (filterType.value === 'event' && isPeriod(item)) {return false}
+    if (filterType.value === 'period' && !isPeriod(item)) {return false}
     const startYear = parseInt(item.start_date.split('-')[0])
-    if (filterFrom.value !== '' && startYear < Number(filterFrom.value)) return false
-    if (filterTo.value !== '' && startYear > Number(filterTo.value)) return false
+    if (filterFrom.value !== '' && startYear < Number(filterFrom.value)) {return false}
+    if (filterTo.value !== '' && startYear > Number(filterTo.value)) {return false}
     return true
   })
 })

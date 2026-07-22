@@ -1,8 +1,7 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TLexicalField } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TLexicalField.TForm) => {
   const formData = new FormData()
@@ -25,7 +24,6 @@ const setFormData = (payload: TLexicalField.TForm) => {
 }
 
 export default function useLexicalFields() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const lexicalFields = ref<TLexicalField.TRecord[]>([])
 

@@ -54,14 +54,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import InputText from 'primevue/inputtext'
-import PocketBase from 'pocketbase'
-import config from '../../config'
+import { pb, idFilter } from '@lib/pb'
 
 type Item = { id: string; label: string }
 
 const model = defineModel<string[]>({ default: () => [] })
 
-const pb = new PocketBase(config.apiBaseUrl)
 const searchTerm = ref('')
 const searchResults = ref<Item[]>([])
 const selectedItems = ref<Item[]>([])
@@ -70,8 +68,8 @@ const searching = ref(false)
 const buildLabel = (p: any) => p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value?.length) return
-  const filter = model.value.map(id => `id = "${id}"`).join(' || ')
+  if (!model.value?.length) {return}
+  const filter = idFilter(model.value)
   const res = await pb.collection('person').getList(1, model.value.length, {
     filter,
     fields: 'id,name,firstname',
@@ -91,7 +89,7 @@ watch(searchTerm, (val) => {
     try {
       const selectedIds = new Set(selectedItems.value.map(s => s.id))
       const res = await pb.collection('person').getList(1, 10, {
-        filter: `name~"${val}" || firstname~"${val}"`,
+        filter: pb.filter('name ~ {:val} || firstname ~ {:val}', { val }),
         fields: 'id,name,firstname',
         sort: 'name,firstname',
       })

@@ -64,7 +64,7 @@ const parentCount = (cat: TCategory.TRecord): number =>
   )
 
 const visibleParentCategories = computed(() => {
-  if (!props.categoryCounts) return parentCategories.value
+  if (!props.categoryCounts) {return parentCategories.value}
   return parentCategories.value.filter(cat => parentCount(cat) > 0)
 })
 

@@ -1,5 +1,10 @@
 <template>
-  <Dialog v-model:visible="visible" modal header="Modifier une personne" class="w-[60%]">
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :header="personId ? 'Modifier une personne' : 'Ajouter une personne'"
+    class="w-[60%]"
+  >
     <PersonForm
       ref="personForm"
       v-model="form"
@@ -7,6 +12,8 @@
       v-model:activities="selectedActivities"
       :initial-videos="initialVideos"
     />
+    <!-- Toast container for PocketBase errors -->
+    <PbErrorToast />
     <template #footer>
       <div class="flex justify-end gap-2 pt-4">
         <Button
@@ -27,10 +34,13 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import PersonForm from './PersonForm.vue';
 import usePersons from '../composables/usePersons';
+import PbErrorToast from './PbErrorToast.vue';
+import usePbErrorToast from '../composables/usePbErrorToast';
 import type { TPerson, TVideo } from '../../types';
 
 type Props = {
-    signId: string
+    // undefined = create mode
+    personId?: string
 }
 type Events = {
     saved: []
@@ -41,15 +51,16 @@ const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
 const personForm = ref<InstanceType<typeof PersonForm>>();
 
-const { updatePerson, loadPerson } = usePersons();
+const { addPerson, updatePerson, loadPerson } = usePersons();
 const saving = ref(false)
+const { showPbError } = usePbErrorToast();
 
-// Store selected category for each parent
+// Store selected category/activity for each parent
 const selectedCategories = ref<{ [parentId: string]: string[] }>({});
 const selectedActivities = ref<{ [parentId: string]: string[] }>({});
 const initialVideos = ref<TVideo.TRecord[]>([]);
 
-const form = ref<TPerson.TForm>({
+const emptyForm = (): TPerson.TForm => ({
     name: '',
     firstname: '',
     illustration: null,
@@ -69,10 +80,12 @@ const form = ref<TPerson.TForm>({
     deathdate: undefined,
 });
 
+const form = ref<TPerson.TForm>(emptyForm());
+
 const save = async () => {
     saving.value = true;
 
-    // Sync lists order before saving
+    // Sync various stuffs before saving
     personForm.value?.syncListsBeforeSave();
 
     // Collect all selected category ids (flatten arrays from each parent)
@@ -96,17 +109,35 @@ const save = async () => {
         Category: selectedCategoryIds,
         Activities: selectedActivityIds,
     };
-    await updatePerson(props.signId, payload);
-    emit('saved');
-    visible.value = false;
-    saving.value = false;
+    try {
+        if (props.personId) {
+            await updatePerson(props.personId, payload);
+        } else {
+            await addPerson(payload);
+        }
+        emit('saved');
+        visible.value = false;
+    } catch (err) {
+        // show formatted PocketBase error(s)
+        showPbError(err);
+    } finally {
+        saving.value = false;
+    }
 };
 
 watch(visible, async (isVisible) => {
     if (!isVisible) {
         return;
     }
-    const person = await loadPerson(props.signId);
+    if (!props.personId) {
+        // Reset form when modal is opened in create mode
+        form.value = emptyForm();
+        selectedCategories.value = {};
+        selectedActivities.value = {};
+        initialVideos.value = [];
+        return;
+    }
+    const person = await loadPerson(props.personId);
 
     form.value = {
         name: person.name,

@@ -114,13 +114,7 @@
         </template>
       </DataTable>
     </div>
-    <SignAddModal v-model="showAddModal" @saved="reload" />
-    <SignEditModal
-      v-if="editedSign?.id"
-      v-model="showEditModal"
-      :sign-id="editedSign?.id"
-      @saved="reload"
-    />
+    <SignModal v-model="showSignModal" :sign-id="editedSignId" @saved="reload" />
     <SignsImportExportModal v-model="showImportExportModal" @saved="reload" />
     <ConfirmModal
       v-model="showDeleteModal"
@@ -140,8 +134,7 @@ import Column from 'primevue/column';
 import Rating from 'primevue/rating';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import SignAddModal from '../components/SignAddModal.vue';
-import SignEditModal from '../components/SignEditModal.vue';
+import SignModal from '../components/SignModal.vue';
 import SignsImportExportModal from '../components/SignsImportExportModal.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import type { TSign } from '../../types';
@@ -181,13 +174,12 @@ const getPrimaryLanguageLabel = (value: string) =>
 
 const getLearningSourceLabel = (value: string) =>
   learningSourceOptions.find(o => o.value === value)?.label ?? value ?? ''
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const showSignModal = ref(false);
+const editedSignId = ref<string | undefined>(undefined);
 const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
 const signToDelete = ref<any>(null);
-const editedSign = ref<any>(null);
 const deleteMessage = ref('');
 
 const categories = (category: any[]) => {
@@ -202,7 +194,8 @@ const roleNames = (roles: any[]) => {
 };
 
 const openAddModal = () => {
-  showAddModal.value = true;
+  editedSignId.value = undefined;
+  showSignModal.value = true;
 };
 
 const openImportExportModal = () => {
@@ -210,8 +203,8 @@ const openImportExportModal = () => {
 };
 
 const editSign = (sign: any) => {
-  editedSign.value = sign;
-  showEditModal.value = true;
+  editedSignId.value = sign.id;
+  showSignModal.value = true;
 };
 
 const confirmDelete = (sign: any) => {
@@ -230,7 +223,7 @@ const deleteSignConfirmed = async () => {
 };
 
 const formatDate = (date: string) => {
-  if (!date) return '';
+  if (!date) {return '';}
   return dayjs(date).format('DD/MM/YYYY HH:mm');
 };
 

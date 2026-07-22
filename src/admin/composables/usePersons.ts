@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 import type { TPerson } from '../../types'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TPerson.TForm) => {
   const formData = new FormData()
@@ -71,7 +71,6 @@ const setFormData = (payload: TPerson.TForm) => {
 }
 
 export default function usePersons() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const persons = ref<TPerson.TRecord[]>([])
   const loadPersons = async () => {
@@ -109,7 +108,7 @@ export default function usePersons() {
   }
 
   const getIllustrationUrl = (person: TPerson.TRecord): string => {
-    if (!person.illustration) return ''
+    if (!person.illustration) {return ''}
     return `${config.apiBaseUrl}/api/files/person/${person.id}/${person.illustration}`
   }
 

@@ -222,7 +222,7 @@ import SignPicker from './SignPicker.vue'
 import PersonMultiPicker from './PersonMultiPicker.vue'
 import LexicalFieldPicker from './LexicalFieldPicker.vue'
 import DatePartInput from './DatePartInput.vue'
-import { createSlug } from '@admin/helpers/strings'
+import { createSlug } from '@lib/slug'
 
 const form = defineModel<TGeneralCulture.TForm>({ required: true })
 
@@ -254,7 +254,7 @@ const previewUrl = (filename: string) =>
 
 const onFilesChange = (e: Event) => {
   const input = e.target as HTMLInputElement
-  if (!input.files) return
+  if (!input.files) {return}
   const files = Array.from(input.files)
   const previews = files.map(file => ({
     url: URL.createObjectURL(file),
@@ -290,18 +290,18 @@ const copyMarkdown = async (filename: string) => {
 // Roles
 watch(roles, () => {
   adminRoleId.value = roles.value.find(r => r.slug === 'admin')?.id || ''
-  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) return
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {return}
   form.value.Roles = form.value.Roles.filter(id => id !== adminRoleId.value)
 })
 
 const isRoleSelected = (roleId: string) => {
-  if (!roleId) return false
-  if (roleId === adminRoleId.value) return true
+  if (!roleId) {return false}
+  if (roleId === adminRoleId.value) {return true}
   return (form.value.Roles || []).includes(roleId)
 }
 
 const toggleRole = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') return
+  if (role.slug === 'admin') {return}
   if ((form.value.Roles || []).includes(role.id)) {
     form.value.Roles = (form.value.Roles || []).filter(id => id !== role.id)
     return
@@ -310,17 +310,17 @@ const toggleRole = (role: { id: string; slug: string }) => {
 }
 
 const roleBadgeClass = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') return 'badge-primary opacity-60 cursor-not-allowed'
+  if (role.slug === 'admin') {return 'badge-primary opacity-60 cursor-not-allowed'}
   return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
 }
 
 // Slug
 const regenerateSlug = () => {
-  if (form.value.name) form.value.slug = createSlug(form.value.name)
+  if (form.value.name) {form.value.slug = createSlug(form.value.name)}
 }
 
 watch(() => form.value.name, (val) => {
-  if (!form.value.slug && val) form.value.slug = createSlug(val)
+  if (!form.value.slug && val) {form.value.slug = createSlug(val)}
 })
 
 onMounted(() => {

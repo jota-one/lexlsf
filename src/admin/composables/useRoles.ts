@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-import config from '../../config'
-import PocketBase from 'pocketbase'
+import { pb } from '@lib/pb'
 
 export interface TRole {
   id: string
@@ -11,7 +10,6 @@ export interface TRole {
 }
 
 export default function useRoles() {
-  const pb = new PocketBase(config.apiBaseUrl)
 
   const roles = ref<TRole[]>([])
 
