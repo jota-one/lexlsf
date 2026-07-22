@@ -23,7 +23,7 @@ type DeckItem = {
   itemType: 'sign' | 'person'
   itemId: string
   position: number
-  itemData?: any // The actual sign or person record
+  itemData?: Record<string, unknown> // The actual sign or person record
   isSkipRequeue?: boolean
 }
 

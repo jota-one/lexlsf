@@ -71,7 +71,7 @@ const { handConfigurations, loadHandConfigurations, deleteHandConfiguration } = 
 const showConfigModal = ref(false);
 const editedConfigId = ref<string | undefined>(undefined);
 const showDeleteModal = ref(false);
-const handConfigToDelete = ref<any>(null);
+const handConfigToDelete = ref<{ id: string } | null>(null);
 const deleteMessage = ref('');
 
 const getIllustrationUrl = (filename: string, id: string) => {
@@ -87,12 +87,12 @@ const openAddModal = () => {
     showConfigModal.value = true;
 };
 
-const editHandConfig = (config: any) => {
+const editHandConfig = (config: { id: string }) => {
     editedConfigId.value = config.id;
     showConfigModal.value = true;
 };
 
-const confirmDelete = (config: any) => {
+const confirmDelete = (config: { id: string; name?: string }) => {
     handConfigToDelete.value = config;
     deleteMessage.value = `Voulez-vous vraiment supprimer la configuration "${config.name}" ? Cette action est irréversible.`;
     showDeleteModal.value = true;

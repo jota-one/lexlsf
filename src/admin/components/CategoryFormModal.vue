@@ -77,13 +77,14 @@ import useCategories from '../composables/useCategories';
 import { ALL_ENTITIES } from '../config/entities';
 import PbErrorToast from './PbErrorToast.vue';
 import usePbErrorToast from '../composables/usePbErrorToast';
+import type { TCategory } from '../../types';
 
 type Events = {
     saved: []
 };
 const emit = defineEmits<Events>();
 const visible = defineModel<boolean>({ required: true });
-const props = defineProps<{ parentId?: string | null; categoryToEdit?: any }>();
+const props = defineProps<{ parentId?: string | null; categoryToEdit?: TCategory.TRecord | null }>();
 
 const form = ref({
     id: '',
@@ -104,7 +105,7 @@ const saving = ref(false);
 const { showPbError } = usePbErrorToast();
 
 const parentOptions = computed(() =>
-    categories.value.map((cat: any) => ({
+    categories.value.map((cat: TCategory.TRecord) => ({
         id: cat.id,
         tag: cat.tag
     }))

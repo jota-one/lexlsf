@@ -49,7 +49,7 @@ export default function useCategories() {
     Parent: string | null
     entities?: string[]
   }) => {
-    const data: any = {
+    const data: Record<string, unknown> = {
       tag: payload.tag,
       slug: payload.slug,
     }

@@ -72,7 +72,7 @@ onMounted(async () => {
     filter,
     fields: 'id,name',
   })
-  selectedItems.value = res.items.map((f: any) => ({ id: f.id, name: f.name }))
+  selectedItems.value = res.items.map((f: { id: string; name: string }) => ({ id: f.id, name: f.name }))
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
@@ -92,8 +92,8 @@ watch(searchTerm, (val) => {
         sort: 'name',
       })
       searchResults.value = res.items
-        .filter((f: any) => !selectedIds.has(f.id))
-        .map((f: any) => ({ id: f.id, name: f.name }))
+        .filter((f: { id: string; name: string }) => !selectedIds.has(f.id))
+        .map((f: { id: string; name: string }) => ({ id: f.id, name: f.name }))
     } finally {
       searching.value = false
     }

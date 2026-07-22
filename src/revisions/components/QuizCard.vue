@@ -3,7 +3,7 @@ import type { QuizMode } from '@admin/config/quizModes'
 
 type Props = {
   mode: QuizMode
-  card: any
+  card: Record<string, unknown>
   getFileUrl: (collection: string, id: string, filename: string) => string
   isFlipped: boolean
 }

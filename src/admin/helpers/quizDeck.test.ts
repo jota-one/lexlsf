@@ -12,7 +12,7 @@ describe('shuffle', () => {
   it('keeps the same elements', () => {
     const arr = [1, 2, 3, 4, 5]
     const result = shuffle([...arr])
-    expect([...result].sort()).toEqual(arr)
+    expect([...result].sort((a, b) => a - b)).toEqual(arr)
   })
 })
 

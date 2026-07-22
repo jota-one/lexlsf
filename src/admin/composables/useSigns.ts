@@ -77,14 +77,14 @@ export default function useSigns() {
     })
   }
 
-  const addSign = async (payload: any) => {
+  const addSign = async (payload: TSign.TForm) => {
     const formData = setFormData(payload)
 
     // upload and create new record
     return pb.collection('sign').create(formData)
   }
 
-  const updateSign = async (id: string, payload: any) => {
+  const updateSign = async (id: string, payload: TSign.TForm) => {
     const formData = setFormData(payload)
 
     // upload and update record

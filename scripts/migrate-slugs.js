@@ -86,7 +86,7 @@ async function main() {
     try {
       await pb.collection('_superusers').authWithPassword(PB_ADMIN_EMAIL, PB_ADMIN_PASSWORD)
       console.log('✓ Authentification réussie (admins)\n')
-    } catch (adminError) {
+    } catch {
       // Si ça échoue, essayer avec _superusers
       console.log('⚠️  Tentative avec admins échouée, essai avec _superusers...')
       await pb.collection('_superusers').authWithPassword(PB_ADMIN_EMAIL, PB_ADMIN_PASSWORD)
@@ -128,4 +128,4 @@ async function main() {
   }
 }
 
-main()
+void main()

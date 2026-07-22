@@ -75,7 +75,7 @@ const cancel = () => {
   router.push('/quizzes')
 }
 
-const handleItemSelected = async (item: any) => {
+const handleItemSelected = async (item: { type: string; id: string }) => {
   try {
     await addQuizItems(quizId.value, [
       {
@@ -90,7 +90,7 @@ const handleItemSelected = async (item: any) => {
   }
 }
 
-const handleItemsSelectedAll = async (items: any[]) => {
+const handleItemsSelectedAll = async (items: Array<{ type: string; id: string }>) => {
   try {
     await addQuizItems(
       quizId.value,

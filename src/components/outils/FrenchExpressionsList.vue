@@ -27,7 +27,7 @@ import { ref, onMounted } from 'vue'
 import useAuth from '@admin/composables/useAuth'
 
 const { pb, isAuthenticated } = useAuth()
-const expressions = ref<any[]>([])
+const expressions = ref<Array<Record<string, unknown>>>([])
 const loading = ref(true)
 
 onMounted(async () => {

@@ -65,7 +65,7 @@ import InputNumber from 'primevue/inputnumber';
 import Select from 'primevue/select';
 import { getCurrentInstance } from 'vue';
 
-const form = defineModel<any>({ required: true });
+const form = defineModel<Record<string, unknown>>({ required: true });
 
 const instance = getCurrentInstance();
 const uniqueId = instance ? instance.uid : Math.random().toString(36).slice(2, 10);

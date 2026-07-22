@@ -54,9 +54,9 @@ const getCategoryMaps = async () => {
 
 // Formatters pour les champs spécifiques
 const birthdateFormatter: TImportExport.FieldFormatter = {
-  export: (value: string | undefined) => {
+  export: (value: unknown) => {
     if (!value) {return ''}
-    return dayjs(value).format('DD.MM.YYYY')
+    return dayjs(value as string).format('DD.MM.YYYY')
   },
   import: (value: string) => {
     if (!value) {return ''}
@@ -66,7 +66,7 @@ const birthdateFormatter: TImportExport.FieldFormatter = {
 }
 
 const booleanFormatter: TImportExport.FieldFormatter = {
-  export: (value: boolean | undefined) => {
+  export: (value: unknown) => {
     if (value === undefined || value === null) {return 'non'}
     return value ? 'oui' : 'non'
   },
@@ -103,7 +103,7 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     unique: true,
-    derive: row => createSlug(row.name || '', row.firstname),
+    derive: row => createSlug((row.name as string) || '', row.firstname as string | undefined),
   },
   {
     key: 'description',
@@ -117,11 +117,11 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     formatter: {
-      export: async (value: string[], row?: Record<string, any>) => {
-        const expanded = row?.expand?.Category
+      export: async (value: unknown, row?: Record<string, unknown>) => {
+        const expanded = (row?.expand as { Category?: Array<{ slug?: string }> } | undefined)?.Category
         if (Array.isArray(expanded) && expanded.length > 0) {
           return expanded
-            .map((category: any) => category?.slug)
+            .map((category: { slug?: string }) => category?.slug)
             .filter(Boolean)
             .join(',')
         }
@@ -154,11 +154,11 @@ export const PERSONS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     formatter: {
-      export: async (value: string[], row?: Record<string, any>) => {
-        const expanded = row?.expand?.Roles
+      export: async (value: unknown, row?: Record<string, unknown>) => {
+        const expanded = (row?.expand as { Roles?: Array<{ slug?: string }> } | undefined)?.Roles
         if (Array.isArray(expanded) && expanded.length > 0) {
           return expanded
-            .map((role: any) => role?.slug)
+            .map((role: { slug?: string }) => role?.slug)
             .filter(Boolean)
             .join(',')
         }

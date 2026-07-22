@@ -45,11 +45,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 
-const selectedSign = ref<any>(null);
-const suggestions = ref<any[]>([]);
+const selectedSign = ref<Record<string, unknown> | null>(null);
+const suggestions = ref<Array<Record<string, unknown>>>([]);
 const loading = ref(false);
 
-const onSearch = async (event: any) => {
+const onSearch = async (event: { query?: string }) => {
     const query = event.query?.trim() || '';
 
     if (!query || query.length < 2) {
@@ -71,25 +71,25 @@ const onSearch = async (event: any) => {
             pb.collection('pi_deaf_expression').getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
         ]);
 
-        const signs = (signsRes.items || []).map((item: any) => ({ ...item, type: 'sign', label: item.name }));
-        const culture = (cultureRes.items || []).map((item: any) => ({
+        const signs = (signsRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'sign', label: item.name }));
+        const culture = (cultureRes.items || []).map((item: Record<string, unknown>) => ({
             ...item,
             type: item.organism ? 'organism' : 'person',
             label: item.organism ? item.name : [item.firstname, item.name].filter(Boolean).join(' '),
         }));
-        const lexical = (lexicalRes.items || []).map((item: any) => ({ ...item, type: 'lexical_field', label: item.name }));
+        const lexical = (lexicalRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'lexical_field', label: item.name }));
         const lexicalTerms = (lexicalTermsRes.items || [])
-            .filter((item: any) => item.expand?.LexicalField)
-            .map((item: any) => ({
+            .filter((item: Record<string, unknown>) => item.expand?.LexicalField)
+            .map((item: Record<string, unknown>) => ({
                 ...item.expand.LexicalField,
                 type: 'lexical_field',
                 label: item.term,
                 definition: `dans : ${item.expand.LexicalField.name}`,
             }));
-        const french = (frenchRes.items || []).map((item: any) => ({ ...item, type: 'french_expression', label: item.expression }));
-        const piDeaf = (piDeafRes.items || []).map((item: any) => ({ ...item, type: 'pi_deaf_expression', label: item.name }));
+        const french = (frenchRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'french_expression', label: item.expression }));
+        const piDeaf = (piDeafRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'pi_deaf_expression', label: item.name }));
 
-        suggestions.value = [...signs, ...culture, ...lexical, ...lexicalTerms, ...french, ...piDeaf].sort((a: any, b: any) => a.label.localeCompare(b.label));
+        suggestions.value = [...signs, ...culture, ...lexical, ...lexicalTerms, ...french, ...piDeaf].sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
     } catch (err) {
         console.error('Search error', err);
         suggestions.value = [];
@@ -98,7 +98,7 @@ const onSearch = async (event: any) => {
     }
 };
 
-const onSelect = (event: any) => {
+const onSelect = (event: { value?: { slug?: string; type?: string } }) => {
     const selected = event.value;
     if (!selected?.slug) {return;}
     const routes: Record<string, string> = {

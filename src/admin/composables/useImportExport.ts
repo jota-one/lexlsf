@@ -1,7 +1,17 @@
 import { ref } from 'vue'
-import config from '../../config'
 import { pb } from '@lib/pb'
 import type { TImportExport } from '../types'
+
+type PbErrorPayload = {
+  message?: string
+  data?: Record<string, { message?: string; code?: string } | undefined>
+}
+type PbImportError = {
+  data?: PbErrorPayload
+  response?: { data?: PbErrorPayload }
+  message?: string
+  status?: number
+}
 
 type TGetFieldsConfig = () => TImportExport.FieldConfig[]
 type TGetFieldConfig = (key: string) => TImportExport.FieldConfig | undefined
@@ -18,7 +28,7 @@ export default function useImportExport(
   const logImport = (
     level: 'info' | 'warn' | 'error',
     message: string,
-    payload?: Record<string, any>,
+    payload?: Record<string, unknown>,
   ) => {
     const logger = level === 'warn' ? console.warn : level === 'error' ? console.error : console.log
     if (payload) {
@@ -45,7 +55,7 @@ export default function useImportExport(
       // Create CSV content
       const csvRows = [headers.join(',')]
 
-      for (const record of records as any[]) {
+      for (const record of records as Array<Record<string, unknown>>) {
         const row = exportableFields.map(fieldConfig => {
           const value = record[fieldConfig.key]
 
@@ -56,7 +66,7 @@ export default function useImportExport(
 
           // Default formatting based on field type
           if (fieldConfig.key === 'Category') {
-            return (value || []).join(';')
+            return ((value as unknown[]) || []).join(';')
           }
 
           if (typeof value === 'boolean') {
@@ -67,17 +77,17 @@ export default function useImportExport(
             return ''
           }
 
-          return escapeCSV(String(value))
+          return escapeCSV(String(value as string | number | boolean))
         })
 
         for (let i = 0; i < row.length; i++) {
           if (row[i] instanceof Promise) {
             row[i] = await row[i]
           }
-          row[i] = escapeCSV(String(row[i] ?? ''))
+          row[i] = escapeCSV(String((row[i] as string) ?? ''))
         }
 
-        csvRows.push(row.join(','))
+        csvRows.push((row as string[]).join(','))
       }
 
       const csvContent = csvRows.join('\n')
@@ -121,7 +131,7 @@ export default function useImportExport(
         if (!values || values.every(v => v === '')) {continue}
 
         try {
-          const record: any = {}
+          const record: Record<string, unknown> = {}
 
           for (const [index, header] of headers.entries()) {
             const value = values[index] || ''
@@ -148,7 +158,7 @@ export default function useImportExport(
           }
 
           // Apply derive functions for missing values
-          getImportableFields().forEach((fieldConfig: any) => {
+          getImportableFields().forEach((fieldConfig: TImportExport.FieldConfig) => {
             if (
               fieldConfig.derive &&
               (record[fieldConfig.key] === undefined ||
@@ -161,8 +171,9 @@ export default function useImportExport(
 
           // Check if record exists by ID
           if (record.id) {
+            const recordId = record.id as string
             try {
-              const existing = await pb.collection(collectionName).getOne(record.id)
+              const existing = await pb.collection(collectionName).getOne(recordId)
               const diff = recordDiff(record, existing)
 
               if (diff.hasChanges) {
@@ -170,7 +181,7 @@ export default function useImportExport(
                   id: record.id,
                   diffs: diff.diffs,
                 })
-                await pb.collection(collectionName).update(record.id, record)
+                await pb.collection(collectionName).update(recordId, record)
                 result.updated++
               } else {
                 logImport('info', 'inchangé', { id: record.id })
@@ -193,20 +204,21 @@ export default function useImportExport(
             await pb.collection(collectionName).create(record)
             result.created++
           }
-        } catch (error: any) {
+        } catch (error) {
           // Extract detailed error message from PocketBase
+          const err = error as PbImportError
           let errorMessage = 'Erreur inconnue'
 
           // PocketBase SDK typically returns errors on error.data, but keep response.data fallback
-          const pbError = error?.data || error?.response?.data
+          const pbError = err?.data || err?.response?.data
           if (pbError) {
             if (pbError.message) {
               errorMessage = pbError.message
             }
             if (pbError.data) {
               const fieldErrors = Object.entries(pbError.data)
-                .map(([field, err]: [string, any]) => {
-                  const message = err?.message || err?.code || String(err)
+                .map(([field, fieldErr]) => {
+                  const message = fieldErr?.message || fieldErr?.code || JSON.stringify(fieldErr)
                   return `${field}: ${message}`
                 })
                 .join('; ')
@@ -214,8 +226,8 @@ export default function useImportExport(
                 errorMessage = fieldErrors
               }
             }
-          } else if (error?.message) {
-            errorMessage = error.message
+          } else if (err?.message) {
+            errorMessage = err.message
           }
 
           logImport('warn', 'erreur import ligne', {
@@ -332,10 +344,10 @@ export default function useImportExport(
   }
 
   const recordDiff = (
-    incoming: Record<string, any>,
-    existing: Record<string, any>,
-  ): { hasChanges: boolean; diffs: Array<{ key: string; incoming: any; existing: any }> } => {
-    const diffs: Array<{ key: string; incoming: any; existing: any }> = []
+    incoming: Record<string, unknown>,
+    existing: Record<string, unknown>,
+  ): { hasChanges: boolean; diffs: Array<{ key: string; incoming: unknown; existing: unknown }> } => {
+    const diffs: Array<{ key: string; incoming: unknown; existing: unknown }> = []
 
     Object.keys(incoming)
       .filter(key => key !== 'id')
@@ -351,7 +363,7 @@ export default function useImportExport(
   }
 
   const checkUniqueConflicts = async (
-    record: Record<string, any>,
+    record: Record<string, unknown>,
     importableFields: TImportExport.FieldConfig[],
   ): Promise<void> => {
     const uniqueFields = importableFields.filter(f => f.unique && record[f.key])
@@ -361,16 +373,16 @@ export default function useImportExport(
         await pb
           .collection(collectionName)
           .getFirstListItem(pb.filter(`${field.key} = {:value}`, { value: record[field.key] }))
-        throw new Error(`${field.label} "${record[field.key]}" existe déjà`)
-      } catch (e: any) {
-        if (e?.status === 404) {continue}
+        throw new Error(`${field.label} "${record[field.key] as string}" existe déjà`)
+      } catch (e) {
+        if ((e as PbImportError)?.status === 404) {continue}
         throw e
       }
     }
   }
 
-  const isEqualValue = (a: any, b: any, key?: string): boolean => {
-    const canonicalize = (value: any, fieldKey?: string) => {
+  const isEqualValue = (a: unknown, b: unknown, key?: string): boolean => {
+    const canonicalize = (value: unknown, fieldKey?: string) => {
       const config = fieldKey ? getFieldConfig(fieldKey) : undefined
 
       if (value === '') {value = null}
@@ -388,7 +400,7 @@ export default function useImportExport(
       const { formatter } = config
 
       if (formatter.import) {
-        return formatter.import(String(value ?? ''))
+        return formatter.import(String((value ?? '') as string | number | boolean))
       }
 
       return value ?? null

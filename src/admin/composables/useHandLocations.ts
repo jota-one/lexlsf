@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-const translations: any = {
+const translations: Record<string, string> = {
   head: 'Tête',
   face: 'Visage',
   neck: 'Cou',

@@ -11,7 +11,7 @@ export const idFilter = (ids: string[]) =>
     .map(id => `id = "${id}"`)
     .join(' || ')
 
-export const fileUrl = (record: { [k: string]: any }, filename: string) => {
+export const fileUrl = (record: { [k: string]: unknown }, filename: string) => {
   if (!filename) {
     return ''
   }

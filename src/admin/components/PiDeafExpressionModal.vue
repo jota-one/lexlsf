@@ -64,7 +64,7 @@ watch(visible, async (isVisible) => {
 // Auto-populate name from selected sign
 watch(() => form.value.Sign, async (signId) => {
   if (!signId) {return}
-  const sign = await pb.collection('sign').getOne(signId, { fields: 'id,name' }) as any
+  const sign = await pb.collection('sign').getOne(signId, { fields: 'id,name' }) as { id: string; name: string }
   form.value.name = sign.name
 })
 

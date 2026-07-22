@@ -188,7 +188,7 @@ import TabPanel from 'primevue/tabpanel'
 import ToggleSwitch from 'primevue/toggleswitch'
 import useRoles from '../composables/useRoles'
 import useCategories from '../composables/useCategories'
-import type { TLexicalField } from '../../types'
+import type { TCategory, TLexicalField } from '../../types'
 import SignPicker from './SignPicker.vue'
 import PersonPicker from './PersonPicker.vue'
 import CategoriesPickerForm from './CategoriesPickerForm.vue'
@@ -225,9 +225,9 @@ watch([categories, () => form.value.Categories], () => {
   categoriesInitialized.value = true
   const flatIds = form.value.Categories || []
   const result: { [parentId: string]: string[] } = {}
-  for (const parent of categories.value.filter((c: any) => !c.Parent)) {
-    const children = (parent.expand?.category_via_Parent || []) as any[]
-    result[parent.id] = children.filter((c: any) => flatIds.includes(c.id)).map((c: any) => c.id)
+  for (const parent of categories.value.filter((c: TCategory.TRecord) => !c.Parent)) {
+    const children = (parent.expand?.category_via_Parent || []) as TCategory.TRecord[]
+    result[parent.id] = children.filter((c: TCategory.TRecord) => flatIds.includes(c.id)).map((c: TCategory.TRecord) => c.id)
   }
   selectedCategories.value = result
 }, { immediate: true })

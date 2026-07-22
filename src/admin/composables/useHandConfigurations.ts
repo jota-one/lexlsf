@@ -21,7 +21,7 @@ export default function useHandConfigurations() {
     })
   }
 
-  const addHandConfiguration = async (payload: any) => {
+  const addHandConfiguration = async (payload: { name: string; illustration: string | Blob }) => {
     loadingHandConfigurations.value = true
     const formData = new FormData()
 
@@ -33,7 +33,7 @@ export default function useHandConfigurations() {
     return pb.collection('hand_configurations').create(formData)
   }
 
-  const updateHandConfiguration = async (id: string, payload: any) => {
+  const updateHandConfiguration = async (id: string, payload: { name: string; illustration?: string | Blob }) => {
     loadingHandConfigurations.value = true
     const formData = new FormData()
 

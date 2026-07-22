@@ -155,7 +155,7 @@ const props = defineProps<{ slug: string }>()
 const { pb, isAuthenticated } = useAuth()
 const router = useRouter()
 
-const record = ref<any>(null)
+const record = ref<Record<string, unknown> | null>(null)
 const mainCategories = ref<TCategory.TRecord[]>([])
 const error = ref(false)
 

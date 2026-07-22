@@ -41,6 +41,7 @@
 import useCategories from '@admin/composables/useCategories';
 import InputText from 'primevue/inputtext';
 import { ref, computed, watch, onMounted } from 'vue';
+import type { TCategory } from '../../types';
 
 type Props = {
   entity?: string
@@ -67,13 +68,13 @@ const normalizeString = (str: string) => {
 };
 
 // Filtered children for a given parent
-const filteredChildCategoryOptions = (parent: any) => {
+const filteredChildCategoryOptions = (parent: TCategory.TRecord) => {
     const children = parent.expand?.category_via_Parent || [];
     if (!categoryFilter.value.trim()) {
         return children;
     }
     const filter = normalizeString(categoryFilter.value);
-    return children.filter((child: any) => normalizeString(child.tag).includes(filter));
+    return children.filter((child: TCategory.TRecord) => normalizeString(child.tag).includes(filter));
 };
 
 // Only show parent categories that have at least one visible child
@@ -81,7 +82,7 @@ const visibleParentCategories = computed(() => {
     if (!categoryFilter.value.trim()) {
         return parentCategories.value;
     }
-    return parentCategories.value.filter((parent: any) => {
+    return parentCategories.value.filter((parent: TCategory.TRecord) => {
         const filteredChildren = filteredChildCategoryOptions(parent);
         return filteredChildren.length > 0;
     });

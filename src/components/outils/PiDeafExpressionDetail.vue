@@ -42,7 +42,7 @@ import config from '../../config'
 const props = defineProps<{ slug: string }>()
 
 const { pb, isAuthenticated } = useAuth()
-const expr = ref<any>(null)
+const expr = ref<Record<string, unknown> | null>(null)
 const strategiesHtml = ref('')
 const loading = ref(true)
 

@@ -39,8 +39,8 @@ export default function useAuth() {
       })
       user.value = authData.record as unknown as TUser.TRecord
       return authData.token
-    } catch (e: any) {
-      return { error: true, message: e.message }
+    } catch (e) {
+      return { error: true, message: (e as Error).message }
     }
   }
 
