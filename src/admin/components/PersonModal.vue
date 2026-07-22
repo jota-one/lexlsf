@@ -169,7 +169,7 @@ watch(visible, async (isVisible) => {
     // Initialize selected categories
     selectedCategories.value = {};
     if (person.expand?.Category) {
-        person.expand.Category.forEach((cat: any) => {
+        person.expand.Category.forEach((cat: { id: string; Parent?: string }) => {
             const parentId = cat.Parent!;
             if (!selectedCategories.value[parentId]) {
                 selectedCategories.value[parentId] = [];
@@ -180,7 +180,7 @@ watch(visible, async (isVisible) => {
     // Initialize selected activities
     selectedActivities.value = {};
     if (person.expand?.Activities) {
-        person.expand.Activities.forEach((act: any) => {
+        person.expand.Activities.forEach((act: { id: string; Parent?: string }) => {
             const parentId = act.Parent!;
             if (!selectedActivities.value[parentId]) {
                 selectedActivities.value[parentId] = [];

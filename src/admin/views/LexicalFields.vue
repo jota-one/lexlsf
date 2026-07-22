@@ -63,15 +63,15 @@ const { lexicalFields, loadLexicalFields, deleteLexicalField } = useLexicalField
 const showFieldModal = ref(false)
 const editedFieldId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
-const fieldToDelete = ref<any>(null)
+const fieldToDelete = ref<{ id: string } | null>(null)
 const deleteMessage = ref('')
 
-const roleNames = (roles: any[]) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
+const roleNames = (roles: Array<{ name: string }>) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
 const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
 
 const openAddModal = () => { editedFieldId.value = undefined; showFieldModal.value = true }
-const editField = (field: any) => { editedFieldId.value = field.id; showFieldModal.value = true }
-const confirmDelete = (field: any) => {
+const editField = (field: { id: string }) => { editedFieldId.value = field.id; showFieldModal.value = true }
+const confirmDelete = (field: { id: string; name?: string }) => {
   fieldToDelete.value = field
   deleteMessage.value = `Voulez-vous vraiment supprimer "${field.name}" et tous ses termes ?`
   showDeleteModal.value = true

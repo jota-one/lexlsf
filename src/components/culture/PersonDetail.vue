@@ -190,7 +190,7 @@ const props = defineProps<{ slug: string }>()
 const { pb, isAuthenticated } = useAuth()
 const router = useRouter()
 
-const record = ref<any>(null)
+const record = ref<Record<string, unknown> | null>(null)
 const error = ref(false)
 
 onMounted(async () => {
@@ -236,7 +236,7 @@ const activitiesList = computed(() => {
   if (!record.value) {return []}
   if (Array.isArray(record.value.expand?.Activities)) {
     return record.value.expand.Activities.map(
-      (a: any) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a),
+      (a: Record<string, unknown>) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a),
     ).filter(Boolean)
   }
   return Array.isArray(record.value.activities) ? record.value.activities : []
@@ -252,7 +252,7 @@ function getYouTubeId(url: string) {
   return match && match[2].length === 11 ? match[2] : null
 }
 
-function goToCategory(cat: any) {
+function goToCategory(cat: { slug?: string; expand?: { Parent?: { slug?: string } } }) {
   if (cat.expand?.Parent) {
     router.push({ path: `/${cat.expand.Parent.slug}/${cat.slug}` })
   } else {

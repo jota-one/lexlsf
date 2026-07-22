@@ -179,14 +179,14 @@ const editedSignId = ref<string | undefined>(undefined);
 const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
-const signToDelete = ref<any>(null);
+const signToDelete = ref<TSign.TRecord | null>(null);
 const deleteMessage = ref('');
 
-const categories = (category: any[]) => {
+const categories = (category: Array<{ tag: string }>) => {
   return (category || []).map(c => c.tag).join(', ')
 };
 
-const roleNames = (roles: any[]) => {
+const roleNames = (roles: Array<{ name: string }>) => {
   if (!roles?.length) {
     return '-';
   }
@@ -202,12 +202,12 @@ const openImportExportModal = () => {
   showImportExportModal.value = true;
 };
 
-const editSign = (sign: any) => {
+const editSign = (sign: TSign.TRecord) => {
   editedSignId.value = sign.id;
   showSignModal.value = true;
 };
 
-const confirmDelete = (sign: any) => {
+const confirmDelete = (sign: TSign.TRecord) => {
   signToDelete.value = sign;
   deleteMessage.value = `Voulez-vous vraiment supprimer le signe "${sign.name}" ? Cette action est irréversible.`;
   showDeleteModal.value = true;

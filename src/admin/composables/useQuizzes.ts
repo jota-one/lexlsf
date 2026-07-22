@@ -18,7 +18,7 @@ export type QuizFormData = {
   title: string
   description?: string
   item_type: 'sign' | 'person' | 'mixed'
-  settings?: Record<string, any>
+  settings?: Record<string, unknown>
   items: Array<{
     item_type: 'sign' | 'person'
     item_id: string

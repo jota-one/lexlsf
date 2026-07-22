@@ -46,14 +46,14 @@ onMounted(async () => {
 
   const countsMap: Record<string, number> = {}
   if (isAdmin.value) {
-    ;(counts as any[]).forEach(sign => {
+    ;(counts as Array<Record<string, unknown>>).forEach(sign => {
       ;(sign.Category ?? []).forEach((catId: string) => {
         countsMap[catId] = (countsMap[catId] ?? 0) + 1
       })
     })
   } else {
-    const userRoleIds = roles.value.map((r: any) => r.id)
-    ;(counts as any[]).forEach(row => {
+    const userRoleIds = roles.value.map((r: { id: string }) => r.id)
+    ;(counts as Array<Record<string, unknown>>).forEach(row => {
       if (userRoleIds.includes(row.role_id)) {
         countsMap[row.category_id] = (countsMap[row.category_id] ?? 0) + row.sign_count
       }

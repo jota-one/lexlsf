@@ -78,8 +78,8 @@ import useAuth from '@admin/composables/useAuth'
 const props = defineProps<{ slug: string }>()
 
 const { pb, isAuthenticated } = useAuth()
-const field = ref<any>(null)
-const terms = ref<any[]>([])
+const field = ref<Record<string, unknown> | null>(null)
+const terms = ref<Array<Record<string, unknown>>>([])
 const loading = ref(true)
 
 onMounted(async () => {
@@ -102,11 +102,11 @@ onMounted(async () => {
   }
 })
 
-const regularTerms = computed(() => terms.value.filter((t: any) => !t.is_person))
+const regularTerms = computed(() => terms.value.filter((t: Record<string, unknown>) => !t.is_person))
 
 const personTerms = computed(() => {
-  const persons = terms.value.filter((t: any) => t.is_person)
-  return persons.sort((a: any, b: any) => {
+  const persons = terms.value.filter((t: Record<string, unknown>) => t.is_person)
+  return persons.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
     const aActive = isActive(a)
     const bActive = isActive(b)
     if (aActive !== bActive) {return aActive ? -1 : 1}
@@ -118,7 +118,7 @@ const personTerms = computed(() => {
   })
 })
 
-const isActive = (term: any) => {
+const isActive = (term: Record<string, unknown>) => {
   if (!term.end_date) {return true}
   return new Date(term.end_date) >= new Date()
 }

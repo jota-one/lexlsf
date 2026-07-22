@@ -105,7 +105,7 @@ watch(() => props.activeZonesLeft, (v) => {
 
 function onImageLoad() { imageLoaded.value = true; }
 
-function transformFor(zone: any) {
+function transformFor(zone: { rotate?: number; cx?: number; cy?: number }) {
     if (!zone.rotate || zone.rotate === 0) {return undefined;}
     // rotate(angle cx cy)
     return `rotate(${zone.rotate} ${zone.cx} ${zone.cy})`;

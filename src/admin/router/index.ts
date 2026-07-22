@@ -30,7 +30,7 @@ const routes = [
   { path: '/roadmap', component: Roadmap },
 ]
 
-const baseUrl = (import.meta as any).env?.BASE_URL || '/'
+const baseUrl = import.meta.env.BASE_URL || '/'
 
 const router = createRouter({
   history: createWebHistory(baseUrl + 'admin/'),

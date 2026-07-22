@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["pb/pb_migrations/**"],
   "rules": {
     "eqeqeq": "error",
     "curly": "error",

@@ -70,7 +70,7 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     unique: true,
-    derive: row => createSlug(row.name || ''),
+    derive: row => createSlug((row.name as string) || ''),
   },
   {
     key: 'Category',
@@ -78,11 +78,11 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     formatter: {
-      export: async (value: string[], row?: Record<string, any>) => {
-        const expanded = row?.expand?.Category
+      export: async (value: unknown, row?: Record<string, unknown>) => {
+        const expanded = (row?.expand as { Category?: Array<{ slug?: string }> } | undefined)?.Category
         if (Array.isArray(expanded) && expanded.length > 0) {
           return expanded
-            .map((category: any) => category?.slug)
+            .map((category: { slug?: string }) => category?.slug)
             .filter(Boolean)
             .join(',')
         }
@@ -165,11 +165,11 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     exportable: true,
     importable: true,
     formatter: {
-      export: async (value: string[], row?: Record<string, any>) => {
-        const expanded = row?.expand?.Roles
+      export: async (value: unknown, row?: Record<string, unknown>) => {
+        const expanded = (row?.expand as { Roles?: Array<{ slug?: string }> } | undefined)?.Roles
         if (Array.isArray(expanded) && expanded.length > 0) {
           return expanded
-            .map((role: any) => role?.slug)
+            .map((role: { slug?: string }) => role?.slug)
             .filter(Boolean)
             .join(',')
         }

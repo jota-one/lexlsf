@@ -137,7 +137,7 @@ const chartOptions = {
     legend: { display: false },
     tooltip: {
       callbacks: {
-        label: (ctx: any) => `Score : ${ctx.raw}`,
+        label: (ctx: { raw: number }) => `Score : ${ctx.raw}`,
       },
     },
   },

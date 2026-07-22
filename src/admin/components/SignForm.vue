@@ -326,7 +326,7 @@ const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions
 // Filtered options for dominant/non-dominant
 const handConfigOptions = computed(() =>
     handConfigurations.value
-        .map((c: any) => ({
+        .map((c: { name: string; illustration: string }) => ({
             label: c.name,
             value: c,
             illustration: c.illustration

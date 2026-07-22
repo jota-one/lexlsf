@@ -114,7 +114,7 @@ const save = async () => {
         }
       }
     } else {
-      const field = await addLexicalField(form.value) as any
+      const field = await addLexicalField(form.value) as { id: string }
       for (const t of terms.value) {
         if (t.term.trim()) {
           await addTerm(termPayload(t, field.id))

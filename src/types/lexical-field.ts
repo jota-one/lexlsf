@@ -1,5 +1,3 @@
-import type { TSign } from '.'
-
 export type TRecord = {
   id: string
   name: string

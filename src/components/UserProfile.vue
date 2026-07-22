@@ -276,7 +276,7 @@ const handleSubmit = async () => {
       avatarPreview.value = getAvatarUrl()
     }
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Erreur lors de la mise à jour du profil:', error)
     showPbError(error)
   } finally {

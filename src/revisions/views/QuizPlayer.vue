@@ -39,8 +39,8 @@ const isFlipped = ref(false)
 const cardStartTime = ref<number>(0)
 const sessionStartTime = ref<number>(0)
 const sessionDuration = ref<number>(0)
-const incompleteSessions = ref<any[]>([])
-const completedSessions = ref<any[]>([])
+const incompleteSessions = ref<Array<Record<string, unknown>>>([])
+const completedSessions = ref<Array<Record<string, unknown>>>([])
 const deletingSessionId = ref<string | null>(null)
 
 const availableModes = computed(() => {
@@ -53,7 +53,7 @@ onMounted(async () => {
     const quizId = route.params.id as string
     const { quiz } = await loadQuiz(quizId)
     quizTitle.value = quiz.title
-    quizItemType.value = quiz.item_type as any
+    quizItemType.value = quiz.item_type as 'sign' | 'person' | 'mixed'
     modes.value = availableModes.value
     selectedMode.value = modes.value[0]?.key || ''
 

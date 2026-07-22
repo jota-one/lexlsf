@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import InputText from 'primevue/inputtext';
 
-const form = defineModel<any>({ required: true });
+const form = defineModel<Record<string, unknown>>({ required: true });
 
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;

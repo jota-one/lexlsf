@@ -812,8 +812,8 @@ const syncListsBeforeSave = () => {
     const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
     form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
     form.value.Videos = getVideoIds();
-    form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined as any;
-    form.value.deathdate = deathdateModel.value ? dayjs(deathdateModel.value).format('YYYY-MM-DD') : undefined as any;
+    form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined;
+    form.value.deathdate = deathdateModel.value ? dayjs(deathdateModel.value).format('YYYY-MM-DD') : undefined;
 };
 
 defineExpose({ syncListsBeforeSave });

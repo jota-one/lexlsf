@@ -1,6 +1,6 @@
 export type FieldFormatter = {
-  export?: (value: any, row?: Record<string, any>) => string | Promise<string>
-  import?: (value: string, row?: Record<string, any>) => any
+  export?: (value: unknown, row?: Record<string, unknown>) => string | Promise<string>
+  import?: (value: string, row?: Record<string, unknown>) => unknown
 }
 
 export type FieldConfig = {
@@ -10,7 +10,7 @@ export type FieldConfig = {
   importable: boolean
   unique?: boolean
   formatter?: FieldFormatter
-  derive?: (row: Record<string, any>) => any
+  derive?: (row: Record<string, unknown>) => unknown
 }
 
 export type ImportResult = {

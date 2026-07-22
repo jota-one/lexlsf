@@ -59,15 +59,15 @@ const { frenchExpressions, loadFrenchExpressions, deleteFrenchExpression } = use
 const showExpressionModal = ref(false)
 const editedExpressionId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
-const expressionToDelete = ref<any>(null)
+const expressionToDelete = ref<{ id: string } | null>(null)
 const deleteMessage = ref('')
 
-const roleNames = (roles: any[]) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
+const roleNames = (roles: Array<{ name: string }>) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
 const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
 
 const openAddModal = () => { editedExpressionId.value = undefined; showExpressionModal.value = true }
-const editExpression = (expr: any) => { editedExpressionId.value = expr.id; showExpressionModal.value = true }
-const confirmDelete = (expr: any) => {
+const editExpression = (expr: { id: string }) => { editedExpressionId.value = expr.id; showExpressionModal.value = true }
+const confirmDelete = (expr: { id: string; expression?: string }) => {
   expressionToDelete.value = expr
   deleteMessage.value = `Voulez-vous vraiment supprimer l'expression "${expr.expression}" ?`
   showDeleteModal.value = true

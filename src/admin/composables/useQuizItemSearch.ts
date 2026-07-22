@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import type { RecordModel } from 'pocketbase'
 import { pb } from '@lib/pb'
 import type { ItemType } from '@admin/types/quiz'
 
@@ -8,7 +9,7 @@ type SearchItem = {
   name: string
   label: string
   details?: string
-  expand?: any
+  expand?: Record<string, unknown>
 }
 
 export type QuizItemSearchQuery = {
@@ -83,7 +84,7 @@ export default function useQuizItemSearch() {
   /**
    * Format search result based on type
    */
-  const formatResult = (record: any, type: 'sign' | 'person'): SearchItem => {
+  const formatResult = (record: RecordModel, type: 'sign' | 'person'): SearchItem => {
     if (type === 'sign') {
       return {
         id: record.id,

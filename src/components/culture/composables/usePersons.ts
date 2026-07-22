@@ -18,7 +18,7 @@ export default function usePersons() {
   }
 
   const loadPerson = async (id: string) => {
-    return pb.collection<TPerson.TRecord & { expand?: any }>('person').getOne(id, {
+    return pb.collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person').getOne(id, {
       fields: '*',
       expand: 'Category,Sign',
     })

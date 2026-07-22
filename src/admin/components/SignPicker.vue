@@ -86,7 +86,7 @@ onMounted(async () => {
   if (ids.length === 0) {return}
   const filter = idFilter(ids)
   const res = await pb.collection('sign').getList(1, ids.length, { filter, fields: 'id,name' })
-  selectedItems.value = res.items.map((s: any) => ({ id: s.id, name: s.name }))
+  selectedItems.value = res.items.map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
@@ -106,8 +106,8 @@ watch(searchTerm, (val) => {
         sort: 'name',
       })
       searchResults.value = res.items
-        .filter((s: any) => !selectedIds.has(s.id))
-        .map((s: any) => ({ id: s.id, name: s.name }))
+        .filter((s: { id: string; name: string }) => !selectedIds.has(s.id))
+        .map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))
     } finally {
       searching.value = false
     }

@@ -128,7 +128,7 @@ import type { TPerson } from '../../types';
 // Retourne la liste des problèmes pour un signe
 function getPersonProblems(person: TPerson.TRecord): string[] {
   const problems: string[] = [];
-  const p: any = person;
+  const p: TPerson.TRecord & { expand?: { Sign?: unknown } } = person;
   // Absence d'illustration
   if (!p.illustration) {
     problems.push("Absence d'illustration");
@@ -153,14 +153,14 @@ const editedPersonId = ref<string | undefined>(undefined);
 const showImportExportModal = ref(false);
 
 const showDeleteModal = ref(false);
-const personToDelete = ref<any>(null);
+const personToDelete = ref<TPerson.TRecord | null>(null);
 const deleteMessage = ref('');
 
-const categories = (category: any[]) => {
+const categories = (category: Array<{ tag: string }>) => {
   return (category || []).map(c => c.tag).join(', ')
 };
 
-const roleNames = (roles: any[]) => {
+const roleNames = (roles: Array<{ name: string }>) => {
   if (!roles?.length) {return '-';}
   return roles.map(r => r.name).join(', ');
 };
@@ -174,12 +174,12 @@ const openImportExportModal = () => {
   showImportExportModal.value = true;
 };
 
-const editPerson = (person: any) => {
+const editPerson = (person: TPerson.TRecord) => {
   editedPersonId.value = person.id;
   showPersonModal.value = true;
 };
 
-const confirmDelete = (person: any) => {
+const confirmDelete = (person: TPerson.TRecord) => {
   personToDelete.value = person;
   deleteMessage.value = `Voulez-vous vraiment supprimer la personne "${person.name}" ? Cette action est irréversible.`;
   showDeleteModal.value = true;

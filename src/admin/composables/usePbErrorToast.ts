@@ -3,7 +3,7 @@ import { useToast } from 'primevue/usetoast'
 type PbErrorFieldDetail = {
   code?: string
   message?: string
-  params?: Record<string, any>
+  params?: Record<string, unknown>
 }
 
 /**
@@ -18,7 +18,7 @@ type PbErrorFieldDetail = {
 export default function usePbErrorToast() {
   const toast = useToast()
 
-  function showPbError(e: any) {
+  function showPbError(e: unknown) {
     try {
       if (!e) {return}
 
@@ -28,16 +28,18 @@ export default function usePbErrorToast() {
         return
       }
 
+      const err = e as { response?: { data?: unknown; message?: string }; data?: unknown; message?: string }
+
       // Normalize error object shape
-      const errObject = e?.response ?? e ?? {}
+      const errObject = err.response ?? err ?? {}
 
       // Try to locate the PocketBase error payload in common places
-      const fieldData = errObject?.data as Record<string, PbErrorFieldDetail> | undefined
+      const fieldData = errObject.data as Record<string, PbErrorFieldDetail> | undefined
 
       // Top-level message (fallback to stringified error)
       const topMessage =
-        errObject?.message ||
-        (typeof e?.message === 'string' ? e.message : undefined) ||
+        errObject.message ||
+        (typeof err.message === 'string' ? err.message : undefined) ||
         'Erreur serveur'
 
       const msg: string[] = []
@@ -47,7 +49,7 @@ export default function usePbErrorToast() {
           let detail = ''
           if (errVal.message) {
             detail = errVal.message
-            if (errVal.params?.file) {detail += ` (${errVal.params.file})`}
+            if (errVal.params?.file) {detail += ` (${errVal.params.file as string})`}
             if (errVal.code) {detail += ` [${errVal.code}]`}
           } else {
             // fallback to JSON

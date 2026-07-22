@@ -208,11 +208,11 @@ const handleExportCSV = async () => {
       detail: 'Le fichier CSV a été téléchargé',
       life: 3000,
     })
-  } catch (error: any) {
+  } catch (error) {
     toast.add({
       severity: 'error',
       summary: 'Erreur d\'export',
-      detail: error.message || 'Une erreur est survenue',
+      detail: (error as Error).message || 'Une erreur est survenue',
       life: 5000,
     })
   }
@@ -259,11 +259,11 @@ const handleImport = async () => {
       fileInput.value.value = ''
     }
     selectedFile.value = null
-  } catch (error: any) {
+  } catch (error) {
     toast.add({
       severity: 'error',
       summary: 'Erreur d\'import',
-      detail: error.message || 'Une erreur est survenue',
+      detail: (error as Error).message || 'Une erreur est survenue',
       life: 5000,
     })
   }

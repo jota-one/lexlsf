@@ -67,7 +67,7 @@ const searchResults = ref<PersonItem[]>([])
 const selectedItem = ref<PersonItem | null>(null)
 const searching = ref(false)
 
-const buildLabel = (p: any) =>
+const buildLabel = (p: { firstname?: string; name: string }) =>
   p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
@@ -91,7 +91,7 @@ watch(searchTerm, (val) => {
         fields: 'id,name,firstname',
         sort: 'name,firstname',
       })
-      searchResults.value = res.items.map((p: any) => ({ id: p.id, label: buildLabel(p) }))
+      searchResults.value = res.items.map((p: { id: string; firstname?: string; name: string }) => ({ id: p.id, label: buildLabel(p) }))
     } finally {
       searching.value = false
     }
