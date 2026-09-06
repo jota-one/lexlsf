@@ -49,6 +49,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-06] Champs lexicaux — les types de terme deviennent un sous-ensemble de catégories (« Types de terme ») gérable depuis la page Catégories, avec un script one-shot pour installer la liste de référence.
 - [2026-09-06] Champs lexicaux — page publique en cartes : une carte par type de terme, 3 par ligne, repliées pour tenir 9 cartes à l'écran et dépliables à la demande ; note affichée avant la stratégie ; un lien vers un terme lié déplie sa carte et met le terme en évidence. Import/export des termes aligné sur les autres : liste `related` séparée par des virgules, et fichiers CSV acceptés aussi bien avec des virgules qu'avec des points-virgules entre colonnes (tous les imports).
 - [2026-09-06] Champs lexicaux — refonte des termes : suppression du flag "personne" (et des champs dates/personne liée), note personnelle, "Type" de terme (nouvelle entité de catégories `lexical_term`) et liens réciproques entre termes, y compris entre champs lexicaux différents. Édition d'un champ lexical déplacée du modal vers une vraie page à onglets, avec une liste de termes compacte éditable ligne par ligne. Import/export CSV des termes (résolution des liens en seconde passe). Page publique compactée et groupée par type.
 - [2026-04-25] Admin — page "Feuille de route" : nouvelles fonctionnalités en cartes (clic → modal détail markdown), améliorations en liste avec badges par catégorie, historique en timeline DaisyUI.
