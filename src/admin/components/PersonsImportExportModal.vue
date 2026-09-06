@@ -74,7 +74,7 @@
         </h3>
 
         <div class="alert alert-info mb-3">
-          <span class="i-fa-solid-list-check"></span>
+          <span class="i-fa6-solid-list-check"></span>
           <span>
             {{ importResult.processed }} personne(s) traitée(s) —
             {{ importResult.created }} nouvelle(s), {{ importResult.updated }} mise(s) à jour,
