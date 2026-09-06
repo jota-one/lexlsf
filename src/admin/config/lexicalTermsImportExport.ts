@@ -112,7 +112,7 @@ const FIELDS: TImportExport.FieldConfig[] = [
         return ids
           .map(id => names.get(id))
           .filter(Boolean)
-          .join(';')
+          .join(',')
       },
     },
   },
@@ -172,7 +172,7 @@ export const applyRelatedTerms = async (fieldId: string, rows: string[][], heade
     }
 
     for (const wanted of rawRelated
-      .split(';')
+      .split(/[;,]/)
       .map(part => part.trim())
       .filter(Boolean)) {
       const matches = byName.get(termKey(wanted)) || []

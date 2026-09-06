@@ -131,7 +131,7 @@ export default function useImportExport(
 
     try {
       const text = await file.text()
-      const rows = parseCSV(text)
+      const rows = parseCSV(text, detectDelimiter(text))
 
       if (rows.length < 2) {
         throw new Error('Le fichier CSV est vide ou invalide')
@@ -316,7 +316,16 @@ export default function useImportExport(
     return value
   }
 
-  const parseCSV = (text: string): string[][] => {
+  /**
+   * Spreadsheets in a French locale save CSV with `;` between columns.
+   * The header row tells which flavour the file uses.
+   */
+  const detectDelimiter = (text: string): string => {
+    const header = text.split(/\r?\n/)[0] || ''
+    return header.split(';').length > header.split(',').length ? ';' : ','
+  }
+
+  const parseCSV = (text: string, delimiter: string): string[][] => {
     const rows: string[][] = []
     let row: string[] = []
     let current = ''
@@ -350,7 +359,7 @@ export default function useImportExport(
         continue
       }
 
-      if (!inQuotes && char === ',') {
+      if (!inQuotes && char === delimiter) {
         row.push(current)
         current = ''
         continue

@@ -123,7 +123,10 @@
           Format des fichiers
         </h3>
         <div class="text-xs space-y-2">
-          <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
+          <p>
+            <strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}. Les colonnes
+            peuvent être séparées par des virgules ou des points-virgules.
+          </p>
           <p>
             <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules. Exemples:
             <code>student</code> ou <code>student,visitor</code>.
