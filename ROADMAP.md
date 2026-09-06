@@ -37,15 +37,10 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
-### Amélioration des champs lexicaux
+### Détection automatique des signes pour les termes
 
-En vrac, voici ce qu'on veut améliorer ici:
-
-- virer la partie "ce terme est une personne". Pas utile dans les champs lexicaux.
-- Un terme doit contenir les champs suivants: le terme, la stratégie, notes personnelles, une catégorie de terme (liste limitée), des liens éventuels sur d'autres termes du champ lexical
-- On veut pouvoir importer tout ça via un CSV
-- L'UI de l'admin des termes est horrible. A partir de 3 termes on y voit plus rien.
-- Côté Frontend, on veut une liste plus compacte avec le nom du terme, et en-dessous la stratégie (en bleu, car tout ce qui concerne les sourds c'est bleu), puis la note perso en noir normal. S'il y a un signe associé, on veut le lien vers le signe sous forme d'icône (déjà fait ailleurs).
+Les termes ne sont pas liés à un signe à l'import CSV. On veut un outil qui, pour chaque terme sans
+signe associé, lance une recherche dans les signes et propose ceux qui pourraient correspondre.
 
 ### Nouveau module "Situation d'interprétation"
 
@@ -54,6 +49,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-06] Champs lexicaux — refonte des termes : suppression du flag "personne" (et des champs dates/personne liée), note personnelle, "Type" de terme (nouvelle entité de catégories `lexical_term`) et liens réciproques entre termes, y compris entre champs lexicaux différents. Édition d'un champ lexical déplacée du modal vers une vraie page à onglets, avec une liste de termes compacte éditable ligne par ligne. Import/export CSV des termes (résolution des liens en seconde passe). Page publique compactée et groupée par type.
 - [2026-04-25] Admin — page "Feuille de route" : nouvelles fonctionnalités en cartes (clic → modal détail markdown), améliorations en liste avec badges par catégorie, historique en timeline DaisyUI.
 - [2026-04-24] Culture générale — timeline publique filtrable (événements ponctuels + périodes) avec fiche détail ; CRUD admin complet (dates partielles, images uploadables avec copie markdown, associations champs lexicaux / signes / personnes, visibilité par rôles) ; collection PocketBase + migrations.
 - [2026-04-23] Champs lexicaux — termes enrichis (flag personne, description markdown, stratégie en bleu, dates d'activité, lien Culture) ; layout public 3 colonnes (termes sur 2 col., personnes triées par activité dans la 3e) ; catégories dédiées `lexical_field` (nouvelle entité dans admin catégories + onglet Catégories dans le formulaire champ lexical).
