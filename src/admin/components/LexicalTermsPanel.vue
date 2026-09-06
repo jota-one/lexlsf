@@ -19,7 +19,7 @@
     <!-- Nouveau terme -->
     <div v-if="newTerm" class="p-4 border border-primary rounded-lg space-y-4">
       <h4 class="font-semibold text-sm">Nouveau terme</h4>
-      <LexicalTermForm v-model="newTerm" :types="types" :all-terms="allTerms" />
+      <LexicalTermForm v-model="newTerm" :types="termTypes" :all-terms="allTerms" />
       <div class="flex justify-end gap-2">
         <button type="button" class="btn btn-ghost btn-sm" @click="newTerm = null">Annuler</button>
         <button type="button" class="btn btn-primary btn-sm" :disabled="saving" @click="createTerm">
@@ -55,7 +55,7 @@
       </Column>
       <Column header="Note" style="width: 5rem">
         <template #body="{ data }">
-          <span v-if="data.note" class="i-fa-solid-note-sticky text-base-content/50"></span>
+          <span v-if="data.note" class="i-fa-solid-sticky-note text-base-content/50"></span>
           <span v-else class="text-base-content/30">—</span>
         </template>
       </Column>
@@ -90,7 +90,7 @@
         <div v-if="buffers[data.id]" class="p-4 space-y-4 bg-base-200/40">
           <LexicalTermForm
             v-model="buffers[data.id]"
-            :types="types"
+            :types="termTypes"
             :all-terms="allTerms"
             :current-id="data.id"
           />
@@ -136,12 +136,12 @@ import { onMounted, ref } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import useLexicalTerms from '../composables/useLexicalTerms'
-import useCategories from '../composables/useCategories'
+import useTermTypes from '../composables/useTermTypes'
 import usePbErrorToast from '../composables/usePbErrorToast'
 import LexicalTermForm from './LexicalTermForm.vue'
 import LexicalTermsImportExportModal from './LexicalTermsImportExportModal.vue'
 import ConfirmModal from './ConfirmModal.vue'
-import type { TCategory, TLexicalTerm } from '../../types'
+import type { TLexicalTerm } from '../../types'
 
 type Props = {
   fieldId: string
@@ -149,7 +149,7 @@ type Props = {
 const props = defineProps<Props>()
 
 const { terms, loadTermsByField, loadAllTerms, addTerm, updateTerm, deleteTerm } = useLexicalTerms()
-const { categories, loadCategories } = useCategories()
+const { termTypes, loadTermTypes } = useTermTypes()
 const { showPbError } = usePbErrorToast()
 
 const loading = ref(false)
@@ -158,7 +158,6 @@ const expandedRows = ref<Record<string, boolean>>({})
 const buffers = ref<Record<string, TLexicalTerm.TForm>>({})
 const newTerm = ref<TLexicalTerm.TForm | null>(null)
 const allTerms = ref<TLexicalTerm.TRecord[]>([])
-const types = ref<TCategory.TRecord[]>([])
 
 const showDeleteModal = ref(false)
 const showImportExport = ref(false)
@@ -269,9 +268,6 @@ const deleteConfirmed = async () => {
 
 onMounted(async () => {
   await reload()
-  await loadCategories('lexical_term')
-  types.value = categories.value.flatMap(
-    parent => (parent.expand?.category_via_Parent || []) as TCategory.TRecord[],
-  )
+  await loadTermTypes()
 })
 </script>
