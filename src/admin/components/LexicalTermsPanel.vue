@@ -5,6 +5,10 @@
         {{ terms.length }} terme{{ terms.length > 1 ? 's' : '' }}
       </span>
       <div class="flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline" @click="showSignMatch = true">
+          <span class="i-ic-round-sign-language"></span>
+          Rapprocher les signes
+        </button>
         <button type="button" class="btn btn-sm btn-outline" @click="showImportExport = true">
           <span class="i-fa-solid-file-csv"></span>
           Import / Export
@@ -128,6 +132,8 @@
       :field-id="fieldId"
       @imported="reload"
     />
+
+    <SignMatchModal v-model="showSignMatch" :terms="terms" @applied="reload" />
   </div>
 </template>
 
@@ -140,6 +146,7 @@ import useTermTypes from '../composables/useTermTypes'
 import usePbErrorToast from '../composables/usePbErrorToast'
 import LexicalTermForm from './LexicalTermForm.vue'
 import LexicalTermsImportExportModal from './LexicalTermsImportExportModal.vue'
+import SignMatchModal from './SignMatchModal.vue'
 import ConfirmModal from './ConfirmModal.vue'
 import type { TLexicalTerm } from '../../types'
 
@@ -161,6 +168,7 @@ const allTerms = ref<TLexicalTerm.TRecord[]>([])
 
 const showDeleteModal = ref(false)
 const showImportExport = ref(false)
+const showSignMatch = ref(false)
 const termToDelete = ref<TLexicalTerm.TRecord | null>(null)
 const deleteMessage = ref('')
 

@@ -86,6 +86,11 @@ export default function useLexicalTerms() {
     return updated
   }
 
+  /** Patches only the sign relation, leaving the rest of the term untouched. */
+  const setTermSign = async (id: string, signId: string) => {
+    return pb.collection('lexical_term').update(id, { Sign: signId })
+  }
+
   const deleteTerm = async (id: string) => {
     // PocketBase strips the deleted id from the other records' relation lists.
     return pb.collection('lexical_term').delete(id)
@@ -97,6 +102,7 @@ export default function useLexicalTerms() {
     loadAllTerms,
     addTerm,
     updateTerm,
+    setTermSign,
     deleteTerm,
   }
 }
