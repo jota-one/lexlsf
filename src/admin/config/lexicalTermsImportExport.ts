@@ -51,9 +51,22 @@ export const resetCaches = () => {
   termNamesPromise = null
 }
 
+/** Trims and collapses inner whitespace, preserving case (for stored values). */
+export const cleanTermValue = (value: string) => value.trim().replace(/\s+/g, ' ')
+
+/** Comparison key for case- and whitespace-insensitive term matching. */
+const termKey = (value: string) => cleanTermValue(value).toLowerCase()
+
 const FIELDS: TImportExport.FieldConfig[] = [
   { key: 'id', label: 'ID', exportable: true, importable: true },
-  { key: 'term', label: 'Terme', exportable: true, importable: true },
+  {
+    key: 'term',
+    label: 'Terme',
+    exportable: true,
+    importable: true,
+    // Fix sloppy CSV input: trim and collapse repeated spaces on the way in.
+    formatter: { import: (value: string) => cleanTermValue(value) },
+  },
   {
     key: 'Type',
     label: 'Type',
@@ -130,7 +143,7 @@ export const applyRelatedTerms = async (fieldId: string, rows: string[][], heade
 
   const byName = new Map<string, TTermRow[]>()
   for (const term of allTerms) {
-    const key = term.term.trim().toLowerCase()
+    const key = termKey(term.term)
     byName.set(key, [...(byName.get(key) || []), term])
   }
 
@@ -152,8 +165,7 @@ export const applyRelatedTerms = async (fieldId: string, rows: string[][], heade
     }
 
     const self = allTerms.find(
-      term =>
-        term.LexicalField === fieldId && term.term.trim().toLowerCase() === name.toLowerCase(),
+      term => term.LexicalField === fieldId && termKey(term.term) === termKey(name),
     )
     if (!self) {
       continue
@@ -163,7 +175,7 @@ export const applyRelatedTerms = async (fieldId: string, rows: string[][], heade
       .split(';')
       .map(part => part.trim())
       .filter(Boolean)) {
-      const matches = byName.get(wanted.toLowerCase()) || []
+      const matches = byName.get(termKey(wanted)) || []
       if (matches.length === 0) {
         errors.push(`"${name}" → terme lié "${wanted}" introuvable`)
         continue

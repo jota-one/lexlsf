@@ -103,9 +103,13 @@ test.describe('Champs lexicaux — admin', () => {
 
       await adminPage.getByRole('button', { name: 'Import / Export' }).click()
 
-      const csv = ['term,Type,strategy,note,related', 'Sénat,,,,Député', 'Député,,,,Sénat'].join(
-        '\n',
-      )
+      // Sloppy input: the term has repeated inner spaces and the `related`
+      // column has stray/inner spaces — both must be cleaned and still match.
+      const csv = [
+        'term,Type,strategy,note,related',
+        'Chambre  haute,,,,Chambre basse',
+        'Chambre basse,,,,  Chambre   haute  ',
+      ].join('\n')
       await adminPage.locator('input[type="file"]').setInputFiles({
         name: 'terms.csv',
         mimeType: 'text/csv',
@@ -117,12 +121,14 @@ test.describe('Champs lexicaux — admin', () => {
 
       await expect(async () => {
         const terms = await listTerms(admin, field.id)
-        const senat = terms.find(t => t.term === 'Sénat')
-        const depute = terms.find(t => t.term === 'Député')
-        expect(senat, 'Sénat imported').toBeTruthy()
-        expect(depute, 'Député imported').toBeTruthy()
-        expect(senat?.RelatedTerms).toContain(depute?.id)
-        expect(depute?.RelatedTerms).toContain(senat?.id)
+        // The stored term must have collapsed inner whitespace.
+        const haute = terms.find(t => t.term === 'Chambre haute')
+        const basse = terms.find(t => t.term === 'Chambre basse')
+        expect(haute, 'Chambre haute imported and cleaned').toBeTruthy()
+        expect(basse, 'Chambre basse imported').toBeTruthy()
+        // The link resolved despite the messy `related` value.
+        expect(haute?.RelatedTerms).toContain(basse?.id)
+        expect(basse?.RelatedTerms).toContain(haute?.id)
       }).toPass({ timeout: 5000 })
     } finally {
       await deleteLexicalField(admin, field.id)
