@@ -30,3 +30,7 @@ pb/pocketbase
 pb/pocketbase.custom
 videos
 sources geetha
+# e2e
+tests/e2e/.env
+tests/e2e/reports/
+test-results/
