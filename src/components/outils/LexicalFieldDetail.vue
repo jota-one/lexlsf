@@ -19,52 +19,13 @@
         Aucun terme dans ce champ lexical.
       </div>
 
-      <div v-else class="space-y-8">
-        <section v-for="group in groupedTerms" :key="group.key">
-          <h2
-            v-if="group.label"
-            class="text-sm font-semibold uppercase tracking-wide text-base-content/50 mb-3"
-          >
-            {{ group.label }}
-          </h2>
-
-          <ul class="divide-y divide-base-300 border-y border-base-300">
-            <li v-for="term in group.terms" :id="`term-${term.id}`" :key="term.id" class="py-3">
-              <div class="flex items-start gap-2">
-                <div class="flex-1 min-w-0">
-                  <span class="font-medium">{{ term.term }}</span>
-
-                  <p v-if="term.strategy" class="text-sm text-info whitespace-pre-line">
-                    {{ term.strategy }}
-                  </p>
-
-                  <p v-if="term.note" class="text-sm whitespace-pre-line">{{ term.note }}</p>
-
-                  <div v-if="term.expand?.RelatedTerms?.length" class="flex flex-wrap gap-1 mt-1">
-                    <a
-                      v-for="related in term.expand.RelatedTerms"
-                      :key="related.id"
-                      :href="relatedHref(related)"
-                      class="badge badge-sm badge-ghost hover:badge-neutral"
-                    >
-                      {{ related.term }}
-                    </a>
-                  </div>
-                </div>
-
-                <a
-                  v-if="term.expand?.Sign"
-                  :href="`/lexique/sign/${term.expand.Sign.slug}`"
-                  class="btn btn-sm btn-info hover:bg-sky-500 shrink-0"
-                  :aria-label="`Voir le signe ${term.expand.Sign.name}`"
-                  :title="`Voir le signe ${term.expand.Sign.name}`"
-                >
-                  <span class="i-ic-round-sign-language"></span>
-                </a>
-              </div>
-            </li>
-          </ul>
-        </section>
+      <div v-else class="columns-1 sm:columns-2 lg:columns-3 gap-4">
+        <LexicalTermTypeCard
+          v-for="group in groupedTerms"
+          :key="group.key"
+          :label="group.label || 'Non classés'"
+          :terms="group.terms"
+        />
       </div>
     </template>
   </div>
@@ -73,6 +34,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import LexicalTermTypeCard from './LexicalTermTypeCard.vue'
 import type { TLexicalField, TLexicalTerm } from '../../types'
 
 type Props = {
@@ -132,12 +94,4 @@ const groupedTerms = computed(() => {
     return a.label.localeCompare(b.label)
   })
 })
-
-const relatedHref = (related: TLexicalTerm.TRelatedTerm) => {
-  const fieldSlug = related.expand?.LexicalField?.slug
-  if (!fieldSlug) {
-    return `#term-${related.id}`
-  }
-  return `/outils/champs-lexicaux/${fieldSlug}#term-${related.id}`
-}
 </script>
