@@ -55,6 +55,7 @@ export async function listTerms(admin: Auth, fieldId: string) {
       id: string
       term: string
       Type: string
+      Sign: string
       RelatedTerms: string[]
       note: string
       strategy: string

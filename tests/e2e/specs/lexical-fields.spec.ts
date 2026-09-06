@@ -303,6 +303,58 @@ test.describe('Champs lexicaux — admin', () => {
     }
   })
 
+  test('proposes and applies signs for terms that have none', async ({ adminPage, admin }) => {
+    const prefix = `E2E${stamp()}`
+    const signName = `${prefix}-Sénat`
+    const signRes = await pbFetch(
+      '/api/collections/sign/records',
+      {
+        method: 'POST',
+        body: JSON.stringify({ name: signName, slug: `${prefix.toLowerCase()}-senat`, Roles: [] }),
+      },
+      admin.token,
+    )
+    expect(signRes.ok, `sign creation failed: ${signRes.status}`).toBeTruthy()
+    const sign = await signRes.json()
+
+    const field = await createField(admin, 'Signes')
+    try {
+      // One term matches the sign exactly (accent aside), one contains it as a
+      // whole word, one has nothing to match.
+      for (const term of [`${prefix}-senat`, `${prefix}-Sénat européen`, `${prefix}-Zzzz`]) {
+        await pbFetch(
+          '/api/collections/lexical_term/records',
+          { method: 'POST', body: JSON.stringify({ term, LexicalField: field.id }) },
+          admin.token,
+        )
+      }
+
+      const edit = new LexicalFieldEditPage(adminPage)
+      await edit.goto(field.id)
+      await edit.openTermsTab()
+
+      await adminPage.getByRole('button', { name: 'Rapprocher les signes' }).click()
+
+      // Two proposals out of three sign-less terms.
+      await expect(adminPage.getByRole('button', { name: /Associer 2 signes/ })).toBeVisible()
+      await expect(adminPage.getByText('Exact', { exact: true })).toBeVisible()
+      await expect(adminPage.getByText('Approchant', { exact: true })).toBeVisible()
+
+      await adminPage.getByRole('button', { name: /Associer 2 signes/ }).click()
+
+      await expect(async () => {
+        const terms = await listTerms(admin, field.id)
+        expect(terms.find(t => t.term === `${prefix}-senat`)?.Sign).toBe(sign.id)
+        expect(terms.find(t => t.term === `${prefix}-Sénat européen`)?.Sign).toBe(sign.id)
+        // The term with no candidate is left alone.
+        expect(terms.find(t => t.term === `${prefix}-Zzzz`)?.Sign).toBeFalsy()
+      }).toPass({ timeout: 5000 })
+    } finally {
+      await deleteLexicalField(admin, field.id)
+      await pbFetch(`/api/collections/sign/records/${sign.id}`, { method: 'DELETE' }, admin.token)
+    }
+  })
+
   test('renders the public page grouped by term type', async ({ adminPage, admin }) => {
     const field = await createField(admin, 'Public')
     const typed = `E2E${stamp()}-Typé`
