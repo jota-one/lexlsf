@@ -15,67 +15,56 @@
         {{ field.introduction }}
       </p>
 
-      <div
-        v-if="regularTerms.length === 0 && personTerms.length === 0"
-        class="text-center text-base-content/50 py-16"
-      >
+      <div v-if="terms.length === 0" class="text-center text-base-content/50 py-16">
         Aucun terme dans ce champ lexical.
       </div>
 
-      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Colonnes 1 & 2 : termes réguliers -->
-        <div class="lg:col-span-2">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div v-for="term in regularTerms" :key="term.id" class="card card-border p-4 space-y-1">
-              <span class="font-medium">{{ term.term }}</span>
-              <p v-if="term.strategy" class="text-sm text-blue-600">{{ term.strategy }}</p>
-              <a
-                v-if="term.expand?.Sign"
-                :href="`/lexique/sign/${term.expand.Sign.slug}`"
-                class="text-sm text-primary hover:underline block"
-              >
-                → Voir le signe : {{ term.expand.Sign.name }}
-              </a>
-            </div>
-          </div>
-        </div>
+      <div v-else class="space-y-8">
+        <section v-for="group in groupedTerms" :key="group.key">
+          <h2
+            v-if="group.label"
+            class="text-sm font-semibold uppercase tracking-wide text-base-content/50 mb-3"
+          >
+            {{ group.label }}
+          </h2>
 
-        <!-- Colonne 3 : personnes -->
-        <div v-if="personTerms.length > 0" class="space-y-4">
-          <h2 class="text-lg font-semibold text-base-content/70">Personnes</h2>
-          <div v-for="term in personTerms" :key="term.id" class="card card-border p-4 space-y-2">
-            <div class="flex items-center gap-2">
-              <span class="font-medium">{{ term.term }}</span>
-              <span v-if="isActive(term)" class="badge badge-success badge-sm">actif</span>
-            </div>
+          <ul class="divide-y divide-base-300 border-y border-base-300">
+            <li v-for="term in group.terms" :id="`term-${term.id}`" :key="term.id" class="py-3">
+              <div class="flex items-start gap-2">
+                <div class="flex-1 min-w-0">
+                  <span class="font-medium">{{ term.term }}</span>
 
-            <div v-if="term.start_date || term.end_date" class="text-xs text-base-content/50">
-              {{ formatDateRange(term.start_date, term.end_date) }}
-            </div>
+                  <p v-if="term.strategy" class="text-sm text-info whitespace-pre-line">
+                    {{ term.strategy }}
+                  </p>
 
-            <p v-if="term.strategy" class="text-sm text-blue-600">{{ term.strategy }}</p>
-            <p v-if="term.description" class="text-sm text-base-content/70">
-              {{ term.description }}
-            </p>
+                  <p v-if="term.note" class="text-sm whitespace-pre-line">{{ term.note }}</p>
 
-            <div class="flex gap-2 flex-wrap">
-              <a
-                v-if="term.expand?.Person"
-                :href="`/culture/person/${term.expand.Person.slug}`"
-                class="text-sm text-primary hover:underline"
-              >
-                → Fiche Culture
-              </a>
-              <a
-                v-if="term.expand?.Sign"
-                :href="`/lexique/sign/${term.expand.Sign.slug}`"
-                class="text-sm text-primary hover:underline"
-              >
-                → Voir le signe
-              </a>
-            </div>
-          </div>
-        </div>
+                  <div v-if="term.expand?.RelatedTerms?.length" class="flex flex-wrap gap-1 mt-1">
+                    <a
+                      v-for="related in term.expand.RelatedTerms"
+                      :key="related.id"
+                      :href="relatedHref(related)"
+                      class="badge badge-sm badge-ghost hover:badge-neutral"
+                    >
+                      {{ related.term }}
+                    </a>
+                  </div>
+                </div>
+
+                <a
+                  v-if="term.expand?.Sign"
+                  :href="`/lexique/sign/${term.expand.Sign.slug}`"
+                  class="btn btn-sm btn-info hover:bg-sky-500 shrink-0"
+                  :aria-label="`Voir le signe ${term.expand.Sign.name}`"
+                  :title="`Voir le signe ${term.expand.Sign.name}`"
+                >
+                  <span class="i-ic-round-sign-language"></span>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </section>
       </div>
     </template>
   </div>
@@ -84,12 +73,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import type { TLexicalField, TLexicalTerm } from '../../types'
 
-const props = defineProps<{ slug: string }>()
+type Props = {
+  slug: string
+}
+const props = defineProps<Props>()
 
 const { pb, isAuthenticated } = useAuth()
-const field = ref<Record<string, unknown> | null>(null)
-const terms = ref<Array<Record<string, unknown>>>([])
+const field = ref<TLexicalField.TRecord | null>(null)
+const terms = ref<TLexicalTerm.TRecord[]>([])
 const loading = ref(true)
 
 onMounted(async () => {
@@ -100,11 +93,11 @@ onMounted(async () => {
   }
   try {
     field.value = await pb
-      .collection('lexical_field')
+      .collection<TLexicalField.TRecord>('lexical_field')
       .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }))
-    terms.value = await pb.collection('lexical_term').getFullList({
+    terms.value = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
       filter: pb.filter('LexicalField = {:id}', { id: field.value.id }),
-      expand: 'Sign,Person',
+      expand: 'Sign,Type,RelatedTerms,RelatedTerms.LexicalField',
       sort: 'term',
     })
   } finally {
@@ -112,49 +105,38 @@ onMounted(async () => {
   }
 })
 
-const regularTerms = computed(() =>
-  terms.value.filter((t: Record<string, unknown>) => !t.is_person),
-)
+/**
+ * Terms are grouped by their type, types in alphabetical order,
+ * untyped terms last.
+ */
+const groupedTerms = computed(() => {
+  const groups = new Map<string, { key: string; label: string; terms: TLexicalTerm.TRecord[] }>()
 
-const personTerms = computed(() => {
-  const persons = terms.value.filter((t: Record<string, unknown>) => t.is_person)
-  return persons.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
-    const aActive = isActive(a)
-    const bActive = isActive(b)
-    if (aActive !== bActive) {
-      return aActive ? -1 : 1
+  for (const term of terms.value) {
+    const key = term.expand?.Type?.id || ''
+    const label = term.expand?.Type?.tag || ''
+    if (!groups.has(key)) {
+      groups.set(key, { key, label, terms: [] })
     }
-    // Both active or both inactive: sort by start_date desc
-    if (a.start_date && b.start_date) {
-      return b.start_date.localeCompare(a.start_date)
-    }
-    if (a.start_date) {
-      return -1
-    }
-    if (b.start_date) {
+    groups.get(key)?.terms.push(term)
+  }
+
+  return [...groups.values()].sort((a, b) => {
+    if (!a.label) {
       return 1
     }
-    return a.term.localeCompare(b.term)
+    if (!b.label) {
+      return -1
+    }
+    return a.label.localeCompare(b.label)
   })
 })
 
-const isActive = (term: Record<string, unknown>) => {
-  if (!term.end_date) {
-    return true
+const relatedHref = (related: TLexicalTerm.TRelatedTerm) => {
+  const fieldSlug = related.expand?.LexicalField?.slug
+  if (!fieldSlug) {
+    return `#term-${related.id}`
   }
-  return new Date(term.end_date) >= new Date()
-}
-
-const formatDateRange = (start: string, end: string) => {
-  const parts = []
-  if (start) {
-    parts.push(new Date(start).getFullYear())
-  }
-  if (end) {
-    parts.push(new Date(end).getFullYear())
-  } else if (start) {
-    parts.push('présent')
-  }
-  return parts.join(' – ')
+  return `/outils/champs-lexicaux/${fieldSlug}#term-${related.id}`
 }
 </script>
