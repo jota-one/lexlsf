@@ -57,7 +57,7 @@
       </DataTable>
     </div>
 
-    <LexicalFieldModal v-model="showFieldModal" :field-id="editedFieldId" @saved="load" />
+    <LexicalFieldModal v-model="showAddModal" />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer le champ lexical ?"
@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -77,9 +78,9 @@ import useLexicalFields from '../composables/useLexicalFields'
 import LexicalFieldModal from '../components/LexicalFieldModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
 
+const router = useRouter()
 const { lexicalFields, loadLexicalFields, deleteLexicalField } = useLexicalFields()
-const showFieldModal = ref(false)
-const editedFieldId = ref<string | undefined>(undefined)
+const showAddModal = ref(false)
 const showDeleteModal = ref(false)
 const fieldToDelete = ref<{ id: string } | null>(null)
 const deleteMessage = ref('')
@@ -89,12 +90,10 @@ const roleNames = (roles: Array<{ name: string }>) =>
 const formatDate = (d: string) => (d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '')
 
 const openAddModal = () => {
-  editedFieldId.value = undefined
-  showFieldModal.value = true
+  showAddModal.value = true
 }
 const editField = (field: { id: string }) => {
-  editedFieldId.value = field.id
-  showFieldModal.value = true
+  router.push(`/lexical-fields/${field.id}/edit`)
 }
 const confirmDelete = (field: { id: string; name?: string }) => {
   fieldToDelete.value = field
