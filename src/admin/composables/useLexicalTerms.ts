@@ -4,15 +4,19 @@ import type { TLexicalTerm } from '../../types'
 
 const TERM_EXPAND = 'Sign,Type,RelatedTerms,RelatedTerms.LexicalField'
 
+// SQLite sorts accented letters after Z, so re-sort in JS for a proper
+// locale-aware order (É next to E) before display.
+const byTerm = (a: TLexicalTerm.TRecord, b: TLexicalTerm.TRecord) => a.term.localeCompare(b.term)
+
 export default function useLexicalTerms() {
   const terms = ref<TLexicalTerm.TRecord[]>([])
 
   const loadTermsByField = async (lexicalFieldId: string) => {
-    terms.value = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
+    const list = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
       filter: pb.filter('LexicalField = {:id}', { id: lexicalFieldId }),
       expand: TERM_EXPAND,
-      sort: 'term',
     })
+    terms.value = list.sort(byTerm)
     return terms.value
   }
 
@@ -20,10 +24,10 @@ export default function useLexicalTerms() {
    * All terms, used by the related-terms picker (links are allowed across fields).
    */
   const loadAllTerms = async () => {
-    return pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
+    const list = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
       expand: 'LexicalField',
-      sort: 'term',
     })
+    return list.sort(byTerm)
   }
 
   const buildPayload = (payload: TLexicalTerm.TForm) => ({

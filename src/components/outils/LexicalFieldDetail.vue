@@ -95,11 +95,12 @@ onMounted(async () => {
     field.value = await pb
       .collection<TLexicalField.TRecord>('lexical_field')
       .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }))
-    terms.value = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
+    const list = await pb.collection<TLexicalTerm.TRecord>('lexical_term').getFullList({
       filter: pb.filter('LexicalField = {:id}', { id: field.value.id }),
       expand: 'Sign,Type,RelatedTerms,RelatedTerms.LexicalField',
-      sort: 'term',
     })
+    // SQLite sorts accented letters after Z; re-sort locale-aware (É next to E).
+    terms.value = list.sort((a, b) => a.term.localeCompare(b.term))
   } finally {
     loading.value = false
   }
