@@ -39,7 +39,7 @@ const TERM_TYPES = [
   'Objet / document / support',
   'Institution / lieu / service',
   'Notion / concept',
-  'Expression / construction/ discours',
+  'Expression / construction / discours',
   'Autres',
 ]
 
