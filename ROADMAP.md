@@ -37,11 +37,6 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
-### Détection automatique des signes pour les termes
-
-Les termes ne sont pas liés à un signe à l'import CSV. On veut un outil qui, pour chaque terme sans
-signe associé, lance une recherche dans les signes et propose ceux qui pourraient correspondre.
-
 ### Nouveau module "Situation d'interprétation"
 
 C'est le module utltime. Il va reposer sur tout le reste et permettre de remonter toutes les infos utiles du site pour une sitation d'interprétation en particulier.
@@ -49,6 +44,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-06] Champs lexicaux — outil de rapprochement des signes : depuis l'onglet Termes, propose un signe pour chaque terme qui n'en a pas (correspondance insensible aux accents, mot contenu, faute de frappe légère), avec revue et alternatives avant application en une fois.
 - [2026-09-06] Champs lexicaux — les types de terme deviennent un sous-ensemble de catégories (« Types de terme ») gérable depuis la page Catégories, avec un script one-shot pour installer la liste de référence.
 - [2026-09-06] Champs lexicaux — page publique en cartes : une carte par type de terme, 3 par ligne, repliées pour tenir 9 cartes à l'écran et dépliables à la demande ; note affichée avant la stratégie ; un lien vers un terme lié déplie sa carte et met le terme en évidence. Import/export des termes aligné sur les autres : liste `related` séparée par des virgules, et fichiers CSV acceptés aussi bien avec des virgules qu'avec des points-virgules entre colonnes (tous les imports).
 - [2026-09-06] Champs lexicaux — refonte des termes : suppression du flag "personne" (et des champs dates/personne liée), note personnelle, "Type" de terme (nouvelle entité de catégories `lexical_term`) et liens réciproques entre termes, y compris entre champs lexicaux différents. Édition d'un champ lexical déplacée du modal vers une vraie page à onglets, avec une liste de termes compacte éditable ligne par ligne. Import/export CSV des termes (résolution des liens en seconde passe). Page publique compactée et groupée par type.
