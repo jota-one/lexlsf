@@ -64,28 +64,32 @@ test.describe('Champs lexicaux — admin', () => {
 
   test('adds terms and links them reciprocally', async ({ adminPage, admin }) => {
     const field = await createField(admin, 'Liens')
+    // Unique term names so the suite never collides with real data in the dev DB
+    // (the related-terms picker searches every field).
+    const a = `E2E${stamp()}-Alpha`
+    const b = `E2E${stamp()}-Beta`
     try {
       const edit = new LexicalFieldEditPage(adminPage)
       await edit.goto(field.id)
       await edit.openTermsTab()
 
-      await edit.addTerm({ term: 'Ministre', type: 'E2E-Institution', note: 'chef de ministère' })
-      await edit.addTerm({ term: 'Parlement', strategy: 'signer assemblée' })
+      await edit.addTerm({ term: a, type: 'E2E-Institution', note: 'chef de ministère' })
+      await edit.addTerm({ term: b, strategy: 'signer assemblée' })
 
-      await edit.linkTerm('Ministre', 'Parlement')
+      await edit.linkTerm(a, b)
 
       // The link must exist on both sides.
       await expect(async () => {
         const terms = await listTerms(admin, field.id)
-        const ministre = terms.find(t => t.term === 'Ministre')
-        const parlement = terms.find(t => t.term === 'Parlement')
-        expect(ministre?.RelatedTerms).toContain(parlement?.id)
-        expect(parlement?.RelatedTerms).toContain(ministre?.id)
+        const termA = terms.find(t => t.term === a)
+        const termB = terms.find(t => t.term === b)
+        expect(termA?.RelatedTerms).toContain(termB?.id)
+        expect(termB?.RelatedTerms).toContain(termA?.id)
       }).toPass({ timeout: 5000 })
 
-      // The type set on Ministre must be persisted.
+      // The type set on the first term must be persisted.
       const terms = await listTerms(admin, field.id)
-      expect(terms.find(t => t.term === 'Ministre')?.Type).toBe(type.id)
+      expect(terms.find(t => t.term === a)?.Type).toBe(type.id)
     } finally {
       await deleteLexicalField(admin, field.id)
     }
@@ -103,12 +107,16 @@ test.describe('Champs lexicaux — admin', () => {
 
       await adminPage.getByRole('button', { name: 'Import / Export' }).click()
 
+      // Unique names so the two-pass link resolution stays unambiguous even
+      // against real data already in the dev DB.
+      const hauteName = `E2E${stamp()}-Chambre haute`
+      const basseName = `E2E${stamp()}-Chambre basse`
       // Sloppy input: the term has repeated inner spaces and the `related`
       // column has stray/inner spaces — both must be cleaned and still match.
       const csv = [
         'term,Type,strategy,note,related',
-        'Chambre  haute,,,,Chambre basse',
-        'Chambre basse,,,,  Chambre   haute  ',
+        `${hauteName.replace(' haute', '  haute')},,,,${basseName}`,
+        `${basseName},,,,  ${hauteName.replace(' haute', '   haute')}  `,
       ].join('\n')
       await adminPage.locator('input[type="file"]').setInputFiles({
         name: 'terms.csv',
@@ -122,10 +130,10 @@ test.describe('Champs lexicaux — admin', () => {
       await expect(async () => {
         const terms = await listTerms(admin, field.id)
         // The stored term must have collapsed inner whitespace.
-        const haute = terms.find(t => t.term === 'Chambre haute')
-        const basse = terms.find(t => t.term === 'Chambre basse')
-        expect(haute, 'Chambre haute imported and cleaned').toBeTruthy()
-        expect(basse, 'Chambre basse imported').toBeTruthy()
+        const haute = terms.find(t => t.term === hauteName)
+        const basse = terms.find(t => t.term === basseName)
+        expect(haute, 'haute imported and cleaned').toBeTruthy()
+        expect(basse, 'basse imported').toBeTruthy()
         // The link resolved despite the messy `related` value.
         expect(haute?.RelatedTerms).toContain(basse?.id)
         expect(basse?.RelatedTerms).toContain(haute?.id)
@@ -135,8 +143,170 @@ test.describe('Champs lexicaux — admin', () => {
     }
   })
 
+  test('imports a semicolon-delimited CSV with comma-separated links', async ({
+    adminPage,
+    admin,
+  }) => {
+    const field = await createField(admin, 'ImportSemi')
+    try {
+      const edit = new LexicalFieldEditPage(adminPage)
+      await edit.goto(field.id)
+      await edit.openTermsTab()
+
+      await adminPage.getByRole('button', { name: 'Import / Export' }).click()
+
+      const senat = `E2E${stamp()}-Senat`
+      const depute = `E2E${stamp()}-Depute`
+      const scrutin = `E2E${stamp()}-Scrutin`
+      // French-locale spreadsheet flavour: `;` between columns, so the related
+      // list can use commas like the other import/exports.
+      const csv = [
+        'term;Type;strategy;note;related',
+        `${senat};;;;${depute},${scrutin}`,
+        `${depute};;;;`,
+        `${scrutin};;;;`,
+      ].join('\n')
+      await adminPage.locator('input[type="file"]').setInputFiles({
+        name: 'terms.csv',
+        mimeType: 'text/csv',
+        buffer: Buffer.from(csv, 'utf-8'),
+      })
+      await adminPage.getByRole('button', { name: 'Importer le fichier' }).click()
+
+      await expect(adminPage.getByText(/3 terme\(s\) traité\(s\)/)).toBeVisible()
+
+      await expect(async () => {
+        const terms = await listTerms(admin, field.id)
+        const first = terms.find(t => t.term === senat)
+        const second = terms.find(t => t.term === depute)
+        const third = terms.find(t => t.term === scrutin)
+        expect(first, 'columns split on the semicolon').toBeTruthy()
+        // Both names of the comma-separated `related` list resolved.
+        expect(first?.RelatedTerms).toContain(second?.id)
+        expect(first?.RelatedTerms).toContain(third?.id)
+        expect(second?.RelatedTerms).toContain(first?.id)
+        expect(third?.RelatedTerms).toContain(first?.id)
+      }).toPass({ timeout: 5000 })
+    } finally {
+      await deleteLexicalField(admin, field.id)
+    }
+  })
+
+  test('expands and highlights a collapsed card when following a related link', async ({
+    adminPage,
+    admin,
+  }) => {
+    const field = await createField(admin, 'Ancres')
+    const prefix = `E2E${stamp()}`
+    try {
+      // Enough terms in the typed card that it renders collapsed.
+      const ids: string[] = []
+      for (let i = 1; i <= 12; i++) {
+        const res = await pbFetch(
+          '/api/collections/lexical_term/records',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              term: `${prefix}-T${String(i).padStart(2, '0')}`,
+              LexicalField: field.id,
+              Type: type.id,
+            }),
+          },
+          admin.token,
+        )
+        ids.push((await res.json()).id)
+      }
+      const targetId = ids[ids.length - 1]
+      // An untyped term linking to the last one, buried in the collapsed card.
+      await pbFetch(
+        '/api/collections/lexical_term/records',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            term: `${prefix}-Source`,
+            LexicalField: field.id,
+            RelatedTerms: [targetId],
+          }),
+        },
+        admin.token,
+      )
+
+      await adminPage.goto(`/outils/champs-lexicaux/${field.slug}`)
+      await expect(adminPage.getByRole('button', { name: 'Réduire' })).toHaveCount(0)
+
+      await adminPage.getByRole('link', { name: `${prefix}-T12` }).click()
+
+      // The card holding the target unfolds...
+      await expect(adminPage.getByRole('button', { name: 'Réduire' })).toBeVisible()
+      // ...and the target term is highlighted.
+      await expect(adminPage.locator(`li#term-${targetId}`)).toHaveCSS(
+        'box-shadow',
+        /3px 0px 0px 0px inset/,
+      )
+    } finally {
+      await deleteLexicalField(admin, field.id)
+    }
+  })
+
+  test('highlights a term reached from another lexical field', async ({ adminPage, admin }) => {
+    const target = await createField(admin, 'Cible')
+    const source = await createField(admin, 'Source')
+    const prefix = `E2E${stamp()}`
+    try {
+      // Enough terms in the target field that its card renders collapsed.
+      const ids: string[] = []
+      for (let i = 1; i <= 12; i++) {
+        const res = await pbFetch(
+          '/api/collections/lexical_term/records',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              term: `${prefix}-C${String(i).padStart(2, '0')}`,
+              LexicalField: target.id,
+              Type: type.id,
+            }),
+          },
+          admin.token,
+        )
+        ids.push((await res.json()).id)
+      }
+      const targetTermId = ids[ids.length - 1]
+      await pbFetch(
+        '/api/collections/lexical_term/records',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            term: `${prefix}-Depart`,
+            LexicalField: source.id,
+            RelatedTerms: [targetTermId],
+          }),
+        },
+        admin.token,
+      )
+
+      await adminPage.goto(`/outils/champs-lexicaux/${source.slug}`)
+      await adminPage.getByRole('link', { name: `${prefix}-C12` }).click()
+
+      // Landing on the other field's page, the card unfolds and the term is
+      // highlighted — `:target` cannot do this, the terms render client-side.
+      await expect(adminPage).toHaveURL(
+        `/outils/champs-lexicaux/${target.slug}#term-${targetTermId}`,
+      )
+      await expect(adminPage.getByRole('button', { name: 'Réduire' })).toBeVisible()
+      await expect(adminPage.locator(`li#term-${targetTermId}`)).toHaveCSS(
+        'box-shadow',
+        /3px 0px 0px 0px inset/,
+      )
+    } finally {
+      await deleteLexicalField(admin, source.id)
+      await deleteLexicalField(admin, target.id)
+    }
+  })
+
   test('renders the public page grouped by term type', async ({ adminPage, admin }) => {
     const field = await createField(admin, 'Public')
+    const typed = `E2E${stamp()}-Typé`
+    const untyped = `E2E${stamp()}-Libre`
     try {
       // Seed one typed and one untyped term via API.
       await pbFetch(
@@ -144,7 +314,7 @@ test.describe('Champs lexicaux — admin', () => {
         {
           method: 'POST',
           body: JSON.stringify({
-            term: 'Préfecture',
+            term: typed,
             LexicalField: field.id,
             Type: type.id,
             strategy: 'signe administration',
@@ -156,7 +326,11 @@ test.describe('Champs lexicaux — admin', () => {
         '/api/collections/lexical_term/records',
         {
           method: 'POST',
-          body: JSON.stringify({ term: 'Vote', LexicalField: field.id, note: 'geste bulletin' }),
+          body: JSON.stringify({
+            term: untyped,
+            LexicalField: field.id,
+            note: 'geste bulletin',
+          }),
         },
         admin.token,
       )
@@ -164,9 +338,11 @@ test.describe('Champs lexicaux — admin', () => {
       await adminPage.goto(`/outils/champs-lexicaux/${field.slug}`)
 
       await expect(adminPage.getByRole('heading', { name: 'E2E-Institution' })).toBeVisible()
-      await expect(adminPage.getByText('Préfecture')).toBeVisible()
+      await expect(adminPage.getByText(typed)).toBeVisible()
       await expect(adminPage.getByText('signe administration')).toBeVisible()
-      await expect(adminPage.getByText('Vote')).toBeVisible()
+      await expect(adminPage.getByText(untyped)).toBeVisible()
+      // Untyped terms fall under a default "Non classés" heading.
+      await expect(adminPage.getByRole('heading', { name: 'Non classés' })).toBeVisible()
     } finally {
       await deleteLexicalField(admin, field.id)
     }
