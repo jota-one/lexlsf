@@ -9,7 +9,13 @@
 
     <div ref="body" class="term-list" :class="{ 'is-collapsed': !expanded }">
       <ul class="divide-y divide-base-300">
-        <li v-for="term in terms" :id="`term-${term.id}`" :key="term.id" class="px-4 py-3">
+        <li
+          v-for="term in terms"
+          :id="`term-${term.id}`"
+          :key="term.id"
+          class="px-4 py-3"
+          :class="{ 'is-highlighted': term.id === highlightedId }"
+        >
           <div class="flex items-start gap-2">
             <div class="flex-1 min-w-0">
               <span class="font-medium">{{ term.term }}</span>
@@ -82,6 +88,7 @@ const relatedHref = (related: TLexicalTerm.TRelatedTerm) => {
 const bodyRef = useTemplateRef<HTMLElement>('body')
 const expanded = ref(false)
 const overflowing = ref(false)
+const highlightedId = ref('')
 
 /**
  * Only meaningful while collapsed: once expanded the list is never clipped, so
@@ -98,17 +105,25 @@ const measure = () => {
 useResizeObserver(bodyRef, measure)
 
 /**
- * Related terms link to `#term-<id>`, which may sit in a collapsed card:
- * expand it and bring the term into view.
+ * Related terms link to `#term-<id>`, which may sit in a collapsed card: expand
+ * it, highlight the term and bring it into view. The highlight cannot rely on
+ * `:target` — the terms are rendered client-side, long after the browser has
+ * resolved the fragment, so it would never match on a cross-field link.
  */
 const revealHashTarget = async () => {
   const hash = window.location.hash
-  if (!hash.startsWith('#term-') || !props.terms.some(term => `#term-${term.id}` === hash)) {
+  const target = hash.startsWith('#term-')
+    ? props.terms.find(term => `#term-${term.id}` === hash)
+    : undefined
+
+  highlightedId.value = target?.id || ''
+  if (!target) {
     return
   }
+
   expanded.value = true
   await nextTick()
-  document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'center' })
+  document.getElementById(`term-${target.id}`)?.scrollIntoView({ block: 'center' })
 }
 
 useEventListener(window, 'hashchange', revealHashTarget)
@@ -131,5 +146,18 @@ onMounted(async () => {
  */
 .term-list.is-collapsed {
   max-height: max(8rem, calc((100dvh - 34rem) / 3));
+}
+
+/* The term a related link points at stays highlighted, after a short flash. */
+.term-list li.is-highlighted {
+  background-color: color-mix(in oklch, var(--color-info) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--color-info);
+  animation: term-flash 1.2s ease-out;
+}
+
+@keyframes term-flash {
+  from {
+    background-color: color-mix(in oklch, var(--color-info) 45%, transparent);
+  }
 }
 </style>
