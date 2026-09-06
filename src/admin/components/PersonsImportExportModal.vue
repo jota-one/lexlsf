@@ -126,20 +126,18 @@
         <div class="text-xs space-y-2">
           <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
           <p>
-            <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules.
-            Exemples: <code>student</code> ou <code>student,visitor</code>.
+            <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules. Exemples:
+            <code>student</code> ou <code>student,visitor</code>.
           </p>
           <p>
             <strong>Category:</strong> utiliser les slugs de categories séparés par des virgules.
             Exemples: <code>personnalites</code> ou <code>personnalites,culture</code>.
           </p>
           <p>
-            <strong>Booléens</strong> (Sourd(e), Organisme, Décédé(e), Famille sourde) :
-            utiliser <code>oui</code> ou <code>non</code>.
+            <strong>Booléens</strong> (Sourd(e), Organisme, Décédé(e), Famille sourde) : utiliser
+            <code>oui</code> ou <code>non</code>.
           </p>
-          <p>
-            <strong>Dates</strong> (naissance, décès) : format <code>DD.MM.YYYY</code>.
-          </p>
+          <p><strong>Dates</strong> (naissance, décès) : format <code>DD.MM.YYYY</code>.</p>
           <p class="text-warning">
             <strong>Note:</strong> Les fichiers d'illustration ne sont pas inclus dans
             l'import/export. Ils doivent être gérés séparément.
@@ -180,8 +178,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
-const { isExporting, isImporting, exportToCSV, importFromCSV } =
-  usePersonsImportExport()
+const { isExporting, isImporting, exportToCSV, importFromCSV } = usePersonsImportExport()
 
 const fileInput = ref<HTMLInputElement>()
 const selectedFile = ref<File | null>(null)
@@ -211,7 +208,7 @@ const handleExportCSV = async () => {
   } catch (error) {
     toast.add({
       severity: 'error',
-      summary: 'Erreur d\'export',
+      summary: "Erreur d'export",
       detail: (error as Error).message || 'Une erreur est survenue',
       life: 5000,
     })
@@ -219,7 +216,9 @@ const handleExportCSV = async () => {
 }
 
 const handleImport = async () => {
-  if (!selectedFile.value) {return}
+  if (!selectedFile.value) {
+    return
+  }
 
   try {
     if (!selectedFile.value.name.endsWith('.csv')) {
@@ -262,7 +261,7 @@ const handleImport = async () => {
   } catch (error) {
     toast.add({
       severity: 'error',
-      summary: 'Erreur d\'import',
+      summary: "Erreur d'import",
       detail: (error as Error).message || 'Une erreur est survenue',
       life: 5000,
     })

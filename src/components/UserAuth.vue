@@ -76,13 +76,16 @@ import { computed } from 'vue'
 import { useTemplateRef } from 'vue'
 import useAuth from '@admin/composables/useAuth'
 import config from '@config'
-import LoginModal from "./LoginModal.vue"
+import LoginModal from './LoginModal.vue'
 
-const { isAuthenticated, isAdmin, isStudent, isImpersonating, user, logout, exitImpersonation } = useAuth()
+const { isAuthenticated, isAdmin, isStudent, isImpersonating, user, logout, exitImpersonation } =
+  useAuth()
 const loginModalRef = useTemplateRef<InstanceType<typeof LoginModal>>('loginModalRef')
 
 const avatarUrl = computed(() => {
-  if (!user.value?.avatar) {return ''}
+  if (!user.value?.avatar) {
+    return ''
+  }
   return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
 })
 

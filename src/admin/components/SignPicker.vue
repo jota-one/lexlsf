@@ -2,11 +2,7 @@
   <div class="space-y-2">
     <!-- Selected items -->
     <div v-if="selectedItems.length > 0" class="flex flex-wrap gap-2">
-      <span
-        v-for="item in selectedItems"
-        :key="item.id"
-        class="badge badge-primary gap-1"
-      >
+      <span v-for="item in selectedItems" :key="item.id" class="badge badge-primary gap-1">
         {{ item.name }}
         <button type="button" @click="remove(item.id)" class="hover:opacity-70">
           <span class="i-fa-solid-times text-xs"></span>
@@ -69,28 +65,36 @@ const props = defineProps<{
 
 const model = defineModel<string | string[]>()
 
-
 const searchTerm = ref('')
 const searchResults = ref<SelectedItem[]>([])
 const selectedItems = ref<SelectedItem[]>([])
 const searching = ref(false)
 
 const getSelectedIds = (): string[] => {
-  if (!model.value) {return []}
-  if (props.mode === 'single') {return (model.value as string) ? [model.value as string] : []}
+  if (!model.value) {
+    return []
+  }
+  if (props.mode === 'single') {
+    return (model.value as string) ? [model.value as string] : []
+  }
   return (model.value as string[]) || []
 }
 
 onMounted(async () => {
   const ids = getSelectedIds()
-  if (ids.length === 0) {return}
+  if (ids.length === 0) {
+    return
+  }
   const filter = idFilter(ids)
   const res = await pb.collection('sign').getList(1, ids.length, { filter, fields: 'id,name' })
-  selectedItems.value = res.items.map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))
+  selectedItems.value = res.items.map((s: { id: string; name: string }) => ({
+    id: s.id,
+    name: s.name,
+  }))
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
-watch(searchTerm, (val) => {
+watch(searchTerm, val => {
   clearTimeout(debounceTimer)
   if (val.length < 2) {
     searchResults.value = []

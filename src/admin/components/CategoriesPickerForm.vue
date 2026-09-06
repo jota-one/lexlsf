@@ -38,80 +38,78 @@
   </div>
 </template>
 <script setup lang="ts">
-import useCategories from '@admin/composables/useCategories';
-import InputText from 'primevue/inputtext';
-import { ref, computed, watch, onMounted } from 'vue';
-import type { TCategory } from '../../types';
+import useCategories from '@admin/composables/useCategories'
+import InputText from 'primevue/inputtext'
+import { ref, computed, watch, onMounted } from 'vue'
+import type { TCategory } from '../../types'
 
 type Props = {
   entity?: string
 }
-const props = defineProps<Props>();
-const idPrefix = computed(() => props.entity ?? 'cat');
+const props = defineProps<Props>()
+const idPrefix = computed(() => props.entity ?? 'cat')
 
-const categoryFilter = ref('');
-const selectedCategories = defineModel<{ [parentId: string]: string[] }>({ required: true });
+const categoryFilter = ref('')
+const selectedCategories = defineModel<{ [parentId: string]: string[] }>({ required: true })
 
-const { categories, loadCategories } = useCategories();
+const { categories, loadCategories } = useCategories()
 
 // Parent categories (those with Parent == null)
-const parentCategories = computed(() =>
-    categories.value.filter((cat) => !cat.Parent)
-);
+const parentCategories = computed(() => categories.value.filter(cat => !cat.Parent))
 
 // Normalize string for filtering (lowercase, remove accents)
 const normalizeString = (str: string) => {
-    return str
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-};
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
 
 // Filtered children for a given parent
 const filteredChildCategoryOptions = (parent: TCategory.TRecord) => {
-    const children = parent.expand?.category_via_Parent || [];
-    if (!categoryFilter.value.trim()) {
-        return children;
-    }
-    const filter = normalizeString(categoryFilter.value);
-    return children.filter((child: TCategory.TRecord) => normalizeString(child.tag).includes(filter));
-};
+  const children = parent.expand?.category_via_Parent || []
+  if (!categoryFilter.value.trim()) {
+    return children
+  }
+  const filter = normalizeString(categoryFilter.value)
+  return children.filter((child: TCategory.TRecord) => normalizeString(child.tag).includes(filter))
+}
 
 // Only show parent categories that have at least one visible child
 const visibleParentCategories = computed(() => {
-    if (!categoryFilter.value.trim()) {
-        return parentCategories.value;
-    }
-    return parentCategories.value.filter((parent: TCategory.TRecord) => {
-        const filteredChildren = filteredChildCategoryOptions(parent);
-        return filteredChildren.length > 0;
-    });
-});
+  if (!categoryFilter.value.trim()) {
+    return parentCategories.value
+  }
+  return parentCategories.value.filter((parent: TCategory.TRecord) => {
+    const filteredChildren = filteredChildCategoryOptions(parent)
+    return filteredChildren.length > 0
+  })
+})
 
 // When categories are loaded, initialize selectedCategories
 watch(categories, () => {
-    parentCategories.value.forEach(parent => {
+  parentCategories.value.forEach(parent => {
     if (!(parent.id in selectedCategories.value)) {
-      selectedCategories.value[parent.id] = [];
+      selectedCategories.value[parent.id] = []
     }
-    });
-});
+  })
+})
 
 const toggleCategory = (parentId: string, childId: string) => {
-    // Ensure it's an array
-    if (!Array.isArray(selectedCategories.value[parentId])) {
-        selectedCategories.value[parentId] = [];
-    }
-    const categories = selectedCategories.value[parentId] as string[];
-    const index = categories.indexOf(childId);
-    if (index > -1) {
-        categories.splice(index, 1);
-    } else {
-        categories.push(childId);
-    }
-};
+  // Ensure it's an array
+  if (!Array.isArray(selectedCategories.value[parentId])) {
+    selectedCategories.value[parentId] = []
+  }
+  const categories = selectedCategories.value[parentId] as string[]
+  const index = categories.indexOf(childId)
+  if (index > -1) {
+    categories.splice(index, 1)
+  } else {
+    categories.push(childId)
+  }
+}
 
 onMounted(() => {
-    loadCategories(props.entity);
-});
+  loadCategories(props.entity)
+})
 </script>

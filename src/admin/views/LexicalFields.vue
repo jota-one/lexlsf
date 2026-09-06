@@ -6,9 +6,19 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter un champ lexical" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+        <Button
+          label="Ajouter un champ lexical"
+          icon="i-fa-solid-plus"
+          size="small"
+          @click="openAddModal"
+        />
       </div>
-      <DataTable :value="lexicalFields" sortField="name" :sortOrder="1" tableStyle="min-width: 40rem">
+      <DataTable
+        :value="lexicalFields"
+        sortField="name"
+        :sortOrder="1"
+        tableStyle="min-width: 40rem"
+      >
         <Column field="name" header="Nom" sortable />
         <Column header="Termes">
           <template #body="slotProps">
@@ -23,13 +33,21 @@
         <Column field="updated" header="Dernière modif" sortable>
           <template #body="slotProps">{{ formatDate(slotProps.data.updated) }}</template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
-              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editField(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editField(slotProps.data)"
+              >
                 <span class="i-fa-solid-pen"></span>
               </button>
-              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Supprimer"
+                @click="confirmDelete(slotProps.data)"
+              >
                 <span class="i-fa-solid-trash"></span>
               </button>
             </div>
@@ -66,11 +84,18 @@ const showDeleteModal = ref(false)
 const fieldToDelete = ref<{ id: string } | null>(null)
 const deleteMessage = ref('')
 
-const roleNames = (roles: Array<{ name: string }>) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
-const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
+const roleNames = (roles: Array<{ name: string }>) =>
+  roles?.length ? roles.map(r => r.name).join(', ') : '—'
+const formatDate = (d: string) => (d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '')
 
-const openAddModal = () => { editedFieldId.value = undefined; showFieldModal.value = true }
-const editField = (field: { id: string }) => { editedFieldId.value = field.id; showFieldModal.value = true }
+const openAddModal = () => {
+  editedFieldId.value = undefined
+  showFieldModal.value = true
+}
+const editField = (field: { id: string }) => {
+  editedFieldId.value = field.id
+  showFieldModal.value = true
+}
 const confirmDelete = (field: { id: string; name?: string }) => {
   fieldToDelete.value = field
   deleteMessage.value = `Voulez-vous vraiment supprimer "${field.name}" et tous ses termes ?`

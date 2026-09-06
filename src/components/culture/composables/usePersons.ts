@@ -18,10 +18,12 @@ export default function usePersons() {
   }
 
   const loadPerson = async (id: string) => {
-    return pb.collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person').getOne(id, {
-      fields: '*',
-      expand: 'Category,Sign',
-    })
+    return pb
+      .collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person')
+      .getOne(id, {
+        fields: '*',
+        expand: 'Category,Sign',
+      })
   }
 
   const getIllustrationUrl = (person: TPerson.TRecord): string => {

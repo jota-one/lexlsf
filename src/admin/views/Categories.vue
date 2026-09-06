@@ -13,7 +13,7 @@
           class="badge badge-sm cursor-pointer"
           :class="[
             selectedContexts.has(entity.id) || entity.disabled ? 'badge-primary' : 'badge-outline',
-            entity.disabled ? 'opacity-60 cursor-not-allowed' : ''
+            entity.disabled ? 'opacity-60 cursor-not-allowed' : '',
           ]"
           :disabled="entity.disabled"
           @click="!entity.disabled && toggleContext(entity.id)"
@@ -51,7 +51,11 @@
                 <td>{{ cat.slug }}</td>
                 <td>
                   <span
-                    v-if="cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length"
+                    v-if="
+                      cat.expand &&
+                      cat.expand.category_via_Parent &&
+                      cat.expand.category_via_Parent.length
+                    "
                   >
                     <span
                       v-for="child in cat.expand.category_via_Parent"
@@ -97,7 +101,13 @@
                     <button
                       class="btn btn-xs btn-ghost"
                       title="Supprimer la catégorie"
-                      :disabled="!!(cat.expand && cat.expand.category_via_Parent && cat.expand.category_via_Parent.length)"
+                      :disabled="
+                        !!(
+                          cat.expand &&
+                          cat.expand.category_via_Parent &&
+                          cat.expand.category_via_Parent.length
+                        )
+                      "
                       @click="confirmDeleteParent(cat)"
                     >
                       <span class="i-fa-solid-trash"></span>
@@ -126,127 +136,142 @@
 </template>
 <script setup lang="ts">
 // filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/views/Categories.vue
-import { ref, onMounted } from 'vue';
-import useCategories from '../composables/useCategories';
-import { ALL_ENTITIES } from '../config/entities';
-import Button from 'primevue/button';
-import CategoryFormModal from '../components/CategoryFormModal.vue';
-import type { TCategory } from '../../types';
+import { ref, onMounted } from 'vue'
+import useCategories from '../composables/useCategories'
+import { ALL_ENTITIES } from '../config/entities'
+import Button from 'primevue/button'
+import CategoryFormModal from '../components/CategoryFormModal.vue'
+import type { TCategory } from '../../types'
 
-type PopoverInstance = { hide?: () => void; toggle?: (event: Event) => void };
-import ConfirmModal from '../components/ConfirmModal.vue';
-import Popover from 'primevue/popover';
+type PopoverInstance = { hide?: () => void; toggle?: (event: Event) => void }
+import ConfirmModal from '../components/ConfirmModal.vue'
+import Popover from 'primevue/popover'
 
-const { categories, loadingCategories, loadCategories, deleteCategory } = useCategories();
-const showAddModal = ref(false);
-const selectedParentId = ref<string | null>(null);
-const categoryToEdit = ref<TCategory.TRecord | null>(null);
+const { categories, loadingCategories, loadCategories, deleteCategory } = useCategories()
+const showAddModal = ref(false)
+const selectedParentId = ref<string | null>(null)
+const categoryToEdit = ref<TCategory.TRecord | null>(null)
 
-const popoverRefs = ref<{ [id: string]: PopoverInstance }>({});
-const showDeleteModal = ref(false);
-const categoryToDelete = ref<TCategory.TRecord | null>(null);
-const deleteMessage = ref('');
+const popoverRefs = ref<{ [id: string]: PopoverInstance }>({})
+const showDeleteModal = ref(false)
+const categoryToDelete = ref<TCategory.TRecord | null>(null)
+const deleteMessage = ref('')
 
 // Filter entities (imported from config)
-const filterEntities = ALL_ENTITIES;
+const filterEntities = ALL_ENTITIES
 
 // Context filters state - Signe always selected and disabled
-const selectedContexts = ref<Set<string>>(new Set(['sign']));
+const selectedContexts = ref<Set<string>>(new Set(['sign']))
 
 // Check if a child matches all selected contexts (AND logic, excluding implicit 'sign')
 const isChildMatch = (child: TCategory.TRecord) => {
-  const hasFilter = selectedContexts.value.size > 0;
-  if (!hasFilter) {return false;}
-  // entities is now an array (from select field with maxSelect: 2)
-  const entsRaw = Array.isArray(child.entities) ? (child.entities as string[]) : [];
-  // Required contexts = selected contexts minus the implicit 'sign'
-  const requiredContexts = Array.from(selectedContexts.value).filter(ctx => ctx !== 'sign');
-  for (const req of requiredContexts) {
-    if (!entsRaw.includes(req)) {return false;}
+  const hasFilter = selectedContexts.value.size > 0
+  if (!hasFilter) {
+    return false
   }
-  return true;
-};
+  // entities is now an array (from select field with maxSelect: 2)
+  const entsRaw = Array.isArray(child.entities) ? (child.entities as string[]) : []
+  // Required contexts = selected contexts minus the implicit 'sign'
+  const requiredContexts = Array.from(selectedContexts.value).filter(ctx => ctx !== 'sign')
+  for (const req of requiredContexts) {
+    if (!entsRaw.includes(req)) {
+      return false
+    }
+  }
+  return true
+}
 
 const toggleContext = (ctx: string) => {
   // Don't allow toggling disabled contexts
-  const entity = filterEntities.find(e => e.id === ctx);
-  if (entity?.disabled) {return;}
+  const entity = filterEntities.find(e => e.id === ctx)
+  if (entity?.disabled) {
+    return
+  }
 
   if (selectedContexts.value.has(ctx)) {
-    selectedContexts.value.delete(ctx);
+    selectedContexts.value.delete(ctx)
   } else {
-    selectedContexts.value.add(ctx);
+    selectedContexts.value.add(ctx)
   }
   // force reactivity on Set by creating a new Set instance
-  selectedContexts.value = new Set(selectedContexts.value);
-};
-
-
+  selectedContexts.value = new Set(selectedContexts.value)
+}
 
 // Helper to set popover ref for each child
 function setPopoverRef(id: string) {
   return (el: PopoverInstance | null) => {
-    if (el) {popoverRefs.value[id] = el;}
-    else {delete popoverRefs.value[id];}
-  };
+    if (el) {
+      popoverRefs.value[id] = el
+    } else {
+      delete popoverRefs.value[id]
+    }
+  }
 }
 
 const openAddModal = () => {
-  selectedParentId.value = null;
-  categoryToEdit.value = null;
-  showAddModal.value = true;
-};
+  selectedParentId.value = null
+  categoryToEdit.value = null
+  showAddModal.value = true
+}
 
 const openAddModalWithParent = (parentId: string) => {
-  selectedParentId.value = parentId;
-  categoryToEdit.value = null;
-  showAddModal.value = true;
-};
+  selectedParentId.value = parentId
+  categoryToEdit.value = null
+  showAddModal.value = true
+}
 
 const openEditModalChild = (category: TCategory.TRecord) => {
-  categoryToEdit.value = category;
-  selectedParentId.value = null;
-  showAddModal.value = true;
+  categoryToEdit.value = category
+  selectedParentId.value = null
+  showAddModal.value = true
   // Hide all popovers
-  Object.values(popoverRefs.value).forEach(refPopover => refPopover?.hide && refPopover.hide());
-};
+  Object.values(popoverRefs.value).forEach(refPopover => refPopover?.hide && refPopover.hide())
+}
 
 const togglePopover = (id: string, event: Event) => {
   // Hide any open popover except the one being toggled
   Object.entries(popoverRefs.value).forEach(([key, refPopover]) => {
-    if (key !== id && refPopover?.hide) {refPopover.hide();}
-  });
+    if (key !== id && refPopover?.hide) {
+      refPopover.hide()
+    }
+  })
   // Toggle the clicked popover
-  const refPopover = popoverRefs.value[id];
+  const refPopover = popoverRefs.value[id]
   if (refPopover) {
-    refPopover.toggle(event);
+    refPopover.toggle(event)
   }
-};
+}
 
 const confirmDeleteChild = (category: TCategory.TRecord) => {
-  categoryToDelete.value = category;
-  deleteMessage.value = `Voulez-vous vraiment supprimer la catégorie "${category.tag}" ? Cette action est irréversible.`;
-  showDeleteModal.value = true;
+  categoryToDelete.value = category
+  deleteMessage.value = `Voulez-vous vraiment supprimer la catégorie "${category.tag}" ? Cette action est irréversible.`
+  showDeleteModal.value = true
   // Hide all popovers
-  Object.values(popoverRefs.value).forEach(refPopover => refPopover?.hide && refPopover.hide());
-};
+  Object.values(popoverRefs.value).forEach(refPopover => refPopover?.hide && refPopover.hide())
+}
 
 const confirmDeleteParent = (category: TCategory.TRecord) => {
   // Only allow if no children
-  if (category.expand && category.expand.category_via_Parent && category.expand.category_via_Parent.length) {return;}
-  categoryToDelete.value = category;
-  deleteMessage.value = `Voulez-vous vraiment supprimer la catégorie "${category.tag}" ? Cette action est irréversible.`;
-  showDeleteModal.value = true;
-};
+  if (
+    category.expand &&
+    category.expand.category_via_Parent &&
+    category.expand.category_via_Parent.length
+  ) {
+    return
+  }
+  categoryToDelete.value = category
+  deleteMessage.value = `Voulez-vous vraiment supprimer la catégorie "${category.tag}" ? Cette action est irréversible.`
+  showDeleteModal.value = true
+}
 
 const deleteCategoryConfirmed = async () => {
   if (categoryToDelete.value) {
-    await deleteCategory(categoryToDelete.value.id);
-    await loadCategories();
-    showDeleteModal.value = false;
-    categoryToDelete.value = null;
+    await deleteCategory(categoryToDelete.value.id)
+    await loadCategories()
+    showDeleteModal.value = false
+    categoryToDelete.value = null
   }
-};
+}
 
-onMounted(loadCategories);
+onMounted(loadCategories)
 </script>

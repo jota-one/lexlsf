@@ -18,8 +18,12 @@
             :src="`/img/orientations/${child.value}.jpg`"
             :alt="child.label"
             class="w-12 h-12 object-contain mb-1"
-            :class="form.orientation === child.value ? 'border-2 border-primary' : 'border border-base-300'"
-            style="border-radius: 0.5rem;"
+            :class="
+              form.orientation === child.value
+                ? 'border-2 border-primary'
+                : 'border border-base-300'
+            "
+            style="border-radius: 0.5rem"
           />
           <span class="text-xs">{{ child.label }}</span>
         </label>
@@ -60,31 +64,31 @@
   </div>
 </template>
 <script setup lang="ts">
-import Textarea from 'primevue/textarea';
-import InputNumber from 'primevue/inputnumber';
-import Select from 'primevue/select';
-import { getCurrentInstance } from 'vue';
+import Textarea from 'primevue/textarea'
+import InputNumber from 'primevue/inputnumber'
+import Select from 'primevue/select'
+import { getCurrentInstance } from 'vue'
 
-const form = defineModel<Record<string, unknown>>({ required: true });
+const form = defineModel<Record<string, unknown>>({ required: true })
 
-const instance = getCurrentInstance();
-const uniqueId = instance ? instance.uid : Math.random().toString(36).slice(2, 10);
+const instance = getCurrentInstance()
+const uniqueId = instance ? instance.uid : Math.random().toString(36).slice(2, 10)
 
 const orientationOptions = [
-    { label: 'Haut dos', value: 'top' },
-    { label: 'Haut 3/4', value: 'top-45deg' },
-    { label: 'Haut paume', value: 'top-front' },
-];
+  { label: 'Haut dos', value: 'top' },
+  { label: 'Haut 3/4', value: 'top-45deg' },
+  { label: 'Haut paume', value: 'top-front' },
+]
 
 const amplitudeOptions = [
-    { label: 'Petite', value: 'small' },
-    { label: 'Moyenne', value: 'medium' },
-    { label: 'Grande', value: 'large' }
-];
+  { label: 'Petite', value: 'small' },
+  { label: 'Moyenne', value: 'medium' },
+  { label: 'Grande', value: 'large' },
+]
 
 const speedOptions = [
-    { label: 'Lente', value: 'slow' },
-    { label: 'Normale', value: 'normal' },
-    { label: 'Rapide', value: 'fast' }
-];
+  { label: 'Lente', value: 'slow' },
+  { label: 'Normale', value: 'normal' },
+  { label: 'Rapide', value: 'fast' },
+]
 </script>

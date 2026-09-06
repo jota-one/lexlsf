@@ -6,9 +6,19 @@
     </h2>
     <div class="card">
       <div class="flex justify-end mb-2">
-        <Button label="Ajouter une expression" icon="i-fa-solid-plus" size="small" @click="openAddModal" />
+        <Button
+          label="Ajouter une expression"
+          icon="i-fa-solid-plus"
+          size="small"
+          @click="openAddModal"
+        />
       </div>
-      <DataTable :value="frenchExpressions" sortField="expression" :sortOrder="1" tableStyle="min-width: 40rem">
+      <DataTable
+        :value="frenchExpressions"
+        sortField="expression"
+        :sortOrder="1"
+        tableStyle="min-width: 40rem"
+      >
         <Column field="expression" header="Expression" sortable />
         <Column header="Signes liés">
           <template #body="slotProps">{{ slotProps.data.Signs?.length ?? 0 }}</template>
@@ -19,13 +29,21 @@
         <Column field="updated" header="Dernière modif" sortable>
           <template #body="slotProps">{{ formatDate(slotProps.data.updated) }}</template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
-              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editExpression(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editExpression(slotProps.data)"
+              >
                 <span class="i-fa-solid-pen"></span>
               </button>
-              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Supprimer"
+                @click="confirmDelete(slotProps.data)"
+              >
                 <span class="i-fa-solid-trash"></span>
               </button>
             </div>
@@ -35,7 +53,11 @@
       </DataTable>
     </div>
 
-    <FrenchExpressionModal v-model="showExpressionModal" :expression-id="editedExpressionId" @saved="load" />
+    <FrenchExpressionModal
+      v-model="showExpressionModal"
+      :expression-id="editedExpressionId"
+      @saved="load"
+    />
     <ConfirmModal
       v-model="showDeleteModal"
       title="Supprimer l'expression ?"
@@ -62,11 +84,18 @@ const showDeleteModal = ref(false)
 const expressionToDelete = ref<{ id: string } | null>(null)
 const deleteMessage = ref('')
 
-const roleNames = (roles: Array<{ name: string }>) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
-const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
+const roleNames = (roles: Array<{ name: string }>) =>
+  roles?.length ? roles.map(r => r.name).join(', ') : '—'
+const formatDate = (d: string) => (d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '')
 
-const openAddModal = () => { editedExpressionId.value = undefined; showExpressionModal.value = true }
-const editExpression = (expr: { id: string }) => { editedExpressionId.value = expr.id; showExpressionModal.value = true }
+const openAddModal = () => {
+  editedExpressionId.value = undefined
+  showExpressionModal.value = true
+}
+const editExpression = (expr: { id: string }) => {
+  editedExpressionId.value = expr.id
+  showExpressionModal.value = true
+}
 const confirmDelete = (expr: { id: string; expression?: string }) => {
   expressionToDelete.value = expr
   deleteMessage.value = `Voulez-vous vraiment supprimer l'expression "${expr.expression}" ?`

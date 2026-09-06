@@ -11,14 +11,22 @@ type Props = {
 const props = defineProps<Props>()
 
 const renderFieldValue = (field: string | undefined) => {
-  if (!field || !props.card?.itemData) {return ''}
+  if (!field || !props.card?.itemData) {
+    return ''
+  }
   return props.card.itemData[field] ?? ''
 }
 
 const mediaUrl = (fieldKey: string) => {
   const file = props.card?.itemData?.[fieldKey]
-  if (!file) {return ''}
-  return props.getFileUrl(props.mode.itemType === 'sign' ? 'sign' : 'person', props.card.itemId, file)
+  if (!file) {
+    return ''
+  }
+  return props.getFileUrl(
+    props.mode.itemType === 'sign' ? 'sign' : 'person',
+    props.card.itemId,
+    file,
+  )
 }
 </script>
 
@@ -65,7 +73,12 @@ const mediaUrl = (fieldKey: string) => {
       :class="isFlipped ? 'bg-base-100' : 'bg-base-200'"
     >
       <div class="card-body min-h-[330px]">
-        <h3 class="card-title text-base uppercase tracking-wide" :class="isFlipped ? 'text-base-content/50' : 'text-base-content/20'">Réponse</h3>
+        <h3
+          class="card-title text-base uppercase tracking-wide"
+          :class="isFlipped ? 'text-base-content/50' : 'text-base-content/20'"
+        >
+          Réponse
+        </h3>
         <div class="flex-1 flex flex-col justify-center gap-3">
           <template v-if="isFlipped">
             <div v-for="field in mode.faceB" :key="field.key">

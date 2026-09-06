@@ -10,7 +10,6 @@ export interface TRole {
 }
 
 export default function useRoles() {
-
   const roles = ref<TRole[]>([])
 
   const loadRoles = async () => {

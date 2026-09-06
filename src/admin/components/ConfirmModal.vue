@@ -11,22 +11,22 @@
 </template>
 <script setup lang="ts">
 // filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/components/ConfirmModal.vue
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
 
 const props = defineProps<{
-    title: string
-    message: string
-}>();
+  title: string
+  message: string
+}>()
 
 const emit = defineEmits<{
-    (e: 'confirm'): void
-}>();
+  (e: 'confirm'): void
+}>()
 
-const visible = defineModel<boolean>({ required: true });
+const visible = defineModel<boolean>({ required: true })
 
 const confirm = () => {
-    emit('confirm');
-    visible.value = false;
-};
+  emit('confirm')
+  visible.value = false
+}
 </script>

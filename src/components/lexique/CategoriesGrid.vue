@@ -30,7 +30,11 @@
     </div>
 
     <!-- Grille des sous-catégories -->
-    <router-view :categories="categories" :category-counts="categoryCounts" :entity-label="entityLabel"></router-view>
+    <router-view
+      :categories="categories"
+      :category-counts="categoryCounts"
+      :entity-label="entityLabel"
+    ></router-view>
   </div>
 </template>
 
@@ -64,7 +68,9 @@ const parentCount = (cat: TCategory.TRecord): number =>
   )
 
 const visibleParentCategories = computed(() => {
-  if (!props.categoryCounts) {return parentCategories.value}
+  if (!props.categoryCounts) {
+    return parentCategories.value
+  }
   return parentCategories.value.filter(cat => parentCount(cat) > 0)
 })
 

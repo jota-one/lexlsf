@@ -180,7 +180,9 @@
               <div class="flex items-center">
                 <img
                   v-if="slotProps.option.illustration"
-                  :src="getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)"
+                  :src="
+                    getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)
+                  "
                   alt="illustration"
                   class="w-8 h-8 object-contain rounded mr-2"
                 />
@@ -225,7 +227,9 @@
               <div class="flex items-center">
                 <img
                   v-if="slotProps.option.illustration"
-                  :src="getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)"
+                  :src="
+                    getIllustrationUrl(slotProps.option.illustration, slotProps.option.value.id)
+                  "
                   alt="illustration"
                   class="w-8 h-8 object-contain rounded mr-2"
                 />
@@ -278,71 +282,74 @@
   </Tabs>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import Tab from 'primevue/tab';
-import Textarea from 'primevue/textarea';
-import TabPanels from 'primevue/tabpanels';
-import TabPanel from 'primevue/tabpanel';
-import Rating from 'primevue/rating';
-import Button from 'primevue/button';
-import useHandConfigurations from '../composables/useHandConfigurations';
-import useSigns from '../composables/useSigns';
-import useRoles from '../composables/useRoles';
-import CategoriesPickerForm from './CategoriesPickerForm.vue';
-import FaceZonesOverlay from './FaceZonesOverlay.vue';
-import BodyZonesOverlay from './BodyZonesOverlay.vue';
-import type { TSign, Ui } from '../../types';
-import HandMovementForm from './HandMovementForm.vue';
-import { createSlug } from '@lib/slug';
+import { ref, onMounted, computed, watch } from 'vue'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import Textarea from 'primevue/textarea'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
+import Rating from 'primevue/rating'
+import Button from 'primevue/button'
+import useHandConfigurations from '../composables/useHandConfigurations'
+import useSigns from '../composables/useSigns'
+import useRoles from '../composables/useRoles'
+import CategoriesPickerForm from './CategoriesPickerForm.vue'
+import FaceZonesOverlay from './FaceZonesOverlay.vue'
+import BodyZonesOverlay from './BodyZonesOverlay.vue'
+import type { TSign, Ui } from '../../types'
+import HandMovementForm from './HandMovementForm.vue'
+import { createSlug } from '@lib/slug'
 
-const form = defineModel<TSign.TForm>({ required: true });
-const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
-const activeTab = ref(0);
-const activeHand = ref<'right' | 'left'>('right');
+const form = defineModel<TSign.TForm>({ required: true })
+const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', {
+  required: true,
+})
+const activeTab = ref(0)
+const activeHand = ref<'right' | 'left'>('right')
 
 const colorConfig: Ui.ColorConfig = {
-    right: '#dc262688',
-    left: '#2563eb88'
-};
+  right: '#dc262688',
+  left: '#2563eb88',
+}
 
 // --- Use composables for relations ---
 const {
-    handConfigurations,
-    loadingHandConfigurations,
-    loadHandConfigurations,
-    getIllustrationUrl,
-} = useHandConfigurations();
+  handConfigurations,
+  loadingHandConfigurations,
+  loadHandConfigurations,
+  getIllustrationUrl,
+} = useHandConfigurations()
 
-const { roles, loadRoles } = useRoles();
-const rolesLoading = ref(false);
+const { roles, loadRoles } = useRoles()
+const rolesLoading = ref(false)
 const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '')
 
-const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns();
+const { learningSourceOptions, primaryLanguageOptions, verificationStatusOptions } = useSigns()
 
 // Filtered options for dominant/non-dominant
 const handConfigOptions = computed(() =>
-    handConfigurations.value
-        .map((c: { name: string; illustration: string }) => ({
-            label: c.name,
-            value: c,
-            illustration: c.illustration
-        }))
-);
+  handConfigurations.value.map((c: { name: string; illustration: string }) => ({
+    label: c.name,
+    value: c,
+    illustration: c.illustration,
+  })),
+)
 
-watch(() => form.value.ConfigurationLeft?.id, (value) => {
-    console.log('config left changed!!', value);
-    console.log('placements', form.value.placement);
-
+watch(
+  () => form.value.ConfigurationLeft?.id,
+  value => {
+    console.log('config left changed!!', value)
+    console.log('placements', form.value.placement)
 
     if (!value && activeHand.value !== 'right') {
-        activeHand.value = 'right'
-        form.value.placement.left = []
+      activeHand.value = 'right'
+      form.value.placement.left = []
     }
-})
+  },
+)
 
 watch(roles, () => {
   if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
@@ -353,17 +360,17 @@ watch(roles, () => {
 })
 
 onMounted(() => {
-  loadHandConfigurations('name');
-  rolesLoading.value = true;
+  loadHandConfigurations('name')
+  rolesLoading.value = true
   loadRoles().finally(() => {
-    rolesLoading.value = false;
-  });
-});
+    rolesLoading.value = false
+  })
+})
 
 const levelLabel = computed(() => {
-    const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
-    return levels[form.value.level - 1] || '';
-});
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1']
+  return levels[form.value.level - 1] || ''
+})
 
 const isRoleSelected = (roleId: string) => {
   if (!roleId) {
@@ -403,23 +410,26 @@ const regenerateSlug = () => {
 }
 
 // Auto-generate slug on name change for new records
-watch(() => form.value.name, (newName) => {
-  // Only auto-generate if slug is empty or this is a new record
-  if ((!form.value.slug || !form.value.id) && newName) {
-    form.value.slug = createSlug(newName)
-  }
-})
+watch(
+  () => form.value.name,
+  newName => {
+    // Only auto-generate if slug is empty or this is a new record
+    if ((!form.value.slug || !form.value.id) && newName) {
+      form.value.slug = createSlug(newName)
+    }
+  },
+)
 
 const onFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    form.value.video = target.files && target.files.length > 0 ? target.files[0] : null;
+  const target = event.target as HTMLInputElement
+  form.value.video = target.files && target.files.length > 0 ? target.files[0] : null
 
-    if (form.value.video) {
-        // use file name (without extension) as value for form.name if it's empty
-        if (!form.value.name) {
-            const fileName = form.value.video.name;
-            form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-        }
+  if (form.value.video) {
+    // use file name (without extension) as value for form.name if it's empty
+    if (!form.value.name) {
+      const fileName = form.value.video.name
+      form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName
     }
-};
+  }
+}
 </script>

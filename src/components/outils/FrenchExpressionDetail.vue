@@ -4,7 +4,10 @@
       <span class="loading loading-spinner loading-lg"></span>
     </div>
     <template v-else-if="expr">
-      <a href="/outils/expressions-francaises" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
+      <a
+        href="/outils/expressions-francaises"
+        class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block"
+      >
         ← Expressions françaises
       </a>
       <h1 class="text-3xl font-bold mb-6">« {{ expr.expression }} »</h1>
@@ -53,9 +56,11 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb.collection('french_expression').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
-      expand: 'Signs',
-    })
+    expr.value = await pb
+      .collection('french_expression')
+      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+        expand: 'Signs',
+      })
     if (expr.value.strategies) {
       strategiesHtml.value = String(await marked.parse(String(expr.value.strategies)))
     }

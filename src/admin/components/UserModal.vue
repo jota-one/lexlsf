@@ -85,7 +85,8 @@
           @select="onAvatarSelect"
         />
         <p v-if="form.avatar" class="text-sm text-gray-500">
-          {{ userId ? 'Nouveau fichier sélectionné' : 'Fichier sélectionné' }}: {{ form.avatar.name }}
+          {{ userId ? 'Nouveau fichier sélectionné' : 'Fichier sélectionné' }}:
+          {{ form.avatar.name }}
         </p>
       </div>
     </div>
@@ -102,19 +103,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import MultiSelect from 'primevue/multiselect';
-import FileUpload from 'primevue/fileupload';
-import type { FileUploadSelectEvent } from 'primevue/fileupload';
-import useUsers from '../composables/useUsers';
-import type { TUserForm } from '../composables/useUsers';
-import useRoles from '../composables/useRoles';
-import PbErrorToast from './PbErrorToast.vue';
-import usePbErrorToast from '../composables/usePbErrorToast';
+import { ref, watch } from 'vue'
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import MultiSelect from 'primevue/multiselect'
+import FileUpload from 'primevue/fileupload'
+import type { FileUploadSelectEvent } from 'primevue/fileupload'
+import useUsers from '../composables/useUsers'
+import type { TUserForm } from '../composables/useUsers'
+import useRoles from '../composables/useRoles'
+import PbErrorToast from './PbErrorToast.vue'
+import usePbErrorToast from '../composables/usePbErrorToast'
 
 type Props = {
   // undefined = create mode
@@ -123,18 +124,18 @@ type Props = {
 
 type Events = {
   saved: []
-};
+}
 
-const props = defineProps<Props>();
-const emit = defineEmits<Events>();
-const visible = defineModel<boolean>({ required: true });
+const props = defineProps<Props>()
+const emit = defineEmits<Events>()
+const visible = defineModel<boolean>({ required: true })
 
-const { addUser, updateUser, loadUser, getAvatarUrl } = useUsers();
-const { roles, loadRoles } = useRoles();
-const { showPbError } = usePbErrorToast();
-const saving = ref(false);
-const rolesLoading = ref(false);
-const currentAvatar = ref('');
+const { addUser, updateUser, loadUser, getAvatarUrl } = useUsers()
+const { roles, loadRoles } = useRoles()
+const { showPbError } = usePbErrorToast()
+const saving = ref(false)
+const rolesLoading = ref(false)
+const currentAvatar = ref('')
 
 const emptyForm = (): TUserForm => ({
   email: '',
@@ -144,51 +145,51 @@ const emptyForm = (): TUserForm => ({
   name: '',
   avatar: null,
   roles: [],
-});
+})
 
-const form = ref<TUserForm>(emptyForm());
+const form = ref<TUserForm>(emptyForm())
 
 const onAvatarSelect = (event: FileUploadSelectEvent) => {
-  const files = event.files;
+  const files = event.files
   if (files && files.length > 0) {
-    form.value.avatar = files[0];
+    form.value.avatar = files[0]
   }
-};
+}
 
 const save = async () => {
   if (!form.value.email || (!props.userId && !form.value.password)) {
-    alert('Veuillez remplir tous les champs obligatoires');
-    return;
+    alert('Veuillez remplir tous les champs obligatoires')
+    return
   }
 
   if (form.value.password && form.value.password !== form.value.passwordConfirm) {
-    alert('Les mots de passe ne correspondent pas');
-    return;
+    alert('Les mots de passe ne correspondent pas')
+    return
   }
 
-  saving.value = true;
+  saving.value = true
 
   try {
     if (props.userId) {
-      await updateUser(props.userId, form.value);
+      await updateUser(props.userId, form.value)
     } else {
-      await addUser(form.value);
+      await addUser(form.value)
     }
-    emit('saved');
-    visible.value = false;
+    emit('saved')
+    visible.value = false
   } catch (err) {
-    showPbError(err);
+    showPbError(err)
   } finally {
-    saving.value = false;
+    saving.value = false
   }
-};
+}
 
 const loadUserData = async () => {
   if (!visible.value || !props.userId) {
-    return;
+    return
   }
 
-  const user = await loadUser(props.userId);
+  const user = await loadUser(props.userId)
 
   form.value = {
     email: user.email,
@@ -198,35 +199,42 @@ const loadUserData = async () => {
     name: user.name || '',
     avatar: null,
     roles: user.roles || [],
-  };
+  }
 
-  currentAvatar.value = getAvatarUrl(user);
-};
+  currentAvatar.value = getAvatarUrl(user)
+}
 
 const loadRolesData = async () => {
-  rolesLoading.value = true;
+  rolesLoading.value = true
   try {
-    await loadRoles();
+    await loadRoles()
   } finally {
-    rolesLoading.value = false;
+    rolesLoading.value = false
   }
-};
+}
 
-watch(visible, async (isVisible) => {
-  if (!isVisible) {
-    return;
-  }
-  if (!props.userId) {
-    // Reset form when modal is opened in create mode
-    form.value = emptyForm();
-    currentAvatar.value = '';
-    await loadRolesData();
-    return;
-  }
-  await Promise.all([loadUserData(), loadRolesData()]);
-}, { immediate: true });
+watch(
+  visible,
+  async isVisible => {
+    if (!isVisible) {
+      return
+    }
+    if (!props.userId) {
+      // Reset form when modal is opened in create mode
+      form.value = emptyForm()
+      currentAvatar.value = ''
+      await loadRolesData()
+      return
+    }
+    await Promise.all([loadUserData(), loadRolesData()])
+  },
+  { immediate: true },
+)
 
-watch(() => props.userId, async () => {
-  await loadUserData();
-});
+watch(
+  () => props.userId,
+  async () => {
+    await loadUserData()
+  },
+)
 </script>

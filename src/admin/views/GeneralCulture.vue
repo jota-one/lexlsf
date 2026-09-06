@@ -26,13 +26,21 @@
         <Column field="updated" header="Dernière modif" sortable>
           <template #body="slotProps">{{ formatDate(slotProps.data.updated) }}</template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
-              <button class="btn btn-xs btn-ghost" title="Modifier" @click="editItem(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editItem(slotProps.data)"
+              >
                 <span class="i-fa-solid-pen"></span>
               </button>
-              <button class="btn btn-xs btn-ghost" title="Supprimer" @click="confirmDelete(slotProps.data)">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Supprimer"
+                @click="confirmDelete(slotProps.data)"
+              >
                 <span class="i-fa-solid-trash"></span>
               </button>
             </div>
@@ -69,15 +77,21 @@ const editedItemId = ref<string | undefined>(undefined)
 const showDeleteModal = ref(false)
 const itemToDelete = ref<TGeneralCulture.TRecord | null>(null)
 const deleteMessage = computed(() =>
-  itemToDelete.value ? `Voulez-vous vraiment supprimer "${itemToDelete.value.name}" ?` : ''
+  itemToDelete.value ? `Voulez-vous vraiment supprimer "${itemToDelete.value.name}" ?` : '',
 )
 
 type RoleExpand = NonNullable<TGeneralCulture.TRecord['expand']>['Roles']
-const roleNames = (roles: RoleExpand) => roles?.length ? roles.map(r => r.name).join(', ') : '—'
-const formatDate = (d: string) => d ? dayjs(d).format('DD/MM/YYYY HH:mm') : ''
+const roleNames = (roles: RoleExpand) => (roles?.length ? roles.map(r => r.name).join(', ') : '—')
+const formatDate = (d: string) => (d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '')
 
-const openAddModal = () => { editedItemId.value = undefined; showItemModal.value = true }
-const editItem = (item: TGeneralCulture.TRecord) => { editedItemId.value = item.id; showItemModal.value = true }
+const openAddModal = () => {
+  editedItemId.value = undefined
+  showItemModal.value = true
+}
+const editItem = (item: TGeneralCulture.TRecord) => {
+  editedItemId.value = item.id
+  showItemModal.value = true
+}
 const confirmDelete = (item: TGeneralCulture.TRecord) => {
   itemToDelete.value = item
   showDeleteModal.value = true

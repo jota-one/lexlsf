@@ -3,7 +3,6 @@ import { pb } from '@lib/pb'
 import type { TLexicalTerm } from '../../types'
 
 export default function useLexicalTerms() {
-
   const terms = ref<TLexicalTerm.TRecord[]>([])
 
   const loadTermsByField = async (lexicalFieldId: string) => {

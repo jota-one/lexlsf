@@ -14,7 +14,10 @@
             <span class="i-fa-solid-times"></span>
           </button>
         </div>
-        <p class="mt-1 font-mono text-sm" :class="isPeriod(item) ? 'text-secondary' : 'text-primary'">
+        <p
+          class="mt-1 font-mono text-sm"
+          :class="isPeriod(item) ? 'text-secondary' : 'text-primary'"
+        >
           {{ formatDateRange(item.start_date, item.end_date) }}
           <span v-if="isPeriod(item)" class="badge badge-secondary badge-xs ml-1">période</span>
         </p>
@@ -47,7 +50,9 @@
 
       <!-- Champs lexicaux -->
       <div v-if="item.expand?.LexicalFields?.length">
-        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">Champs lexicaux</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">
+          Champs lexicaux
+        </p>
         <div class="flex flex-wrap gap-2">
           <a
             v-for="lf in item.expand.LexicalFields"
@@ -62,7 +67,9 @@
 
       <!-- Signes -->
       <div v-if="item.expand?.Signs?.length">
-        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">Signes associés</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">
+          Signes associés
+        </p>
         <div class="flex flex-wrap gap-2">
           <a
             v-for="sign in item.expand.Signs"
@@ -78,7 +85,9 @@
 
       <!-- Personnes / Organismes -->
       <div v-if="item.expand?.Persons?.length">
-        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">Personnes / Organismes</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50 mb-2">
+          Personnes / Organismes
+        </p>
         <div class="flex flex-wrap gap-2">
           <a
             v-for="person in item.expand.Persons"
@@ -136,8 +145,10 @@ const close = () => router.push('/')
 
 watch(
   () => props.slug,
-  async (slug) => {
-    if (!slug) {return}
+  async slug => {
+    if (!slug) {
+      return
+    }
     item.value = null
     item.value = await loadItem(slug)
   },

@@ -1,7 +1,9 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-2">Expressions françaises</h1>
-    <p class="text-base-content/60 mb-8">Expressions idiomatiques et leurs stratégies pour les signer.</p>
+    <p class="text-base-content/60 mb-8">
+      Expressions idiomatiques et leurs stratégies pour les signer.
+    </p>
 
     <div v-if="loading" class="flex justify-center py-16">
       <span class="loading loading-spinner loading-lg"></span>
@@ -17,7 +19,9 @@
           <p class="font-medium text-lg">« {{ expr.expression }} »</p>
         </a>
       </div>
-      <p v-if="expressions.length === 0" class="text-center text-base-content/50 py-16">Aucune expression disponible.</p>
+      <p v-if="expressions.length === 0" class="text-center text-base-content/50 py-16">
+        Aucune expression disponible.
+      </p>
     </template>
   </div>
 </template>

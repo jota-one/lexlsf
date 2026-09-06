@@ -8,13 +8,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, getCurrentInstance, type App } from 'vue';
-import router from '../admin/router';
-import useAuth from '../admin/composables/useAuth';
-import Sidebar from '../admin/layouts/Sidebar.vue';
-import ToastService from 'primevue/toastservice';
-import Tooltip from 'primevue/tooltip';
-import 'vue3-markdown/dist/vue3-markdown.css';
+import { ref, onBeforeMount, getCurrentInstance, type App } from 'vue'
+import router from '../admin/router'
+import useAuth from '../admin/composables/useAuth'
+import Sidebar from '../admin/layouts/Sidebar.vue'
+import ToastService from 'primevue/toastservice'
+import Tooltip from 'primevue/tooltip'
+import 'vue3-markdown/dist/vue3-markdown.css'
 
 const ready = ref(false)
 const { refreshAuth } = useAuth()
@@ -24,10 +24,10 @@ onBeforeMount(async () => {
   app.directive('focus', {
     mounted(el) {
       el.focus()
-    }
+    },
   })
   app.use(ToastService)
-  app.directive('tooltip', Tooltip);
+  app.directive('tooltip', Tooltip)
 
   // Load the session and roles once, before the router guard can rely on them
   await refreshAuth()

@@ -27,7 +27,7 @@ const emit = defineEmits<Emits>()
 
 const form = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
+  set: value => emit('update:modelValue', value),
 })
 
 const itemTypeOptions = [

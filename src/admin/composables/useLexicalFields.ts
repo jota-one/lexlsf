@@ -24,7 +24,6 @@ const setFormData = (payload: TLexicalField.TForm) => {
 }
 
 export default function useLexicalFields() {
-
   const lexicalFields = ref<TLexicalField.TRecord[]>([])
 
   const loadLexicalFields = async () => {

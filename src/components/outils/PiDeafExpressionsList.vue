@@ -1,7 +1,9 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-2">Expressions pi-sourdes</h1>
-    <p class="text-base-content/60 mb-8">Expressions en LSF et leurs stratégies de transcription en français.</p>
+    <p class="text-base-content/60 mb-8">
+      Expressions en LSF et leurs stratégies de transcription en français.
+    </p>
 
     <div v-if="loading" class="flex justify-center py-16">
       <span class="loading loading-spinner loading-lg"></span>
@@ -17,7 +19,9 @@
           <p class="font-medium text-lg">{{ expr.name || expr.expand?.Sign?.name }}</p>
         </a>
       </div>
-      <p v-if="expressions.length === 0" class="text-center text-base-content/50 py-16">Aucune expression disponible.</p>
+      <p v-if="expressions.length === 0" class="text-center text-base-content/50 py-16">
+        Aucune expression disponible.
+      </p>
     </template>
   </div>
 </template>
@@ -37,7 +41,9 @@ onMounted(async () => {
     return
   }
   try {
-    expressions.value = await pb.collection('pi_deaf_expression').getFullList({ expand: 'Sign', sort: 'name' })
+    expressions.value = await pb
+      .collection('pi_deaf_expression')
+      .getFullList({ expand: 'Sign', sort: 'name' })
   } finally {
     loading.value = false
   }

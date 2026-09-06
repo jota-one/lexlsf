@@ -4,14 +4,22 @@
       <span class="loading loading-spinner loading-lg"></span>
     </div>
     <template v-else-if="expr">
-      <a href="/outils/expressions-pi-sourdes" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
+      <a
+        href="/outils/expressions-pi-sourdes"
+        class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block"
+      >
         ← Expressions pi-sourdes
       </a>
       <h1 class="text-3xl font-bold mb-6">{{ expr.name || expr.expand?.Sign?.name }}</h1>
 
       <section v-if="expr.expand?.Sign" class="mb-8">
         <h2 class="text-lg font-semibold mb-3">
-          Signe : <a :href="`/lexique/sign/${expr.expand.Sign.slug}`" class="text-primary hover:underline">{{ expr.expand.Sign.name }}</a>
+          Signe :
+          <a
+            :href="`/lexique/sign/${expr.expand.Sign.slug}`"
+            class="text-primary hover:underline"
+            >{{ expr.expand.Sign.name }}</a
+          >
         </h2>
         <video
           v-if="videoUrl"
@@ -58,9 +66,11 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb.collection('pi_deaf_expression').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
-      expand: 'Sign',
-    })
+    expr.value = await pb
+      .collection('pi_deaf_expression')
+      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+        expand: 'Sign',
+      })
     if (expr.value.strategies) {
       strategiesHtml.value = String(await marked.parse(String(expr.value.strategies)))
     }

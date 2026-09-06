@@ -164,6 +164,7 @@ current de-facto behavior and avoids a class of "cancelled request" bugs.
 **Files**: every file listed by `grep -rln "new PocketBase" src` (28 files).
 
 Mechanical, per file:
+
 1. Delete `import PocketBase from 'pocketbase'` and the `const pb = new PocketBase(...)` line
    (and the now-unused `config` import if it has no other use).
 2. Add `import { pb } from '@lib/pb'`.
@@ -275,7 +276,9 @@ keeps only read operations; admin keeps CRUD.
      try {
        const raw = localStorage.getItem('pocketbase_auth')
        ok = !!(raw && JSON.parse(raw).token)
-     } catch (e) { ok = false }
+     } catch (e) {
+       ok = false
+     }
      ```
      then delete the `userJwt` mirror entirely. Choose this variant; keep
      `impersonatorJwt` in sessionStorage (it is intentionally tab-scoped? No —
@@ -306,9 +309,11 @@ impersonation-related if variant 1 was chosen — state which in the PR).
 `grep -rn 'filter: `' src` (~25 sites; the analysis §3.7 lists the user-input ones).
 
 Rule: any filter containing an interpolated variable becomes
+
 ```ts
 filter: pb.filter('name ~ {:q} || Category.tag ~ {:q}', { q })
 ```
+
 Static filters (`'Parent = null'`) stay as-is. The `itemIds.map(...).join(' || ')`
 in `useQuizSession.ts:227` becomes
 `pb.filter(itemIds.map((_, i) => `id = {:id${i}}`).join(' || '), Object.fromEntries(itemIds.map((id, i) => [`id${i}`, id])))`
@@ -316,8 +321,8 @@ in `useQuizSession.ts:227` becomes
 `/^[a-z0-9]+$/i` first (PB record ids are alphanumeric).
 
 **Acceptance**: searching `d"art` in global search and in each admin picker returns
-results (or empty) without console errors. `grep -rn 'filter: `' src` shows only
-static strings or `pb.filter(` calls.
+results (or empty) without console errors. `grep -rn 'filter: `' src`shows only
+static strings or`pb.filter(` calls.
 
 ### 4.4 Consistent error handling in admin writes
 
@@ -362,18 +367,19 @@ XxxAddModal.vue + XxxEditModal.vue  →  XxxModal.vue
 Consumers (the list views) currently hold two `visible` refs and render two modals;
 they collapse to one modal + one `editedId: string | undefined` ref.
 
-| Task | Entity | Files to merge | Consumer view |
-|---|---|---|---|
-| 5.1 | Sign | `SignAddModal.vue`, `SignEditModal.vue` | `views/Signs.vue` |
-| 5.2 | Person | `PersonAddModal.vue`, `PersonEditModal.vue` | `views/Persons.vue` |
-| 5.3 | HandConfiguration | `HandConfigurationAddModal/EditModal` | `views/HandConfigurations.vue` |
-| 5.4 | LexicalField | `LexicalFieldAddModal/EditModal` | `views/LexicalFields.vue` |
-| 5.5 | FrenchExpression | `FrenchExpressionAddModal/EditModal` | `views/FrenchExpressions.vue` |
-| 5.6 | PiDeafExpression | `PiDeafExpressionAddModal/EditModal` | `views/PiDeafExpressions.vue` |
-| 5.7 | GeneralCulture | `GeneralCultureAddModal/EditModal` | `views/GeneralCulture.vue` |
-| 5.8 | User | `UserAddModal.vue`, `UserEditModal.vue` | `views/Users.vue` |
+| Task | Entity            | Files to merge                              | Consumer view                  |
+| ---- | ----------------- | ------------------------------------------- | ------------------------------ |
+| 5.1  | Sign              | `SignAddModal.vue`, `SignEditModal.vue`     | `views/Signs.vue`              |
+| 5.2  | Person            | `PersonAddModal.vue`, `PersonEditModal.vue` | `views/Persons.vue`            |
+| 5.3  | HandConfiguration | `HandConfigurationAddModal/EditModal`       | `views/HandConfigurations.vue` |
+| 5.4  | LexicalField      | `LexicalFieldAddModal/EditModal`            | `views/LexicalFields.vue`      |
+| 5.5  | FrenchExpression  | `FrenchExpressionAddModal/EditModal`        | `views/FrenchExpressions.vue`  |
+| 5.6  | PiDeafExpression  | `PiDeafExpressionAddModal/EditModal`        | `views/PiDeafExpressions.vue`  |
+| 5.7  | GeneralCulture    | `GeneralCultureAddModal/EditModal`          | `views/GeneralCulture.vue`     |
+| 5.8  | User              | `UserAddModal.vue`, `UserEditModal.vue`     | `views/Users.vue`              |
 
 Rules for the implementer:
+
 - Do 5.1 first and get it reviewed — it sets the template for 5.2–5.8.
 - Diff the Add/Edit pair **before** merging; if they diverge in behavior beyond the
   pattern above (e.g. Edit loads expands, User has password-only-on-create), keep
@@ -462,6 +468,7 @@ or wait for the next release).
   }
 }
 ```
+
 Run `pnpm lint`; fix any `error`-level findings it surfaces (expect `==` hits);
 `any` stays a warning (cleanup is incremental).
 
@@ -487,6 +494,7 @@ release** (sub-tasks a–d in one PR to `main`, coordinated with the `apps.yaml`
 switch).
 
 **a) Astro config** — `astro.config.mjs`, `package.json`:
+
 1. Remove `adapter: node(...)`, the prod `server` block, and the prod
    `ssr.noExternal` block (obsolete without SSR). Static output is the default
    without an adapter.
@@ -495,6 +503,7 @@ switch).
 
 **b) Route rework for static output** (dynamic params don't exist at runtime in
 static mode):
+
 1. The five SPA catch-alls (`admin/[...slug]`, `lexique/[...slug]`,
    `culture/[...slug]`, `culture-generale/[...slug]`, `revisions/[...slug]`) need
    `getStaticPaths` returning the bare root (`[{ params: { slug: undefined } }]`)

@@ -107,11 +107,9 @@
 
         <!-- Date de naissance / création -->
         <div class="flex items-center gap-4">
-          <label
-            for="birthdate"
-            class="font-semibold w-60"
-            >{{ form.organism ? 'Date de création' : 'Date de naissance' }}</label
-          >
+          <label for="birthdate" class="font-semibold w-60">{{
+            form.organism ? 'Date de création' : 'Date de naissance'
+          }}</label>
           <DatePicker
             v-model="birthdateModel"
             inputId="birthdate"
@@ -122,17 +120,17 @@
 
         <!-- Lieu de naissance / création -->
         <div class="flex items-center gap-4">
-          <label
-            for="birthplace"
-            class="font-semibold w-60"
-            >{{ form.organism ? 'Lieu de création' : 'Lieu de naissance' }}</label
-          >
+          <label for="birthplace" class="font-semibold w-60">{{
+            form.organism ? 'Lieu de création' : 'Lieu de naissance'
+          }}</label>
           <InputText v-model="form.birthplace" id="birthplace" class="w-full" />
         </div>
 
         <!-- Décédé/Dissout -->
         <div class="flex items-center gap-4">
-          <label for="deceased" class="font-semibold w-60">{{ form.organism ? 'Dissout' : 'Décédé·e' }}</label>
+          <label for="deceased" class="font-semibold w-60">{{
+            form.organism ? 'Dissout' : 'Décédé·e'
+          }}</label>
           <div class="flex items-center gap-3">
             <button
               type="button"
@@ -158,11 +156,9 @@
 
         <!-- Date de décès / dissolution -->
         <div v-if="form.deceased" class="flex items-center gap-4">
-          <label
-            for="deathdate"
-            class="font-semibold w-60"
-            >{{ form.organism ? 'Date de dissolution' : 'Date de décès' }}</label
-          >
+          <label for="deathdate" class="font-semibold w-60">{{
+            form.organism ? 'Date de dissolution' : 'Date de décès'
+          }}</label>
           <DatePicker
             v-model="deathdateModel"
             inputId="deathdate"
@@ -330,8 +326,7 @@
                       {{ entry.title || '(Sans titre)' }}
                     </h4>
                     <p class="text-sm text-base-content/70">
-                      {{ entry.description ||
-                                            '(Sansdescription)' }}
+                      {{ entry.description || '(Sansdescription)' }}
                     </p>
                   </div>
                 </div>
@@ -501,156 +496,184 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import InputText from 'primevue/inputtext';
-import DatePicker from 'primevue/datepicker';
-import Button from 'primevue/button';
+import { ref, onMounted, computed, watch } from 'vue'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import InputText from 'primevue/inputtext'
+import DatePicker from 'primevue/datepicker'
+import Button from 'primevue/button'
 
-dayjs.extend(customParseFormat);
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import Tab from 'primevue/tab';
-import TabPanels from 'primevue/tabpanels';
-import TabPanel from 'primevue/tabpanel';
-import ToggleSwitch from 'primevue/toggleswitch';
-import { VMarkdownEditor } from 'vue3-markdown';
-import useRoles from '../composables/useRoles';
-import useVideos from '../composables/useVideos';
-import { useSortableList } from '../composables/useSortableList';
-import type { TPerson, TVideo } from '../../types';
-import CategoriesPickerForm from './CategoriesPickerForm.vue';
-import SignPicker from './SignPicker.vue';
-import { createSlug } from '@lib/slug';
+dayjs.extend(customParseFormat)
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
+import ToggleSwitch from 'primevue/toggleswitch'
+import { VMarkdownEditor } from 'vue3-markdown'
+import useRoles from '../composables/useRoles'
+import useVideos from '../composables/useVideos'
+import { useSortableList } from '../composables/useSortableList'
+import type { TPerson, TVideo } from '../../types'
+import CategoriesPickerForm from './CategoriesPickerForm.vue'
+import SignPicker from './SignPicker.vue'
+import { createSlug } from '@lib/slug'
 
 // Internal type for timeline entries with mandatory ID for sorting
-type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string };
+type TTimelineEntryWithId = TPerson.TTimelineEntry & { id: string }
 
 const props = defineProps<{
-    initialVideos?: TVideo.TRecord[]
-}>();
+  initialVideos?: TVideo.TRecord[]
+}>()
 
-const form = defineModel<TPerson.TForm>({ required: true });
-const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', { required: true });
-const selectedActivities = defineModel<{ [parentId: string]: string[] }>('activities', { required: true });
-const activeTab = ref(0);
-const editingBioIndex = ref<number | null>(null);
-const editingVideoIndex = ref<number | null>(null);
-const newVideoMode = ref(false);
-const newVideo = ref<TVideo.TForm>({ title: '', url: '' });
-const editingVideo = ref<TVideo.TForm>({ title: '', url: '' });
+const form = defineModel<TPerson.TForm>({ required: true })
+const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', {
+  required: true,
+})
+const selectedActivities = defineModel<{ [parentId: string]: string[] }>('activities', {
+  required: true,
+})
+const activeTab = ref(0)
+const editingBioIndex = ref<number | null>(null)
+const editingVideoIndex = ref<number | null>(null)
+const newVideoMode = ref(false)
+const newVideo = ref<TVideo.TForm>({ title: '', url: '' })
+const editingVideo = ref<TVideo.TForm>({ title: '', url: '' })
 
 // Calendar model for birthdate (Date)
-const birthdateModel = ref<Date | null>(null);
+const birthdateModel = ref<Date | null>(null)
 
 // Calendar model for deathdate (Date)
-const deathdateModel = ref<Date | null>(null);
+const deathdateModel = ref<Date | null>(null)
 
-const { roles, loadRoles } = useRoles();
-const rolesLoading = ref(false);
-const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '');
+const { roles, loadRoles } = useRoles()
+const rolesLoading = ref(false)
+const adminRoleId = computed(() => roles.value.find(role => role.slug === 'admin')?.id || '')
 
 watch(roles, () => {
   if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
-    return;
+    return
   }
-  form.value.Roles = form.value.Roles.filter(roleId => roleId !== adminRoleId.value);
-});
+  form.value.Roles = form.value.Roles.filter(roleId => roleId !== adminRoleId.value)
+})
 
 const isRoleSelected = (roleId: string) => {
-  if (!roleId) {return false;}
-  if (roleId === adminRoleId.value) {return true;}
-  return (form.value.Roles || []).includes(roleId);
-};
+  if (!roleId) {
+    return false
+  }
+  if (roleId === adminRoleId.value) {
+    return true
+  }
+  return (form.value.Roles || []).includes(roleId)
+}
 
 const toggleRole = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return;}
-  if ((form.value.Roles || []).includes(role.id)) {
-    form.value.Roles = (form.value.Roles || []).filter(roleId => roleId !== role.id);
-    return;
+  if (role.slug === 'admin') {
+    return
   }
-  form.value.Roles = [...(form.value.Roles || []), role.id];
-};
+  if ((form.value.Roles || []).includes(role.id)) {
+    form.value.Roles = (form.value.Roles || []).filter(roleId => roleId !== role.id)
+    return
+  }
+  form.value.Roles = [...(form.value.Roles || []), role.id]
+}
 
 const roleBadgeClass = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return 'badge-primary opacity-60 cursor-not-allowed';}
-  return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer';
-};
+  if (role.slug === 'admin') {
+    return 'badge-primary opacity-60 cursor-not-allowed'
+  }
+  return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
+}
 
-const { addVideo, updateVideo, findVideoByUrl } = useVideos();
+const { addVideo, updateVideo, findVideoByUrl } = useVideos()
 
 // Utiliser le composable useSortableList pour les vidéos
 const {
-    items: videos,
-    container: videosContainer,
-    setItems: setVideos,
-    getItemIds: getVideoIds
+  items: videos,
+  container: videosContainer,
+  setItems: setVideos,
+  getItemIds: getVideoIds,
 } = useSortableList<TVideo.TRecord>('videosContainer', [], {
-    animation: 200,
-    handle: '.handle',
-});
+  animation: 200,
+  handle: '.handle',
+})
 
 // Utiliser le composable useSortableList pour la timeline
 const {
-    items: timeline,
-    container: timelineContainer,
-    setItems: setTimeline,
+  items: timeline,
+  container: timelineContainer,
+  setItems: setTimeline,
 } = useSortableList<TTimelineEntryWithId>('timelineContainer', [], {
-    animation: 200,
-    handle: '.bio-handle',
-});
+  animation: 200,
+  handle: '.bio-handle',
+})
 
-watch(() => props.initialVideos, (newVal) => {
+watch(
+  () => props.initialVideos,
+  newVal => {
     if (newVal) {
-        setVideos(newVal);
+      setVideos(newVal)
     }
-}, { immediate: true });
+  },
+  { immediate: true },
+)
 
 // Initialize timeline when form is loaded from outside (e.g., loading person from DB)
 // This will fire every time the modale opens with new data
-watch(() => form.value.timeline, (newVal) => {
+watch(
+  () => form.value.timeline,
+  newVal => {
     if (newVal && newVal.length > 0) {
-        // If current timeline exist and have same count, don't reinitialize (preserve order)
-        if (timeline.value.length === newVal.length && timeline.value.length > 0) {
-            return;
-        }
+      // If current timeline exist and have same count, don't reinitialize (preserve order)
+      if (timeline.value.length === newVal.length && timeline.value.length > 0) {
+        return
+      }
 
-        // Ensure each timeline entry has an id
-        const timelineWithIds: TTimelineEntryWithId[] = newVal.map((h, idx) => ({
-            ...h,
-            id: h.id || `timeline-${idx}-${Date.now()}`
-        }));
-        setTimeline(timelineWithIds);
+      // Ensure each timeline entry has an id
+      const timelineWithIds: TTimelineEntryWithId[] = newVal.map((h, idx) => ({
+        ...h,
+        id: h.id || `timeline-${idx}-${Date.now()}`,
+      }))
+      setTimeline(timelineWithIds)
     } else if (newVal && newVal.length === 0) {
-        setTimeline([]);
+      setTimeline([])
     }
-}, { immediate: true });
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
-  rolesLoading.value = true;
+  rolesLoading.value = true
   loadRoles().finally(() => {
-    rolesLoading.value = false;
-  });
-});
+    rolesLoading.value = false
+  })
+})
 
-watch(() => form.value.birthdate, (newVal) => {
-  if (!newVal) {
-    birthdateModel.value = null;
-    return;
-  }
-  const parsed = dayjs(newVal);
-  birthdateModel.value = parsed.isValid() ? parsed.toDate() : null;
-}, { immediate: true });
+watch(
+  () => form.value.birthdate,
+  newVal => {
+    if (!newVal) {
+      birthdateModel.value = null
+      return
+    }
+    const parsed = dayjs(newVal)
+    birthdateModel.value = parsed.isValid() ? parsed.toDate() : null
+  },
+  { immediate: true },
+)
 
-watch(() => form.value.deathdate, (newVal) => {
-  if (!newVal) {
-    deathdateModel.value = null;
-    return;
-  }
-  const parsed = dayjs(newVal);
-  deathdateModel.value = parsed.isValid() ? parsed.toDate() : null;
-}, { immediate: true });
+watch(
+  () => form.value.deathdate,
+  newVal => {
+    if (!newVal) {
+      deathdateModel.value = null
+      return
+    }
+    const parsed = dayjs(newVal)
+    deathdateModel.value = parsed.isValid() ? parsed.toDate() : null
+  },
+  { immediate: true },
+)
 
 // Slug management
 const regenerateSlug = () => {
@@ -668,153 +691,157 @@ watch([() => form.value.name, () => form.value.firstname], ([newName, newFirstna
 })
 
 const onFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    form.value.illustration = target.files && target.files.length > 0 ? target.files[0] : null;
+  const target = event.target as HTMLInputElement
+  form.value.illustration = target.files && target.files.length > 0 ? target.files[0] : null
 
-    if (form.value.illustration) {
-        // use file name (without extension) as value for form.name if it's empty
-        if (!form.value.name) {
-            const fileName = form.value.illustration.name;
-            form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-        }
+  if (form.value.illustration) {
+    // use file name (without extension) as value for form.name if it's empty
+    if (!form.value.name) {
+      const fileName = form.value.illustration.name
+      form.value.name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName
     }
-};
+  }
+}
 
 // Initialize timeline if not present
 if (!form.value.timeline) {
-    form.value.timeline = [];
+  form.value.timeline = []
 }
 
 const addBioEntry = () => {
-    const newEntry: TTimelineEntryWithId = {
-        id: `bio-${Date.now()}`,
-        title: '',
-        description: ''
-    };
-    timeline.value = [...timeline.value, newEntry];
-    // Synchronise form without the temporary IDs
-    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
-    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
-    const newIndex = timeline.value.length - 1;
-    editingBioIndex.value = newIndex;
-};
+  const newEntry: TTimelineEntryWithId = {
+    id: `bio-${Date.now()}`,
+    title: '',
+    description: '',
+  }
+  timeline.value = [...timeline.value, newEntry]
+  // Synchronise form without the temporary IDs
+  const timelineForForm = timeline.value.map(({ id, ...rest }) => rest)
+  form.value.timeline = timelineForForm as TPerson.TTimelineEntry[]
+  const newIndex = timeline.value.length - 1
+  editingBioIndex.value = newIndex
+}
 
 const removeBioEntry = (index: number) => {
-    timeline.value.splice(index, 1);
-    timeline.value = [...timeline.value];
-    // Synchronise form without the temporary IDs
-    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
-    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
-    if (editingBioIndex.value === index) {
-        editingBioIndex.value = null;
-    } else if (editingBioIndex.value !== null && editingBioIndex.value > index) {
-        editingBioIndex.value--;
-    }
-};
+  timeline.value.splice(index, 1)
+  timeline.value = [...timeline.value]
+  // Synchronise form without the temporary IDs
+  const timelineForForm = timeline.value.map(({ id, ...rest }) => rest)
+  form.value.timeline = timelineForForm as TPerson.TTimelineEntry[]
+  if (editingBioIndex.value === index) {
+    editingBioIndex.value = null
+  } else if (editingBioIndex.value !== null && editingBioIndex.value > index) {
+    editingBioIndex.value--
+  }
+}
 
 const editBioEntry = (index: number) => {
-    editingBioIndex.value = index;
-};
+  editingBioIndex.value = index
+}
 
 const validateBioEntry = () => {
-    // Synchronise form without the temporary IDs
-    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
-    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
-    editingBioIndex.value = null;
-};
+  // Synchronise form without the temporary IDs
+  const timelineForForm = timeline.value.map(({ id, ...rest }) => rest)
+  form.value.timeline = timelineForForm as TPerson.TTimelineEntry[]
+  editingBioIndex.value = null
+}
 
 const startAddVideo = () => {
-    newVideo.value = { title: '', url: '' };
-    newVideoMode.value = true;
-    editingVideoIndex.value = null;
-};
+  newVideo.value = { title: '', url: '' }
+  newVideoMode.value = true
+  editingVideoIndex.value = null
+}
 
 const cancelAddVideo = () => {
-    newVideoMode.value = false;
-};
+  newVideoMode.value = false
+}
 
 const saveNewVideo = async () => {
-    try {
-        let videoRecord: TVideo.TRecord;
+  try {
+    let videoRecord: TVideo.TRecord
 
-        // Check if video already exists
-        const existing = await findVideoByUrl(newVideo.value.url);
-        if (existing) {
-            videoRecord = existing;
-            // Update title if changed
-            if (newVideo.value.title && newVideo.value.title !== existing.title) {
-                videoRecord = await updateVideo(existing.id, {
-                    title: newVideo.value.title,
-                    url: existing.url
-                });
-            }
-        } else {
-            videoRecord = await addVideo(newVideo.value);
-        }
-
-        // Check if already linked to this person
-        if (videos.value.some(v => v.id === videoRecord.id)) {
-            // Already linked, just close mode (or maybe show message)
-            newVideoMode.value = false;
-            return;
-        }
-
-        videos.value = [...videos.value, videoRecord];
-        form.value.Videos = getVideoIds();
-        newVideoMode.value = false;
-    } catch (e) {
-        console.error(e);
-        // Handle error (maybe show toast)
+    // Check if video already exists
+    const existing = await findVideoByUrl(newVideo.value.url)
+    if (existing) {
+      videoRecord = existing
+      // Update title if changed
+      if (newVideo.value.title && newVideo.value.title !== existing.title) {
+        videoRecord = await updateVideo(existing.id, {
+          title: newVideo.value.title,
+          url: existing.url,
+        })
+      }
+    } else {
+      videoRecord = await addVideo(newVideo.value)
     }
-};
+
+    // Check if already linked to this person
+    if (videos.value.some(v => v.id === videoRecord.id)) {
+      // Already linked, just close mode (or maybe show message)
+      newVideoMode.value = false
+      return
+    }
+
+    videos.value = [...videos.value, videoRecord]
+    form.value.Videos = getVideoIds()
+    newVideoMode.value = false
+  } catch (e) {
+    console.error(e)
+    // Handle error (maybe show toast)
+  }
+}
 
 const startEditVideo = (index: number) => {
-    const video = videos.value[index];
-    editingVideo.value = { ...video };
-    editingVideoIndex.value = index;
-    newVideoMode.value = false;
-};
+  const video = videos.value[index]
+  editingVideo.value = { ...video }
+  editingVideoIndex.value = index
+  newVideoMode.value = false
+}
 
 const cancelEditVideo = () => {
-    editingVideoIndex.value = null;
-};
+  editingVideoIndex.value = null
+}
 
 const saveEditVideo = async (index: number) => {
-    const video = videos.value[index];
-    try {
-        const updated = await updateVideo(video.id, editingVideo.value);
-        videos.value[index] = updated;
-        videos.value = [...videos.value];
-        editingVideoIndex.value = null;
-    } catch (e) {
-        console.error(e);
-    }
-};
+  const video = videos.value[index]
+  try {
+    const updated = await updateVideo(video.id, editingVideo.value)
+    videos.value[index] = updated
+    videos.value = [...videos.value]
+    editingVideoIndex.value = null
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 const removeVideo = (index: number) => {
-    videos.value.splice(index, 1);
-    videos.value = [...videos.value];
+  videos.value.splice(index, 1)
+  videos.value = [...videos.value]
 
-    // Mettre à jour le formulaire
-    form.value.Videos = getVideoIds();
+  // Mettre à jour le formulaire
+  form.value.Videos = getVideoIds()
 
-    // Si on supprime la vidéo en cours d'édition, désactiver le mode édition
-    if (editingVideoIndex.value === index) {
-        editingVideoIndex.value = null;
-    } else if (editingVideoIndex.value !== null && editingVideoIndex.value > index) {
-        editingVideoIndex.value--;
-    }
-};
+  // Si on supprime la vidéo en cours d'édition, désactiver le mode édition
+  if (editingVideoIndex.value === index) {
+    editingVideoIndex.value = null
+  } else if (editingVideoIndex.value !== null && editingVideoIndex.value > index) {
+    editingVideoIndex.value--
+  }
+}
 
 // Sync lists order to form before saving
 // This ensures the sorted order from drag & drop is saved to the backend
 const syncListsBeforeSave = () => {
-    const timelineForForm = timeline.value.map(({ id, ...rest }) => rest);
-    form.value.timeline = timelineForForm as TPerson.TTimelineEntry[];
-    form.value.Videos = getVideoIds();
-    form.value.birthdate = birthdateModel.value ? dayjs(birthdateModel.value).format('YYYY-MM-DD') : undefined;
-    form.value.deathdate = deathdateModel.value ? dayjs(deathdateModel.value).format('YYYY-MM-DD') : undefined;
-};
+  const timelineForForm = timeline.value.map(({ id, ...rest }) => rest)
+  form.value.timeline = timelineForForm as TPerson.TTimelineEntry[]
+  form.value.Videos = getVideoIds()
+  form.value.birthdate = birthdateModel.value
+    ? dayjs(birthdateModel.value).format('YYYY-MM-DD')
+    : undefined
+  form.value.deathdate = deathdateModel.value
+    ? dayjs(deathdateModel.value).format('YYYY-MM-DD')
+    : undefined
+}
 
-defineExpose({ syncListsBeforeSave });
+defineExpose({ syncListsBeforeSave })
 </script>

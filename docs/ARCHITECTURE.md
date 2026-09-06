@@ -5,13 +5,13 @@
 The site is **not** one big SPA. It is an Astro site hosting **five independent
 Vue mini-apps** (islands), one per section:
 
-| Section | Astro entry | Vue app root |
-|---|---|---|
-| Admin | `src/pages/admin/[...slug].astro` | `src/components/Admin.vue` (vue-router) |
-| Lexique | `src/pages/lexique/[...slug].astro` | `src/components/lexique/` |
-| Culture | `src/pages/culture/[...slug].astro` | `src/components/culture/` |
-| Culture générale | `src/pages/culture-generale/[...slug].astro` | `src/components/culture-generale/` |
-| Révisions (quiz) | `src/pages/revisions/[...slug].astro` | `src/components/Revisions.vue` |
+| Section          | Astro entry                                  | Vue app root                            |
+| ---------------- | -------------------------------------------- | --------------------------------------- |
+| Admin            | `src/pages/admin/[...slug].astro`            | `src/components/Admin.vue` (vue-router) |
+| Lexique          | `src/pages/lexique/[...slug].astro`          | `src/components/lexique/`               |
+| Culture          | `src/pages/culture/[...slug].astro`          | `src/components/culture/`               |
+| Culture générale | `src/pages/culture-generale/[...slug].astro` | `src/components/culture-generale/`      |
+| Révisions (quiz) | `src/pages/revisions/[...slug].astro`        | `src/components/Revisions.vue`          |
 
 Navigating between sections is a **full page load**; navigating inside a
 section is client-side. Each app stays small, loads only its own code, and can

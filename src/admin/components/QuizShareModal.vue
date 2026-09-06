@@ -30,28 +30,28 @@ const sharedUserIds = ref<string[]>([])
 const loading = ref(false)
 const saving = ref(false)
 
-const selectableUsers = computed(() =>
-  users.value.filter(u => u.id !== currentUserId.value)
+const selectableUsers = computed(() => users.value.filter(u => u.id !== currentUserId.value))
+
+const userOptionLabel = (user: TUser) => (user.name ? `${user.name} (${user.email})` : user.email)
+
+watch(
+  visible,
+  async val => {
+    if (!val) {
+      return
+    }
+    loading.value = true
+    try {
+      const [{ quiz }] = await Promise.all([loadQuiz(props.quizId), loadUsers()])
+      sharedUserIds.value = (quiz.shared_with_users ?? []) as string[]
+    } catch (e) {
+      showPbError(e)
+    } finally {
+      loading.value = false
+    }
+  },
+  { immediate: true },
 )
-
-const userOptionLabel = (user: TUser) =>
-  user.name ? `${user.name} (${user.email})` : user.email
-
-watch(visible, async (val) => {
-  if (!val) {return}
-  loading.value = true
-  try {
-    const [{ quiz }] = await Promise.all([
-      loadQuiz(props.quizId),
-      loadUsers(),
-    ])
-    sharedUserIds.value = (quiz.shared_with_users ?? []) as string[]
-  } catch (e) {
-    showPbError(e)
-  } finally {
-    loading.value = false
-  }
-}, { immediate: true })
 
 const save = async () => {
   saving.value = true

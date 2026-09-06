@@ -27,7 +27,6 @@ export type QuizFormData = {
 }
 
 export default function useQuizzes() {
-
   const quizzes = ref<QuizRecord[]>([])
   const loading = ref(false)
   const quizItemCounts = ref<Record<string, number>>({})

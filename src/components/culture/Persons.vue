@@ -47,23 +47,29 @@ const goToPerson = (slug: string) => {
 }
 
 const displayName = (person: TPerson.TRecord) => {
-  if (person.organism) {return person.name}
+  if (person.organism) {
+    return person.name
+  }
   return [person.firstname, person.name].filter(Boolean).join(' ')
 }
 
-watch(() => props.subcategory, (value) => {
-    loadPersons(value);
-}, { immediate: true });
+watch(
+  () => props.subcategory,
+  value => {
+    loadPersons(value)
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.4s;
+  transition: opacity 0.4s;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 </style>

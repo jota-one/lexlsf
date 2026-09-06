@@ -32,7 +32,7 @@ const { results, loading, error, search, clear } = useQuizItemSearch()
 
 const excludeSet = computed(() => new Set(props.excludeKeys || []))
 const filteredResults = computed(() =>
-  results.value.filter((item) => !excludeSet.value.has(`${item.type}:${item.id}`))
+  results.value.filter(item => !excludeSet.value.has(`${item.type}:${item.id}`)),
 )
 
 const hasActiveFilters = computed(
@@ -40,7 +40,7 @@ const hasActiveFilters = computed(
     searchTerm.value.length > 0 ||
     !!selectedLevel.value ||
     deafFilter.value !== 'both' ||
-    !!addedSince.value
+    !!addedSince.value,
 )
 
 // Search filters

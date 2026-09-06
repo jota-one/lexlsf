@@ -21,7 +21,7 @@
           </template>
         </Column>
         <!-- Actions column -->
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
               <button
@@ -58,53 +58,54 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import useHandConfigurations from '../composables/useHandConfigurations';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import HandConfigurationModal from '../components/HandConfigurationModal.vue';
-import ConfirmModal from '../components/ConfirmModal.vue';
-import config from '../../config';
+import { onMounted, ref } from 'vue'
+import useHandConfigurations from '../composables/useHandConfigurations'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+import HandConfigurationModal from '../components/HandConfigurationModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
+import config from '../../config'
 
-const { handConfigurations, loadHandConfigurations, deleteHandConfiguration } = useHandConfigurations();
-const showConfigModal = ref(false);
-const editedConfigId = ref<string | undefined>(undefined);
-const showDeleteModal = ref(false);
-const handConfigToDelete = ref<{ id: string } | null>(null);
-const deleteMessage = ref('');
+const { handConfigurations, loadHandConfigurations, deleteHandConfiguration } =
+  useHandConfigurations()
+const showConfigModal = ref(false)
+const editedConfigId = ref<string | undefined>(undefined)
+const showDeleteModal = ref(false)
+const handConfigToDelete = ref<{ id: string } | null>(null)
+const deleteMessage = ref('')
 
 const getIllustrationUrl = (filename: string, id: string) => {
-    // Remplacez ceci par la logique réelle pour générer l'URL de l'image
-    // Par exemple, si PocketBase: `/api/files/hand_configurations/${id}/${filename}`
-    return filename ? `${config.apiBaseUrl}/api/files/hand_configurations/${id}/${filename}` : '';
-};
+  // Remplacez ceci par la logique réelle pour générer l'URL de l'image
+  // Par exemple, si PocketBase: `/api/files/hand_configurations/${id}/${filename}`
+  return filename ? `${config.apiBaseUrl}/api/files/hand_configurations/${id}/${filename}` : ''
+}
 
-onMounted(loadHandConfigurations);
+onMounted(loadHandConfigurations)
 
 const openAddModal = () => {
-    editedConfigId.value = undefined;
-    showConfigModal.value = true;
-};
+  editedConfigId.value = undefined
+  showConfigModal.value = true
+}
 
 const editHandConfig = (config: { id: string }) => {
-    editedConfigId.value = config.id;
-    showConfigModal.value = true;
-};
+  editedConfigId.value = config.id
+  showConfigModal.value = true
+}
 
 const confirmDelete = (config: { id: string; name?: string }) => {
-    handConfigToDelete.value = config;
-    deleteMessage.value = `Voulez-vous vraiment supprimer la configuration "${config.name}" ? Cette action est irréversible.`;
-    showDeleteModal.value = true;
-};
+  handConfigToDelete.value = config
+  deleteMessage.value = `Voulez-vous vraiment supprimer la configuration "${config.name}" ? Cette action est irréversible.`
+  showDeleteModal.value = true
+}
 
 const deleteHandConfigConfirmed = async () => {
-    if (handConfigToDelete.value) {
-        // Remplacez par la logique réelle de suppression
-        await deleteHandConfiguration(handConfigToDelete.value.id);
-        await loadHandConfigurations();
-        showDeleteModal.value = false;
-        handConfigToDelete.value = null;
-    }
-};
+  if (handConfigToDelete.value) {
+    // Remplacez par la logique réelle de suppression
+    await deleteHandConfiguration(handConfigToDelete.value.id)
+    await loadHandConfigurations()
+    showDeleteModal.value = false
+    handConfigToDelete.value = null
+  }
+}
 </script>

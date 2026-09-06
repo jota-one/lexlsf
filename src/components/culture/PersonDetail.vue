@@ -30,7 +30,9 @@
               <div v-if="record.birthdate || record.birthplace" class="flex items-start gap-2">
                 <span class="i-fa-solid-baby text-base"></span>
                 <div class="text-sm">
-                  <span class="font-semibold">{{ record.organism ? 'Crée le:' : 'Né(e) le:' }}</span>
+                  <span class="font-semibold">{{
+                    record.organism ? 'Crée le:' : 'Né(e) le:'
+                  }}</span>
                   <span v-if="record.birthdate"> {{ formatDate(record.birthdate) }}</span>
                   <template v-if="record.birthplace">
                     <br /><span>{{ record.birthplace }}</span>
@@ -47,7 +49,9 @@
               </div>
 
               <div
-                v-if="!record.organism && (typeof record.deafFamily !== 'undefined' || record.family)"
+                v-if="
+                  !record.organism && (typeof record.deafFamily !== 'undefined' || record.family)
+                "
                 class="flex items-start gap-2"
               >
                 <span class="i-fa-solid-users text-base"></span>
@@ -155,7 +159,14 @@
                     height="100%"
                     :src="`https://www.youtube.com/embed/${getYouTubeId(video.url)}`"
                     :title="video.title"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="
+                      accelerometer;
+                      autoplay;
+                      clipboard-write;
+                      encrypted-media;
+                      gyroscope;
+                      picture-in-picture;
+                    "
                     allowfullscreen
                     class="rounded-lg"
                   ></iframe>
@@ -167,13 +178,9 @@
       </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-20 opacity-70">
-      Personne introuvable.
-    </div>
+    <div v-else-if="error" class="text-center py-20 opacity-70">Personne introuvable.</div>
 
-    <div v-else class="text-center py-20 opacity-70">
-      Chargement…
-    </div>
+    <div v-else class="text-center py-20 opacity-70">Chargement…</div>
   </transition>
 </template>
 
@@ -200,16 +207,20 @@ onMounted(async () => {
   }
 
   try {
-    record.value = await pb.collection('person').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
-      expand: 'Category,Category.Parent,Sign,Videos,Activities',
-    })
+    record.value = await pb
+      .collection('person')
+      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+        expand: 'Category,Category.Parent,Sign,Videos,Activities',
+      })
   } catch {
     error.value = true
   }
 })
 
 const displayName = computed(() => {
-  if (!record.value) {return ''}
+  if (!record.value) {
+    return ''
+  }
   if (!record.value.organism && record.value.firstname) {
     return `${record.value.firstname} ${record.value.name}`
   }
@@ -233,7 +244,9 @@ const descriptionHtml = computed(() =>
 )
 
 const activitiesList = computed(() => {
-  if (!record.value) {return []}
+  if (!record.value) {
+    return []
+  }
   if (Array.isArray(record.value.expand?.Activities)) {
     return record.value.expand.Activities.map(
       (a: Record<string, unknown>) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a),

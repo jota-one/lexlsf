@@ -16,7 +16,9 @@ export default function useGeneralCulture() {
   const loadItem = async (slug: string) => {
     return pb
       .collection<TGeneralCulture.TRecord>(COLLECTION)
-      .getFirstListItem(pb.filter('slug = {:slug}', { slug }), { expand: 'LexicalFields,Signs,Persons' })
+      .getFirstListItem(pb.filter('slug = {:slug}', { slug }), {
+        expand: 'LexicalFields,Signs,Persons',
+      })
   }
 
   const getImageUrl = (record: TGeneralCulture.TRecord, filename: string, thumb?: string) => {

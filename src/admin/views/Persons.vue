@@ -21,7 +21,7 @@
         />
       </div>
       <DataTable :value="persons" sortField="updated" :sortOrder="-1" tableStyle="min-width: 50rem">
-        <Column style="width: 40px;" :header="''">
+        <Column style="width: 40px" :header="''">
           <template #body="slotProps">
             <template v-if="getPersonProblems(slotProps.data).length">
               <button
@@ -35,7 +35,7 @@
             </template>
           </template>
         </Column>
-        <Column style="width: 60px;" :header="''">
+        <Column style="width: 60px" :header="''">
           <template #body="slotProps">
             <img
               v-if="slotProps.data.illustration"
@@ -49,9 +49,11 @@
           <template #body="slotProps">
             <div class="flex items-center gap-2">
               <span>
-                {{ slotProps.data.organism
-                  ? slotProps.data.name
-                  : [slotProps.data.firstname, slotProps.data.name].filter(Boolean).join(' ') }}
+                {{
+                  slotProps.data.organism
+                    ? slotProps.data.name
+                    : [slotProps.data.firstname, slotProps.data.name].filter(Boolean).join(' ')
+                }}
               </span>
               <span
                 class="badge badge-xs"
@@ -78,7 +80,7 @@
             <span>{{ formatDate(slotProps.data.updated) }}</span>
           </template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
               <button
@@ -114,24 +116,24 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import dayjs from 'dayjs';
-import usePersons from '../composables/usePersons';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import { onMounted, ref } from 'vue'
+import dayjs from 'dayjs'
+import usePersons from '../composables/usePersons'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import Button from 'primevue/button'
-import PersonModal from '../components/PersonModal.vue';
-import PersonsImportExportModal from '../components/PersonsImportExportModal.vue';
-import ConfirmModal from '../components/ConfirmModal.vue';
-import type { TPerson } from '../../types';
+import PersonModal from '../components/PersonModal.vue'
+import PersonsImportExportModal from '../components/PersonsImportExportModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
+import type { TPerson } from '../../types'
 
 // Retourne la liste des problèmes pour un signe
 function getPersonProblems(person: TPerson.TRecord): string[] {
-  const problems: string[] = [];
-  const p: TPerson.TRecord & { expand?: { Sign?: unknown } } = person;
+  const problems: string[] = []
+  const p: TPerson.TRecord & { expand?: { Sign?: unknown } } = person
   // Absence d'illustration
   if (!p.illustration) {
-    problems.push("Absence d'illustration");
+    problems.push("Absence d'illustration")
   }
 
   // Vérification : la personne doit avoir un signe associé (1-1).
@@ -139,65 +141,71 @@ function getPersonProblems(person: TPerson.TRecord): string[] {
   // - p.Sign : id string (relation 1-1 stored as id)
   // - p.expand?.Sign : expanded record/object
   // - éventuellement p.expand?.Sign being an array (defensive)
-  const hasSign = Boolean(p.Sign) || Boolean(p.expand && (p.expand.Sign || (Array.isArray(p.expand.Sign) && p.expand.Sign.length)));
+  const hasSign =
+    Boolean(p.Sign) ||
+    Boolean(p.expand && (p.expand.Sign || (Array.isArray(p.expand.Sign) && p.expand.Sign.length)))
   if (!hasSign) {
-    problems.push('Aucun signe associé');
+    problems.push('Aucun signe associé')
   }
 
-  return problems;
+  return problems
 }
 
-const { persons, loadPersons, deletePerson, getIllustrationUrl } = usePersons();
-const showPersonModal = ref(false);
-const editedPersonId = ref<string | undefined>(undefined);
-const showImportExportModal = ref(false);
+const { persons, loadPersons, deletePerson, getIllustrationUrl } = usePersons()
+const showPersonModal = ref(false)
+const editedPersonId = ref<string | undefined>(undefined)
+const showImportExportModal = ref(false)
 
-const showDeleteModal = ref(false);
-const personToDelete = ref<TPerson.TRecord | null>(null);
-const deleteMessage = ref('');
+const showDeleteModal = ref(false)
+const personToDelete = ref<TPerson.TRecord | null>(null)
+const deleteMessage = ref('')
 
 const categories = (category: Array<{ tag: string }>) => {
   return (category || []).map(c => c.tag).join(', ')
-};
+}
 
 const roleNames = (roles: Array<{ name: string }>) => {
-  if (!roles?.length) {return '-';}
-  return roles.map(r => r.name).join(', ');
-};
+  if (!roles?.length) {
+    return '-'
+  }
+  return roles.map(r => r.name).join(', ')
+}
 
 const openAddModal = () => {
-  editedPersonId.value = undefined;
-  showPersonModal.value = true;
-};
+  editedPersonId.value = undefined
+  showPersonModal.value = true
+}
 
 const openImportExportModal = () => {
-  showImportExportModal.value = true;
-};
+  showImportExportModal.value = true
+}
 
 const editPerson = (person: TPerson.TRecord) => {
-  editedPersonId.value = person.id;
-  showPersonModal.value = true;
-};
+  editedPersonId.value = person.id
+  showPersonModal.value = true
+}
 
 const confirmDelete = (person: TPerson.TRecord) => {
-  personToDelete.value = person;
-  deleteMessage.value = `Voulez-vous vraiment supprimer la personne "${person.name}" ? Cette action est irréversible.`;
-  showDeleteModal.value = true;
-};
+  personToDelete.value = person
+  deleteMessage.value = `Voulez-vous vraiment supprimer la personne "${person.name}" ? Cette action est irréversible.`
+  showDeleteModal.value = true
+}
 
 const deletePersonConfirmed = async () => {
   if (personToDelete.value) {
-    await deletePerson(personToDelete.value.id);
-    await loadPersons();
-    showDeleteModal.value = false;
-    personToDelete.value = null;
+    await deletePerson(personToDelete.value.id)
+    await loadPersons()
+    showDeleteModal.value = false
+    personToDelete.value = null
   }
-};
+}
 
 const formatDate = (date: string) => {
-  if (!date) {return '';}
-  return dayjs(date).format('DD/MM/YYYY HH:mm');
-};
+  if (!date) {
+    return ''
+  }
+  return dayjs(date).format('DD/MM/YYYY HH:mm')
+}
 
 onMounted(loadPersons)
 </script>

@@ -42,11 +42,11 @@ Two properties matter for this proposal:
 
 - **The static site travels in the `.app` bundle** (because `pb_public` is
   gitignored, the `.pb` bundle never contains it). So even without a node server,
-  the `.app` deployment path must keep existing — only its *restart target* is
+  the `.app` deployment path must keep existing — only its _restart target_ is
   wrong for a node-less app.
 - **Unpacking happens inside the service restart** (`pb_deploy` is the first link
-  of every `ExecStart` chain). An `.app` bundle therefore *requires* restarting
-  *some* service, otherwise the tarball is never extracted.
+  of every `ExecStart` chain). An `.app` bundle therefore _requires_ restarting
+  _some_ service, otherwise the tarball is never extracted.
 
 ## 2. Target state for lexlsf
 
@@ -93,7 +93,7 @@ create a broken `entrypoint → ""` symlink. Guard it:
 
 ```yaml
 if [ -n "${{ matrix.instance.node_entrypoint }}" ]; then
-  echo "${{ matrix.instance.node_entrypoint }}" > "$pb_path/.entrypoint"
+echo "${{ matrix.instance.node_entrypoint }}" > "$pb_path/.entrypoint"
 fi
 ```
 
@@ -133,7 +133,7 @@ source of truth, which is the whole point of the infra-as-code setup.)
   git:
     repository: https://github.com/jota-one/lexlsf
     branch: main
-  serve: pb-static          # was: pb-api-and-node
+  serve: pb-static # was: pb-api-and-node
   preinstalled-binaries: [ffmpeg]
   pb:
     port: 8092
@@ -172,7 +172,7 @@ the same catch-all + client-side-slug pattern the five SPAs already use).
 fallback. Static Astro output only materializes `/admin/index.html`,
 `/lexique/index.html`, etc., so deep links (`/admin/signs`,
 `/lexique/sign/bonjour`) would 404. PB's built-in `indexFallback=true` is not
-enough either (it falls back to the *root* `index.html`, which is the homepage
+enough either (it falls back to the _root_ `index.html`, which is the homepage
 shell, not the right SPA shell). Replace with a nearest-parent-index fallback:
 
 ```go
@@ -224,11 +224,11 @@ Patches 3.1–3.3 don't need reverting; they are inert for node-full apps.
 
 ## 6. Effort estimate
 
-| Piece | Size |
-|---|---|
-| 3.1 `pb_watch_check` | ~6 lines |
-| 3.2 `.entrypoint` guard | ~3 lines |
-| 3.3 node decommission | ~12 lines |
-| 3.4 `apps.yaml` | 1 entry edited |
+| Piece                          | Size                                              |
+| ------------------------------ | ------------------------------------------------- |
+| 3.1 `pb_watch_check`           | ~6 lines                                          |
+| 3.2 `.entrypoint` guard        | ~3 lines                                          |
+| 3.3 node decommission          | ~12 lines                                         |
+| 3.4 `apps.yaml`                | 1 entry edited                                    |
 | lexlsf static build (plan 7.4) | the real work — ~1 day incl. route rework + tests |
-| `main.go` fallback | ~25 lines + manual test |
+| `main.go` fallback             | ~25 lines + manual test                           |

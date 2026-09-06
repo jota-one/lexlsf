@@ -29,7 +29,9 @@
         </div>
       </div>
       <div class="text-sm text-base-content/60 mb-2">
-        <span v-if="debouncedQuery">{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span>
+        <span v-if="debouncedQuery"
+          >{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span
+        >
         <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
       </div>
       <DataTable
@@ -40,7 +42,7 @@
         @sort="onSort"
         tableStyle="min-width: 50rem"
       >
-        <Column style="width: 40px;" :header="''">
+        <Column style="width: 40px" :header="''">
           <template #body="slotProps">
             <template v-if="getSignProblems(slotProps.data).length">
               <button
@@ -88,7 +90,7 @@
             <span>{{ formatDate(slotProps.data.updated) }}</span>
           </template>
         </Column>
-        <Column header="Actions" style="width: 80px;">
+        <Column header="Actions" style="width: 80px">
           <template #body="slotProps">
             <div class="flex gap-2">
               <button
@@ -109,7 +111,9 @@
           </template>
         </Column>
         <template #footer>
-          <span v-if="debouncedQuery">{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span>
+          <span v-if="debouncedQuery"
+            >{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span
+          >
           <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
         </template>
       </DataTable>
@@ -125,32 +129,40 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { refDebounced } from '@vueuse/core';
-import dayjs from 'dayjs';
-import useSigns from '../composables/useSigns';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Rating from 'primevue/rating';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import SignModal from '../components/SignModal.vue';
-import SignsImportExportModal from '../components/SignsImportExportModal.vue';
-import ConfirmModal from '../components/ConfirmModal.vue';
-import type { TSign } from '../../types';
+import { onMounted, ref, watch } from 'vue'
+import { refDebounced } from '@vueuse/core'
+import dayjs from 'dayjs'
+import useSigns from '../composables/useSigns'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Rating from 'primevue/rating'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import SignModal from '../components/SignModal.vue'
+import SignsImportExportModal from '../components/SignsImportExportModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
+import type { TSign } from '../../types'
 
 // Retourne la liste des problèmes pour un signe
 function getSignProblems(sign: TSign.TRecord): string[] {
-  const problems: string[] = [];
+  const problems: string[] = []
   // Absence de fichier vidéo
   if (!sign.video) {
-    problems.push('Absence de fichier vidéo');
+    problems.push('Absence de fichier vidéo')
   }
   // Prévoir d’autres checks ici
-  return problems;
+  return problems
 }
 
-const { signs, totalSigns, loadSigns, deleteSign, getNumericLevel, learningSourceOptions, primaryLanguageOptions } = useSigns();
+const {
+  signs,
+  totalSigns,
+  loadSigns,
+  deleteSign,
+  getNumericLevel,
+  learningSourceOptions,
+  primaryLanguageOptions,
+} = useSigns()
 
 const searchQuery = ref('')
 const debouncedQuery = refDebounced(searchQuery, 350)
@@ -174,58 +186,60 @@ const getPrimaryLanguageLabel = (value: string) =>
 
 const getLearningSourceLabel = (value: string) =>
   learningSourceOptions.find(o => o.value === value)?.label ?? value ?? ''
-const showSignModal = ref(false);
-const editedSignId = ref<string | undefined>(undefined);
-const showImportExportModal = ref(false);
+const showSignModal = ref(false)
+const editedSignId = ref<string | undefined>(undefined)
+const showImportExportModal = ref(false)
 
-const showDeleteModal = ref(false);
-const signToDelete = ref<TSign.TRecord | null>(null);
-const deleteMessage = ref('');
+const showDeleteModal = ref(false)
+const signToDelete = ref<TSign.TRecord | null>(null)
+const deleteMessage = ref('')
 
 const categories = (category: Array<{ tag: string }>) => {
   return (category || []).map(c => c.tag).join(', ')
-};
+}
 
 const roleNames = (roles: Array<{ name: string }>) => {
   if (!roles?.length) {
-    return '-';
+    return '-'
   }
-  return roles.map(r => r.name).join(', ');
-};
+  return roles.map(r => r.name).join(', ')
+}
 
 const openAddModal = () => {
-  editedSignId.value = undefined;
-  showSignModal.value = true;
-};
+  editedSignId.value = undefined
+  showSignModal.value = true
+}
 
 const openImportExportModal = () => {
-  showImportExportModal.value = true;
-};
+  showImportExportModal.value = true
+}
 
 const editSign = (sign: TSign.TRecord) => {
-  editedSignId.value = sign.id;
-  showSignModal.value = true;
-};
+  editedSignId.value = sign.id
+  showSignModal.value = true
+}
 
 const confirmDelete = (sign: TSign.TRecord) => {
-  signToDelete.value = sign;
-  deleteMessage.value = `Voulez-vous vraiment supprimer le signe "${sign.name}" ? Cette action est irréversible.`;
-  showDeleteModal.value = true;
-};
+  signToDelete.value = sign
+  deleteMessage.value = `Voulez-vous vraiment supprimer le signe "${sign.name}" ? Cette action est irréversible.`
+  showDeleteModal.value = true
+}
 
 const deleteSignConfirmed = async () => {
   if (signToDelete.value) {
-    await deleteSign(signToDelete.value.id);
-    await reload();
-    showDeleteModal.value = false;
-    signToDelete.value = null;
+    await deleteSign(signToDelete.value.id)
+    await reload()
+    showDeleteModal.value = false
+    signToDelete.value = null
   }
-};
+}
 
 const formatDate = (date: string) => {
-  if (!date) {return '';}
-  return dayjs(date).format('DD/MM/YYYY HH:mm');
-};
+  if (!date) {
+    return ''
+  }
+  return dayjs(date).format('DD/MM/YYYY HH:mm')
+}
 
 onMounted(loadSigns)
 </script>

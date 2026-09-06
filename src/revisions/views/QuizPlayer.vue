@@ -44,7 +44,9 @@ const completedSessions = ref<Array<Record<string, unknown>>>([])
 const deletingSessionId = ref<string | null>(null)
 
 const availableModes = computed(() => {
-  if (quizItemType.value === 'mixed') {return getQuizModes()}
+  if (quizItemType.value === 'mixed') {
+    return getQuizModes()
+  }
   return getQuizModes(quizItemType.value as 'sign' | 'person')
 })
 
@@ -79,7 +81,9 @@ watch(currentCard, () => {
 })
 
 const start = async () => {
-  if (!selectedMode.value) {return}
+  if (!selectedMode.value) {
+    return
+  }
   starting.value = true
   try {
     const quizId = route.params.id as string
@@ -110,7 +114,9 @@ const currentMode = computed(() => modes.value.find(m => m.key === selectedMode.
 
 const handleResume = async (sessionId: string) => {
   const session = incompleteSessions.value.find(s => s.id === sessionId)
-  if (!session) {return}
+  if (!session) {
+    return
+  }
   starting.value = true
   try {
     await resumeSession(session.id)
@@ -132,10 +138,14 @@ const dismissSessions = () => {
 
 const handleDeleteSession = async (sessionId: string) => {
   const session = incompleteSessions.value.find(s => s.id === sessionId)
-  if (!session) {return}
+  if (!session) {
+    return
+  }
 
   const confirmed = window.confirm('Supprimer cette session en cours ?')
-  if (!confirmed) {return}
+  if (!confirmed) {
+    return
+  }
 
   deletingSessionId.value = sessionId
   try {
@@ -201,7 +211,12 @@ const handleBackToList = () => {
                 {{ session.stats.total }}
               </td>
               <td>
-                {{ new Date(session.started_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) }}
+                {{
+                  new Date(session.started_at).toLocaleString('fr-FR', {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  })
+                }}
               </td>
               <td class="text-right space-x-2">
                 <button
@@ -280,7 +295,9 @@ const handleBackToList = () => {
     <div v-if="currentSession" class="space-y-3 flex-1 flex flex-col mt-4">
       <div v-if="!finished && currentCard && currentMode" class="flex-1 flex flex-col">
         <!-- Progress -->
-        <div class="flex justify-end items-center gap-2 mb-4 pb-3 border-b border-base-300 whitespace-nowrap">
+        <div
+          class="flex justify-end items-center gap-2 mb-4 pb-3 border-b border-base-300 whitespace-nowrap"
+        >
           <div class="text-sm text-base-content/70">
             {{ progress.current }} / {{ progress.total }}
           </div>

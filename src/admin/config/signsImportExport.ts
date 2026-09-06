@@ -2,7 +2,6 @@ import { createSlug } from '@lib/slug'
 import type { TImportExport } from '../types'
 import { pb } from '@lib/pb'
 
-
 let rolesMapsPromise: Promise<{
   slugToId: Map<string, string>
   idToSlug: Map<string, string>
@@ -79,7 +78,8 @@ export const SIGNS_FIELDS_CONFIG: TImportExport.FieldConfig[] = [
     importable: true,
     formatter: {
       export: async (value: unknown, row?: Record<string, unknown>) => {
-        const expanded = (row?.expand as { Category?: Array<{ slug?: string }> } | undefined)?.Category
+        const expanded = (row?.expand as { Category?: Array<{ slug?: string }> } | undefined)
+          ?.Category
         if (Array.isArray(expanded) && expanded.length > 0) {
           return expanded
             .map((category: { slug?: string }) => category?.slug)

@@ -133,13 +133,13 @@ const isLoading = ref(false)
 
 const profile = reactive({
   name: '',
-  email: ''
+  email: '',
 })
 
 const passwordData = reactive({
   oldPassword: '',
   password: '',
-  passwordConfirm: ''
+  passwordConfirm: '',
 })
 
 const avatarFile = ref<File | null>(null)
@@ -155,8 +155,8 @@ const handleAvatarChange = (event: Event) => {
       toast.add({
         severity: 'error',
         summary: 'Erreur',
-        detail: 'L\'image ne doit pas dépasser 5MB',
-        life: 5000
+        detail: "L'image ne doit pas dépasser 5MB",
+        life: 5000,
       })
       return
     }
@@ -165,7 +165,7 @@ const handleAvatarChange = (event: Event) => {
 
     // Créer une prévisualisation
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = e => {
       avatarPreview.value = e.target?.result as string
     }
     reader.readAsDataURL(file)
@@ -173,7 +173,9 @@ const handleAvatarChange = (event: Event) => {
 }
 
 const getAvatarUrl = (): string => {
-  if (!user.value?.avatar) {return ''}
+  if (!user.value?.avatar) {
+    return ''
+  }
   return `${config.apiBaseUrl}/api/files/users/${user.value.id}/${user.value.avatar}`
 }
 
@@ -211,7 +213,7 @@ const handleSubmit = async () => {
           severity: 'error',
           summary: 'Erreur',
           detail: 'Veuillez saisir votre ancien mot de passe',
-          life: 5000
+          life: 5000,
         })
         isLoading.value = false
         return
@@ -222,7 +224,7 @@ const handleSubmit = async () => {
           severity: 'error',
           summary: 'Erreur',
           detail: 'Veuillez saisir un nouveau mot de passe',
-          life: 5000
+          life: 5000,
         })
         isLoading.value = false
         return
@@ -233,7 +235,7 @@ const handleSubmit = async () => {
           severity: 'error',
           summary: 'Erreur',
           detail: 'Les nouveaux mots de passe ne correspondent pas',
-          life: 5000
+          life: 5000,
         })
         isLoading.value = false
         return
@@ -244,7 +246,7 @@ const handleSubmit = async () => {
           severity: 'error',
           summary: 'Erreur',
           detail: 'Le mot de passe doit contenir au moins 8 caractères',
-          life: 5000
+          life: 5000,
         })
         isLoading.value = false
         return
@@ -262,7 +264,7 @@ const handleSubmit = async () => {
       severity: 'success',
       summary: 'Succès',
       detail: 'Votre profil a été mis à jour avec succès',
-      life: 5000
+      life: 5000,
     })
 
     // Réinitialiser les champs
@@ -275,7 +277,6 @@ const handleSubmit = async () => {
     if (user.value?.avatar) {
       avatarPreview.value = getAvatarUrl()
     }
-
   } catch (error) {
     console.error('Erreur lors de la mise à jour du profil:', error)
     showPbError(error)

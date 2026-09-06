@@ -49,7 +49,9 @@
         <span class="i-fa-solid-times mr-1"></span>
         Réinitialiser
       </button>
-      <span class="text-sm text-base-content/50 self-center ml-auto">{{ filteredItems.length }} résultat(s)</span>
+      <span class="text-sm text-base-content/50 self-center ml-auto"
+        >{{ filteredItems.length }} résultat(s)</span
+      >
     </div>
 
     <!-- Contenu principal : timeline + panneau détail -->
@@ -74,11 +76,13 @@
             <!-- Cercle sur la ligne -->
             <div
               class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 transition-colors"
-              :class="activeSlug === item.slug
-                ? 'bg-primary border-primary'
-                : isPeriod(item)
-                  ? 'bg-base-100 border-secondary group-hover:border-secondary group-hover:bg-secondary/20'
-                  : 'bg-base-100 border-primary group-hover:border-primary group-hover:bg-primary/20'"
+              :class="
+                activeSlug === item.slug
+                  ? 'bg-primary border-primary'
+                  : isPeriod(item)
+                    ? 'bg-base-100 border-secondary group-hover:border-secondary group-hover:bg-secondary/20'
+                    : 'bg-base-100 border-primary group-hover:border-primary group-hover:bg-primary/20'
+              "
             ></div>
 
             <!-- Date -->
@@ -141,11 +145,19 @@ const isFiltered = computed(
 
 const filteredItems = computed(() => {
   return items.value.filter(item => {
-    if (filterType.value === 'event' && isPeriod(item)) {return false}
-    if (filterType.value === 'period' && !isPeriod(item)) {return false}
+    if (filterType.value === 'event' && isPeriod(item)) {
+      return false
+    }
+    if (filterType.value === 'period' && !isPeriod(item)) {
+      return false
+    }
     const startYear = parseInt(item.start_date.split('-')[0])
-    if (filterFrom.value !== '' && startYear < Number(filterFrom.value)) {return false}
-    if (filterTo.value !== '' && startYear > Number(filterTo.value)) {return false}
+    if (filterFrom.value !== '' && startYear < Number(filterFrom.value)) {
+      return false
+    }
+    if (filterTo.value !== '' && startYear > Number(filterTo.value)) {
+      return false
+    }
     return true
   })
 })

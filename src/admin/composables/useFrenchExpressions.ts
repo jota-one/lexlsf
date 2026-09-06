@@ -24,7 +24,6 @@ const setFormData = (payload: TFrenchExpression.TForm) => {
 }
 
 export default function useFrenchExpressions() {
-
   const frenchExpressions = ref<TFrenchExpression.TRecord[]>([])
 
   const loadFrenchExpressions = async () => {

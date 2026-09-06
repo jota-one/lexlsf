@@ -32,7 +32,6 @@ export interface TUserForm {
 }
 
 export default function useUsers() {
-
   const users = ref<TUser[]>([])
 
   const loadUsers = async () => {
@@ -110,7 +109,9 @@ export default function useUsers() {
   }
 
   const getAvatarUrl = (user: TUser): string => {
-    if (!user.avatar) {return ''}
+    if (!user.avatar) {
+      return ''
+    }
     return `${config.apiBaseUrl}/api/files/_pb_users_auth_/${user.id}/${user.avatar}`
   }
 

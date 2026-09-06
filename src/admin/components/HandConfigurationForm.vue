@@ -18,12 +18,12 @@
   </form>
 </template>
 <script setup lang="ts">
-import InputText from 'primevue/inputtext';
+import InputText from 'primevue/inputtext'
 
-const form = defineModel<Record<string, unknown>>({ required: true });
+const form = defineModel<Record<string, unknown>>({ required: true })
 
 const onFileChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    form.value.illustration = target.files && target.files.length > 0 ? target.files[0] : null;
-};
+  const target = event.target as HTMLInputElement
+  form.value.illustration = target.files && target.files.length > 0 ? target.files[0] : null
+}
 </script>

@@ -44,7 +44,6 @@ const setFormData = (payload: TSign.TForm) => {
 }
 
 export default function useSigns() {
-
   const signs = ref<TSign.TRecord[]>([])
   const totalSigns = ref(0)
   const loadSigns = async (query?: string, sort = '-updated') => {

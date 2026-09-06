@@ -47,7 +47,9 @@ const openShareModal = (quiz: QuizRecord) => {
 }
 
 const confirmDelete = async () => {
-  if (!quizToDelete.value) {return}
+  if (!quizToDelete.value) {
+    return
+  }
 
   try {
     await deleteQuiz(quizToDelete.value.id)
@@ -61,7 +63,7 @@ const confirmDelete = async () => {
     // Si PocketBase bloque la suppression à cause de relations obligatoires, afficher un message clair
     if (isRelationBlocked) {
       showPbError(
-        "Suppression impossible : ce quiz a encore des sessions ou tentatives associées. Supprime d'abord les sessions liées avant de retirer le quiz."
+        "Suppression impossible : ce quiz a encore des sessions ou tentatives associées. Supprime d'abord les sessions liées avant de retirer le quiz.",
       )
       return
     }

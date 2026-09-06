@@ -1,5 +1,9 @@
 <template>
-  <router-view :categories="categories" :category-counts="categoryCounts" entity-label="personne"></router-view>
+  <router-view
+    :categories="categories"
+    :category-counts="categoryCounts"
+    entity-label="personne"
+  ></router-view>
 </template>
 
 <script setup lang="ts">
@@ -73,8 +77,7 @@ onMounted(async () => {
     })
     .filter(
       parentCat =>
-        parentCat.expand?.category_via_Parent &&
-        parentCat.expand.category_via_Parent.length > 0,
+        parentCat.expand?.category_via_Parent && parentCat.expand.category_via_Parent.length > 0,
     )
 })
 </script>

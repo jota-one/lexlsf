@@ -32,108 +32,153 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import AutoComplete from 'primevue/autocomplete';
-import FloatLabel from 'primevue/floatlabel';
-import { pb } from '@lib/pb';
+import { ref } from 'vue'
+import AutoComplete from 'primevue/autocomplete'
+import FloatLabel from 'primevue/floatlabel'
+import { pb } from '@lib/pb'
 
 type Props = {
-    mode?: 'hero' | 'inline';
-};
+  mode?: 'hero' | 'inline'
+}
 const props = withDefaults(defineProps<Props>(), {
-    mode: 'inline',
-});
+  mode: 'inline',
+})
 
-
-const selectedSign = ref<Record<string, unknown> | null>(null);
-const suggestions = ref<Array<Record<string, unknown>>>([]);
-const loading = ref(false);
+const selectedSign = ref<Record<string, unknown> | null>(null)
+const suggestions = ref<Array<Record<string, unknown>>>([])
+const loading = ref(false)
 
 const onSearch = async (event: { query?: string }) => {
-    const query = event.query?.trim() || '';
+  const query = event.query?.trim() || ''
 
-    if (!query || query.length < 2) {
-        suggestions.value = [];
-        return;
-    }
+  if (!query || query.length < 2) {
+    suggestions.value = []
+    return
+  }
 
-    loading.value = true;
-    try {
-        const signFilter = `name~"${query}"`;
-        const cultureFilter = `(name~"${query}" || firstname~"${query}")`;
+  loading.value = true
+  try {
+    const signFilter = `name~"${query}"`
+    const cultureFilter = `(name~"${query}" || firstname~"${query}")`
 
-        const [signsRes, cultureRes, lexicalRes, lexicalTermsRes, frenchRes, piDeafRes] = await Promise.all([
-            pb.collection('sign').getList(1, 10, { filter: signFilter, fields: 'id,name,definition,slug', sort: 'name' }),
-            pb.collection('person').getList(1, 10, { filter: cultureFilter, fields: 'id,name,firstname,organism,definition,slug', sort: 'name,firstname' }),
-            pb.collection('lexical_field').getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
-            pb.collection('lexical_term').getList(1, 10, { filter: pb.filter('term ~ {:query}', { query }), expand: 'LexicalField', fields: 'id,term,expand.LexicalField.id,expand.LexicalField.name,expand.LexicalField.slug', sort: 'term' }),
-            pb.collection('french_expression').getList(1, 5, { filter: pb.filter('expression ~ {:query}', { query }), fields: 'id,expression,slug', sort: 'expression' }),
-            pb.collection('pi_deaf_expression').getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
-        ]);
+    const [signsRes, cultureRes, lexicalRes, lexicalTermsRes, frenchRes, piDeafRes] =
+      await Promise.all([
+        pb
+          .collection('sign')
+          .getList(1, 10, { filter: signFilter, fields: 'id,name,definition,slug', sort: 'name' }),
+        pb.collection('person').getList(1, 10, {
+          filter: cultureFilter,
+          fields: 'id,name,firstname,organism,definition,slug',
+          sort: 'name,firstname',
+        }),
+        pb
+          .collection('lexical_field')
+          .getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
+        pb.collection('lexical_term').getList(1, 10, {
+          filter: pb.filter('term ~ {:query}', { query }),
+          expand: 'LexicalField',
+          fields:
+            'id,term,expand.LexicalField.id,expand.LexicalField.name,expand.LexicalField.slug',
+          sort: 'term',
+        }),
+        pb.collection('french_expression').getList(1, 5, {
+          filter: pb.filter('expression ~ {:query}', { query }),
+          fields: 'id,expression,slug',
+          sort: 'expression',
+        }),
+        pb
+          .collection('pi_deaf_expression')
+          .getList(1, 5, { filter: signFilter, fields: 'id,name,slug', sort: 'name' }),
+      ])
 
-        const signs = (signsRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'sign', label: item.name }));
-        const culture = (cultureRes.items || []).map((item: Record<string, unknown>) => ({
-            ...item,
-            type: item.organism ? 'organism' : 'person',
-            label: item.organism ? item.name : [item.firstname, item.name].filter(Boolean).join(' '),
-        }));
-        const lexical = (lexicalRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'lexical_field', label: item.name }));
-        const lexicalTerms = (lexicalTermsRes.items || [])
-            .filter((item: Record<string, unknown>) => item.expand?.LexicalField)
-            .map((item: Record<string, unknown>) => ({
-                ...item.expand.LexicalField,
-                type: 'lexical_field',
-                label: item.term,
-                definition: `dans : ${item.expand.LexicalField.name}`,
-            }));
-        const french = (frenchRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'french_expression', label: item.expression }));
-        const piDeaf = (piDeafRes.items || []).map((item: Record<string, unknown>) => ({ ...item, type: 'pi_deaf_expression', label: item.name }));
+    const signs = (signsRes.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      type: 'sign',
+      label: item.name,
+    }))
+    const culture = (cultureRes.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      type: item.organism ? 'organism' : 'person',
+      label: item.organism ? item.name : [item.firstname, item.name].filter(Boolean).join(' '),
+    }))
+    const lexical = (lexicalRes.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      type: 'lexical_field',
+      label: item.name,
+    }))
+    const lexicalTerms = (lexicalTermsRes.items || [])
+      .filter((item: Record<string, unknown>) => item.expand?.LexicalField)
+      .map((item: Record<string, unknown>) => ({
+        ...item.expand.LexicalField,
+        type: 'lexical_field',
+        label: item.term,
+        definition: `dans : ${item.expand.LexicalField.name}`,
+      }))
+    const french = (frenchRes.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      type: 'french_expression',
+      label: item.expression,
+    }))
+    const piDeaf = (piDeafRes.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      type: 'pi_deaf_expression',
+      label: item.name,
+    }))
 
-        suggestions.value = [...signs, ...culture, ...lexical, ...lexicalTerms, ...french, ...piDeaf].sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
-    } catch (err) {
-        console.error('Search error', err);
-        suggestions.value = [];
-    } finally {
-        loading.value = false;
-    }
-};
+    suggestions.value = [
+      ...signs,
+      ...culture,
+      ...lexical,
+      ...lexicalTerms,
+      ...french,
+      ...piDeaf,
+    ].sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
+  } catch (err) {
+    console.error('Search error', err)
+    suggestions.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 const onSelect = (event: { value?: { slug?: string; type?: string } }) => {
-    const selected = event.value;
-    if (!selected?.slug) {return;}
-    const routes: Record<string, string> = {
-        sign: '/lexique/sign',
-        organism: '/culture/person',
-        person: '/culture/person',
-        lexical_field: '/outils/champs-lexicaux',
-        french_expression: '/outils/expressions-francaises',
-        pi_deaf_expression: '/outils/expressions-pi-sourdes',
-    };
-    const base = routes[selected.type] || '/signs';
-    window.location.href = `${base}/${selected.slug}`;
-};
+  const selected = event.value
+  if (!selected?.slug) {
+    return
+  }
+  const routes: Record<string, string> = {
+    sign: '/lexique/sign',
+    organism: '/culture/person',
+    person: '/culture/person',
+    lexical_field: '/outils/champs-lexicaux',
+    french_expression: '/outils/expressions-francaises',
+    pi_deaf_expression: '/outils/expressions-pi-sourdes',
+  }
+  const base = routes[selected.type] || '/signs'
+  window.location.href = `${base}/${selected.slug}`
+}
 
 const badgeClass = (type: string) => {
-    const classes: Record<string, string> = {
-        sign: 'badge-primary',
-        organism: 'badge-info',
-        person: 'badge-accent',
-        lexical_field: 'badge-warning',
-        french_expression: 'badge-success',
-        pi_deaf_expression: 'badge-secondary',
-    };
-    return classes[type] ?? 'badge-ghost';
-};
+  const classes: Record<string, string> = {
+    sign: 'badge-primary',
+    organism: 'badge-info',
+    person: 'badge-accent',
+    lexical_field: 'badge-warning',
+    french_expression: 'badge-success',
+    pi_deaf_expression: 'badge-secondary',
+  }
+  return classes[type] ?? 'badge-ghost'
+}
 
 const badgeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-        sign: 'Signe',
-        organism: 'Organisme',
-        person: 'Personne',
-        lexical_field: 'Champ lexical',
-        french_expression: 'Expr. française',
-        pi_deaf_expression: 'Expr. pi-sourde',
-    };
-    return labels[type] ?? type;
-};
+  const labels: Record<string, string> = {
+    sign: 'Signe',
+    organism: 'Organisme',
+    person: 'Personne',
+    lexical_field: 'Champ lexical',
+    french_expression: 'Expr. française',
+    pi_deaf_expression: 'Expr. pi-sourde',
+  }
+  return labels[type] ?? type
+}
 </script>

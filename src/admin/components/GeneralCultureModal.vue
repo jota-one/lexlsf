@@ -46,31 +46,37 @@ const { showPbError } = usePbErrorToast()
 const form = ref(emptyForm())
 const existingImageFilenames = ref<string[]>([])
 
-watch(visible, async (isVisible) => {
-  if (!isVisible) {return}
-  if (!props.itemId) {
-    // Reset form when modal is opened in create mode
-    form.value = emptyForm()
-    existingImageFilenames.value = []
-    return
-  }
-  const item = await loadItem(props.itemId)
-  form.value = {
-    id: item.id,
-    name: item.name,
-    slug: item.slug,
-    description: item.description || '',
-    start_date: item.start_date || '',
-    end_date: item.end_date || '',
-    LexicalFields: item.LexicalFields || [],
-    Signs: item.Signs || [],
-    Persons: item.Persons || [],
-    Roles: item.Roles || [],
-    newImages: [],
-    removedImages: [],
-  }
-  existingImageFilenames.value = item.images || []
-}, { immediate: true })
+watch(
+  visible,
+  async isVisible => {
+    if (!isVisible) {
+      return
+    }
+    if (!props.itemId) {
+      // Reset form when modal is opened in create mode
+      form.value = emptyForm()
+      existingImageFilenames.value = []
+      return
+    }
+    const item = await loadItem(props.itemId)
+    form.value = {
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
+      description: item.description || '',
+      start_date: item.start_date || '',
+      end_date: item.end_date || '',
+      LexicalFields: item.LexicalFields || [],
+      Signs: item.Signs || [],
+      Persons: item.Persons || [],
+      Roles: item.Roles || [],
+      newImages: [],
+      removedImages: [],
+    }
+    existingImageFilenames.value = item.images || []
+  },
+  { immediate: true },
+)
 
 const save = async () => {
   saving.value = true

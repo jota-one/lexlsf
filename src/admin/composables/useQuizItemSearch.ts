@@ -21,7 +21,6 @@ export type QuizItemSearchQuery = {
 }
 
 export default function useQuizItemSearch() {
-
   const results = ref<SearchItem[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)

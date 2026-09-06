@@ -14,7 +14,7 @@
         />
       </div>
       <DataTable :value="users" sortField="created" :sortOrder="-1" tableStyle="min-width: 50rem">
-        <Column style="width: 80px;" :header="''">
+        <Column style="width: 80px" :header="''">
           <template #body="slotProps">
             <img
               v-if="slotProps.data.avatar"
@@ -64,7 +64,7 @@
             <span>{{ formatDate(slotProps.data.created) }}</span>
           </template>
         </Column>
-        <Column header="Actions" style="width: 100px;">
+        <Column header="Actions" style="width: 100px">
           <template #body="slotProps">
             <div class="flex gap-2">
               <button
@@ -106,57 +106,59 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import dayjs from 'dayjs';
-import useUsers from '../composables/useUsers';
-import useAuth from '../composables/useAuth';
-import type { TUser } from '../composables/useUsers';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import UserModal from '../components/UserModal.vue';
-import ConfirmModal from '../components/ConfirmModal.vue';
+import { onMounted, ref } from 'vue'
+import dayjs from 'dayjs'
+import useUsers from '../composables/useUsers'
+import useAuth from '../composables/useAuth'
+import type { TUser } from '../composables/useUsers'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+import UserModal from '../components/UserModal.vue'
+import ConfirmModal from '../components/ConfirmModal.vue'
 
-const { users, loadUsers, deleteUser, getAvatarUrl } = useUsers();
-const { user: currentUser, impersonate } = useAuth();
-const showUserModal = ref(false);
-const editedUserId = ref<string | undefined>(undefined);
-const showDeleteModal = ref(false);
-const editedUser = ref<TUser | null>(null);
-const deleteMessage = ref('');
+const { users, loadUsers, deleteUser, getAvatarUrl } = useUsers()
+const { user: currentUser, impersonate } = useAuth()
+const showUserModal = ref(false)
+const editedUserId = ref<string | undefined>(undefined)
+const showDeleteModal = ref(false)
+const editedUser = ref<TUser | null>(null)
+const deleteMessage = ref('')
 
 const formatDate = (dateString: string) => {
-  return dayjs(dateString).format('DD MMM YYYY, HH:mm');
-};
+  return dayjs(dateString).format('DD MMM YYYY, HH:mm')
+}
 
 const openAddModal = () => {
-  editedUserId.value = undefined;
-  showUserModal.value = true;
-};
+  editedUserId.value = undefined
+  showUserModal.value = true
+}
 
 const editUser = (user: TUser) => {
-  editedUserId.value = user.id;
-  showUserModal.value = true;
-};
+  editedUserId.value = user.id
+  showUserModal.value = true
+}
 
 const confirmDelete = (user: TUser) => {
-  editedUser.value = user;
-  deleteMessage.value = `Êtes-vous sûr de vouloir supprimer l'utilisateur "${user.email}" ?`;
-  showDeleteModal.value = true;
-};
+  editedUser.value = user
+  deleteMessage.value = `Êtes-vous sûr de vouloir supprimer l'utilisateur "${user.email}" ?`
+  showDeleteModal.value = true
+}
 
 const deleteUserConfirmed = async () => {
-  if (!editedUser.value) {return;}
+  if (!editedUser.value) {
+    return
+  }
 
   try {
-    await deleteUser(editedUser.value.id);
-    await loadUsers();
-    showDeleteModal.value = false;
-    editedUser.value = null;
+    await deleteUser(editedUser.value.id)
+    await loadUsers()
+    showDeleteModal.value = false
+    editedUser.value = null
   } catch (error) {
-    console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+    console.error("Erreur lors de la suppression de l'utilisateur:", error)
   }
-};
+}
 
-onMounted(loadUsers);
+onMounted(loadUsers)
 </script>

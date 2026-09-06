@@ -66,7 +66,7 @@ const save = async () => {
   }
 }
 
-watch(visible, (newVal) => {
+watch(visible, newVal => {
   if (newVal) {
     // Reset form when modal opens
     form.value = {

@@ -13,9 +13,7 @@
             <span class="i-fa-solid-user"></span>
           </a>
         </h1>
-        <p>
-          <span v-if="record.definition" class="italic">Déf. </span>{{ record.definition }}
-        </p>
+        <p><span v-if="record.definition" class="italic">Déf. </span>{{ record.definition }}</p>
       </div>
 
       <div class="grid grid-cols-12 gap-4">
@@ -26,10 +24,18 @@
             </video>
             <div class="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <div v-for="cat in signCategories" :key="cat.id" class="flex items-center gap-4 pb-2 mb-2">
+                <div
+                  v-for="cat in signCategories"
+                  :key="cat.id"
+                  class="flex items-center gap-4 pb-2 mb-2"
+                >
                   <h2 class="flex-1 self-start">{{ cat.tag }}</h2>
                   <ul>
-                    <li v-for="subcat in cat.subcategories" :key="subcat.id" class="py-1 flex justify-end">
+                    <li
+                      v-for="subcat in cat.subcategories"
+                      :key="subcat.id"
+                      class="py-1 flex justify-end"
+                    >
                       <div class="badge badge-outline badge-primary hover:badge-ghost justify-end">
                         <button class="cursor-pointer" @click="goToCategory(cat.slug, subcat.slug)">
                           {{ subcat.tag }}
@@ -48,7 +54,8 @@
                       :key="i"
                       class="text-xl"
                       :class="i <= level ? 'text-primary' : 'text-base-300'"
-                    >★</span>
+                      >★</span
+                    >
                   </div>
                   <span class="text-sm">({{ record.level?.toUpperCase() }})</span>
                 </div>
@@ -84,7 +91,9 @@
                     class="max-h-36 w-auto object-contain rounded-lg shadow"
                   />
                 </div>
-                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                <div
+                  class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center"
+                >
                   Mouvement main gauche (bientôt disponible)
                 </div>
               </div>
@@ -98,7 +107,9 @@
                     class="max-h-36 w-auto object-contain rounded-lg shadow"
                   />
                 </div>
-                <div class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center">
+                <div
+                  class="w-full border rounded-lg bg-base-200 py-4 px-3 text-sm text-gray-600 text-center"
+                >
                   Mouvement main droite (bientôt disponible)
                 </div>
               </div>
@@ -130,13 +141,9 @@
       </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-20 opacity-70">
-      Signe introuvable.
-    </div>
+    <div v-else-if="error" class="text-center py-20 opacity-70">Signe introuvable.</div>
 
-    <div v-else class="text-center py-20 opacity-70">
-      Chargement…
-    </div>
+    <div v-else class="text-center py-20 opacity-70">Chargement…</div>
   </transition>
 </template>
 
@@ -158,7 +165,6 @@ const router = useRouter()
 const record = ref<Record<string, unknown> | null>(null)
 const mainCategories = ref<TCategory.TRecord[]>([])
 const error = ref(false)
-
 
 const colors = { right: '#f4309865', left: '#00bafe74' }
 
@@ -194,12 +200,8 @@ const videoUrl = computed(() =>
     : '',
 )
 
-const hasConfiguration = computed(
-  () => record.value?.expand?.ConfigurationRight?.illustration,
-)
-const hasLeftConfiguration = computed(
-  () => record.value?.expand?.ConfigurationLeft?.illustration,
-)
+const hasConfiguration = computed(() => record.value?.expand?.ConfigurationRight?.illustration)
+const hasLeftConfiguration = computed(() => record.value?.expand?.ConfigurationLeft?.illustration)
 
 const configurationUrl = computed(() => {
   const r = record.value?.expand?.ConfigurationRight
@@ -211,7 +213,9 @@ const configurationLeftUrl = computed(() => {
 })
 
 const signCategories = computed(() => {
-  if (!record.value || !mainCategories.value.length) {return []}
+  if (!record.value || !mainCategories.value.length) {
+    return []
+  }
   return mainCategories.value
     .map(mainCat => ({
       ...mainCat,

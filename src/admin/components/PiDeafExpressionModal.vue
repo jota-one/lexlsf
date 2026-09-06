@@ -43,30 +43,44 @@ const { showPbError } = usePbErrorToast()
 
 const form = ref<TPiDeafExpression.TForm>({ Sign: '', strategies: '', Roles: [] })
 
-watch(visible, async (isVisible) => {
-  if (!isVisible) {return}
-  if (!props.expressionId) {
-    // Reset form when modal is opened in create mode
-    form.value = { Sign: '', strategies: '', Roles: [] }
-    return
-  }
-  const record = await loadPiDeafExpression(props.expressionId)
-  form.value = {
-    id: record.id,
-    name: record.name,
-    slug: record.slug,
-    strategies: record.strategies || '',
-    Sign: record.Sign,
-    Roles: record.Roles || [],
-  }
-}, { immediate: true })
+watch(
+  visible,
+  async isVisible => {
+    if (!isVisible) {
+      return
+    }
+    if (!props.expressionId) {
+      // Reset form when modal is opened in create mode
+      form.value = { Sign: '', strategies: '', Roles: [] }
+      return
+    }
+    const record = await loadPiDeafExpression(props.expressionId)
+    form.value = {
+      id: record.id,
+      name: record.name,
+      slug: record.slug,
+      strategies: record.strategies || '',
+      Sign: record.Sign,
+      Roles: record.Roles || [],
+    }
+  },
+  { immediate: true },
+)
 
 // Auto-populate name from selected sign
-watch(() => form.value.Sign, async (signId) => {
-  if (!signId) {return}
-  const sign = await pb.collection('sign').getOne(signId, { fields: 'id,name' }) as { id: string; name: string }
-  form.value.name = sign.name
-})
+watch(
+  () => form.value.Sign,
+  async signId => {
+    if (!signId) {
+      return
+    }
+    const sign = (await pb.collection('sign').getOne(signId, { fields: 'id,name' })) as {
+      id: string
+      name: string
+    }
+    form.value.name = sign.name
+  },
+)
 
 const save = async () => {
   saving.value = true

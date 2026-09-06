@@ -61,7 +61,6 @@ type PersonItem = { id: string; label: string }
 
 const model = defineModel<string>()
 
-
 const searchTerm = ref('')
 const searchResults = ref<PersonItem[]>([])
 const selectedItem = ref<PersonItem | null>(null)
@@ -71,13 +70,15 @@ const buildLabel = (p: { firstname?: string; name: string }) =>
   p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value) {return}
+  if (!model.value) {
+    return
+  }
   const res = await pb.collection('person').getOne(model.value, { fields: 'id,name,firstname' })
   selectedItem.value = { id: res.id, label: buildLabel(res) }
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
-watch(searchTerm, (val) => {
+watch(searchTerm, val => {
   clearTimeout(debounceTimer)
   if (val.length < 2) {
     searchResults.value = []
@@ -91,7 +92,12 @@ watch(searchTerm, (val) => {
         fields: 'id,name,firstname',
         sort: 'name,firstname',
       })
-      searchResults.value = res.items.map((p: { id: string; firstname?: string; name: string }) => ({ id: p.id, label: buildLabel(p) }))
+      searchResults.value = res.items.map(
+        (p: { id: string; firstname?: string; name: string }) => ({
+          id: p.id,
+          label: buildLabel(p),
+        }),
+      )
     } finally {
       searching.value = false
     }

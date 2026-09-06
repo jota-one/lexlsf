@@ -1,11 +1,7 @@
 <template>
   <div class="space-y-2">
     <div v-if="selectedItems.length > 0" class="flex flex-wrap gap-2">
-      <span
-        v-for="item in selectedItems"
-        :key="item.id"
-        class="badge badge-secondary gap-1"
-      >
+      <span v-for="item in selectedItems" :key="item.id" class="badge badge-secondary gap-1">
         {{ item.name }}
         <button type="button" @click="remove(item.id)" class="hover:opacity-70">
           <span class="i-fa-solid-times text-xs"></span>
@@ -66,17 +62,22 @@ const selectedItems = ref<Item[]>([])
 const searching = ref(false)
 
 onMounted(async () => {
-  if (!model.value?.length) {return}
+  if (!model.value?.length) {
+    return
+  }
   const filter = idFilter(model.value)
   const res = await pb.collection('lexical_field').getList(1, model.value.length, {
     filter,
     fields: 'id,name',
   })
-  selectedItems.value = res.items.map((f: { id: string; name: string }) => ({ id: f.id, name: f.name }))
+  selectedItems.value = res.items.map((f: { id: string; name: string }) => ({
+    id: f.id,
+    name: f.name,
+  }))
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
-watch(searchTerm, (val) => {
+watch(searchTerm, val => {
   clearTimeout(debounceTimer)
   if (val.length < 2) {
     searchResults.value = []

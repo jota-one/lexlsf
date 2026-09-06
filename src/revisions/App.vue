@@ -15,7 +15,7 @@ onBeforeMount(() => {
   app.directive('focus', {
     mounted(el) {
       el.focus()
-    }
+    },
   })
   app.use(router)
   app.use(ToastService)

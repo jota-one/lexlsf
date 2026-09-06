@@ -1,11 +1,7 @@
 <template>
   <div class="space-y-2">
     <div v-if="selectedItems.length > 0" class="flex flex-wrap gap-2">
-      <span
-        v-for="item in selectedItems"
-        :key="item.id"
-        class="badge badge-primary gap-1"
-      >
+      <span v-for="item in selectedItems" :key="item.id" class="badge badge-primary gap-1">
         {{ item.label }}
         <button type="button" @click="remove(item.id)" class="hover:opacity-70">
           <span class="i-fa-solid-times text-xs"></span>
@@ -65,20 +61,26 @@ const searchResults = ref<Item[]>([])
 const selectedItems = ref<Item[]>([])
 const searching = ref(false)
 
-const buildLabel = (p: { firstname?: string; name: string }) => p.firstname ? `${p.firstname} ${p.name}` : p.name
+const buildLabel = (p: { firstname?: string; name: string }) =>
+  p.firstname ? `${p.firstname} ${p.name}` : p.name
 
 onMounted(async () => {
-  if (!model.value?.length) {return}
+  if (!model.value?.length) {
+    return
+  }
   const filter = idFilter(model.value)
   const res = await pb.collection('person').getList(1, model.value.length, {
     filter,
     fields: 'id,name,firstname',
   })
-  selectedItems.value = res.items.map((p: { id: string; firstname?: string; name: string }) => ({ id: p.id, label: buildLabel(p) }))
+  selectedItems.value = res.items.map((p: { id: string; firstname?: string; name: string }) => ({
+    id: p.id,
+    label: buildLabel(p),
+  }))
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>
-watch(searchTerm, (val) => {
+watch(searchTerm, val => {
   clearTimeout(debounceTimer)
   if (val.length < 2) {
     searchResults.value = []
@@ -95,7 +97,10 @@ watch(searchTerm, (val) => {
       })
       searchResults.value = res.items
         .filter((p: { id: string; firstname?: string; name: string }) => !selectedIds.has(p.id))
-        .map((p: { id: string; firstname?: string; name: string }) => ({ id: p.id, label: buildLabel(p) }))
+        .map((p: { id: string; firstname?: string; name: string }) => ({
+          id: p.id,
+          label: buildLabel(p),
+        }))
     } finally {
       searching.value = false
     }

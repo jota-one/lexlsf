@@ -37,16 +37,14 @@ onMounted(async () => {
 const loadItems = async () => {
   loading.value = true
   try {
-    const quizItems = await pb
-      .collection('quiz_item')
-      .getFullList({
-        filter: pb.filter('Quiz = {:quizId}', { quizId: props.quizId }),
-        expand: 'Quiz,Item',
-        sort: '+position',
-      })
+    const quizItems = await pb.collection('quiz_item').getFullList({
+      filter: pb.filter('Quiz = {:quizId}', { quizId: props.quizId }),
+      expand: 'Quiz,Item',
+      sort: '+position',
+    })
 
     items.value = await Promise.all(
-      quizItems.map(async (item) => {
+      quizItems.map(async item => {
         const itemType = item.item_type as 'sign' | 'person'
         const collection = itemType === 'sign' ? 'sign' : 'person'
 
@@ -68,9 +66,12 @@ const loadItems = async () => {
           label,
           details: itemType === 'sign' ? itemData.definition : itemData.description,
         }
-      })
+      }),
     )
-    emit('loaded', items.value.map((i) => `${i.itemType}:${i.itemId}`))
+    emit(
+      'loaded',
+      items.value.map(i => `${i.itemType}:${i.itemId}`),
+    )
   } catch (error) {
     showPbError(error)
   } finally {
@@ -79,13 +80,18 @@ const loadItems = async () => {
 }
 
 const deleteItem = async (itemId: string) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) {return}
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément du quiz?')) {
+    return
+  }
 
   try {
     await pb.collection('quiz_item').delete(itemId)
-    items.value = items.value.filter((i) => i.id !== itemId)
+    items.value = items.value.filter(i => i.id !== itemId)
     emit('delete')
-    emit('loaded', items.value.map((i) => `${i.itemType}:${i.itemId}`))
+    emit(
+      'loaded',
+      items.value.map(i => `${i.itemType}:${i.itemId}`),
+    )
   } catch (error) {
     showPbError(error)
   }

@@ -43,9 +43,11 @@
               :for="`entity-${entity.id}`"
               class="badge badge-sm cursor-pointer"
               :class="[
-                            (form.entities || []).includes(entity.id) || entity.id === 'sign' ? 'badge-primary' : '',
-                            entity.disabled ? 'opacity-60 cursor-not-allowed' : ''
-                        ]"
+                (form.entities || []).includes(entity.id) || entity.id === 'sign'
+                  ? 'badge-primary'
+                  : '',
+                entity.disabled ? 'opacity-60 cursor-not-allowed' : '',
+              ]"
             >
               {{ entity.label }}
             </label>
@@ -68,97 +70,97 @@
 </template>
 <script setup lang="ts">
 // filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/components/CategoryFormModal.vue
-import { ref, computed, onMounted, watch, useTemplateRef } from 'vue';
-import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
-import Button from 'primevue/button';
-import useCategories from '../composables/useCategories';
-import { ALL_ENTITIES } from '../config/entities';
-import PbErrorToast from './PbErrorToast.vue';
-import usePbErrorToast from '../composables/usePbErrorToast';
-import type { TCategory } from '../../types';
+import { ref, computed, onMounted, watch, useTemplateRef } from 'vue'
+import Dialog from 'primevue/dialog'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
+import useCategories from '../composables/useCategories'
+import { ALL_ENTITIES } from '../config/entities'
+import PbErrorToast from './PbErrorToast.vue'
+import usePbErrorToast from '../composables/usePbErrorToast'
+import type { TCategory } from '../../types'
 
 type Events = {
-    saved: []
-};
-const emit = defineEmits<Events>();
-const visible = defineModel<boolean>({ required: true });
-const props = defineProps<{ parentId?: string | null; categoryToEdit?: TCategory.TRecord | null }>();
+  saved: []
+}
+const emit = defineEmits<Events>()
+const visible = defineModel<boolean>({ required: true })
+const props = defineProps<{ parentId?: string | null; categoryToEdit?: TCategory.TRecord | null }>()
 
 const form = ref({
-    id: '',
-    tag: '',
-    slug: '',
-    Parent: null as string | null,
-    entities: [] as string[],
-});
+  id: '',
+  tag: '',
+  slug: '',
+  Parent: null as string | null,
+  entities: [] as string[],
+})
 
-const isEditMode = computed(() => !!props.categoryToEdit);
+const isEditMode = computed(() => !!props.categoryToEdit)
 
-const allEntities = ALL_ENTITIES;
+const allEntities = ALL_ENTITIES
 
-const tagElement = useTemplateRef<{ $el: HTMLInputElement }>('tagInput');
+const tagElement = useTemplateRef<{ $el: HTMLInputElement }>('tagInput')
 
-const { categories, loadCategories, saveCategory } = useCategories();
-const saving = ref(false);
-const { showPbError } = usePbErrorToast();
+const { categories, loadCategories, saveCategory } = useCategories()
+const saving = ref(false)
+const { showPbError } = usePbErrorToast()
 
 const parentOptions = computed(() =>
-    categories.value.map((cat: TCategory.TRecord) => ({
-        id: cat.id,
-        tag: cat.tag
-    }))
-);
+  categories.value.map((cat: TCategory.TRecord) => ({
+    id: cat.id,
+    tag: cat.tag,
+  })),
+)
 
-onMounted(loadCategories);
+onMounted(loadCategories)
 
 watch(
-    () => props.parentId,
-    (newParentId) => {
-        if (!isEditMode.value) {
-            form.value.Parent = newParentId ?? null;
-        }
-    },
-    { immediate: true }
-);
-
-watch(visible, (v) => {
-    if (v) {
-        if (isEditMode.value && props.categoryToEdit) {
-            // Edit mode: populate form with existing data
-            form.value.id = props.categoryToEdit.id;
-            form.value.tag = props.categoryToEdit.tag;
-            form.value.slug = props.categoryToEdit.slug;
-            form.value.Parent = props.categoryToEdit.Parent ?? null;
-            form.value.entities = props.categoryToEdit.entities ?? [];
-        } else {
-            // Create mode: reset form
-            form.value.id = '';
-            form.value.tag = '';
-            form.value.slug = '';
-            form.value.Parent = props.parentId ?? null;
-            form.value.entities = [];
-        }
-        // focus first field after dialog is visible
-        // need the setTimeout to wait for the animation to finish
-        setTimeout(() => {
-            tagElement.value?.$el?.focus();
-        }, 500);
+  () => props.parentId,
+  newParentId => {
+    if (!isEditMode.value) {
+      form.value.Parent = newParentId ?? null
     }
-});
+  },
+  { immediate: true },
+)
+
+watch(visible, v => {
+  if (v) {
+    if (isEditMode.value && props.categoryToEdit) {
+      // Edit mode: populate form with existing data
+      form.value.id = props.categoryToEdit.id
+      form.value.tag = props.categoryToEdit.tag
+      form.value.slug = props.categoryToEdit.slug
+      form.value.Parent = props.categoryToEdit.Parent ?? null
+      form.value.entities = props.categoryToEdit.entities ?? []
+    } else {
+      // Create mode: reset form
+      form.value.id = ''
+      form.value.tag = ''
+      form.value.slug = ''
+      form.value.Parent = props.parentId ?? null
+      form.value.entities = []
+    }
+    // focus first field after dialog is visible
+    // need the setTimeout to wait for the animation to finish
+    setTimeout(() => {
+      tagElement.value?.$el?.focus()
+    }, 500)
+  }
+})
 
 const save = async () => {
-    saving.value = true;
-    try {
-        await saveCategory(form.value);
-        emit('saved');
-        visible.value = false;
-    } catch (err) {
-        // show formatted PocketBase error(s)
-        showPbError(err);
-    } finally {
-        saving.value = false;
-    }
-};
+  saving.value = true
+  try {
+    await saveCategory(form.value)
+    emit('saved')
+    visible.value = false
+  } catch (err) {
+    // show formatted PocketBase error(s)
+    showPbError(err)
+  } finally {
+    saving.value = false
+  }
+}
 </script>

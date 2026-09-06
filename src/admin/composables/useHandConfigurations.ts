@@ -33,7 +33,10 @@ export default function useHandConfigurations() {
     return pb.collection('hand_configurations').create(formData)
   }
 
-  const updateHandConfiguration = async (id: string, payload: { name: string; illustration?: string | Blob }) => {
+  const updateHandConfiguration = async (
+    id: string,
+    payload: { name: string; illustration?: string | Blob },
+  ) => {
     loadingHandConfigurations.value = true
     const formData = new FormData()
 

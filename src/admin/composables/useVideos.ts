@@ -2,7 +2,6 @@ import { pb } from '@lib/pb'
 import type { TVideo } from '../../types'
 
 export default function useVideos() {
-
   const addVideo = async (payload: TVideo.TForm) => {
     return pb.collection<TVideo.TRecord>('video').create(payload)
   }

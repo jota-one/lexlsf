@@ -42,23 +42,29 @@ const { showPbError } = usePbErrorToast()
 
 const form = ref<TFrenchExpression.TForm>({ expression: '', strategies: '', Signs: [], Roles: [] })
 
-watch(visible, async (isVisible) => {
-  if (!isVisible) {return}
-  if (!props.expressionId) {
-    // Reset form when modal is opened in create mode
-    form.value = { expression: '', strategies: '', Signs: [], Roles: [] }
-    return
-  }
-  const record = await loadFrenchExpression(props.expressionId)
-  form.value = {
-    id: record.id,
-    expression: record.expression,
-    slug: record.slug,
-    strategies: record.strategies || '',
-    Signs: record.Signs || [],
-    Roles: record.Roles || [],
-  }
-}, { immediate: true })
+watch(
+  visible,
+  async isVisible => {
+    if (!isVisible) {
+      return
+    }
+    if (!props.expressionId) {
+      // Reset form when modal is opened in create mode
+      form.value = { expression: '', strategies: '', Signs: [], Roles: [] }
+      return
+    }
+    const record = await loadFrenchExpression(props.expressionId)
+    form.value = {
+      id: record.id,
+      expression: record.expression,
+      slug: record.slug,
+      strategies: record.strategies || '',
+      Signs: record.Signs || [],
+      Roles: record.Roles || [],
+    }
+  },
+  { immediate: true },
+)
 
 const save = async () => {
   saving.value = true

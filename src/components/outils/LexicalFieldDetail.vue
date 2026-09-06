@@ -4,13 +4,21 @@
       <span class="loading loading-spinner loading-lg"></span>
     </div>
     <template v-else-if="field">
-      <a href="/outils/champs-lexicaux" class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block">
+      <a
+        href="/outils/champs-lexicaux"
+        class="text-sm text-base-content/50 hover:text-base-content mb-4 inline-block"
+      >
         ← Champs lexicaux
       </a>
       <h1 class="text-3xl font-bold mb-2">{{ field.name }}</h1>
-      <p v-if="field.introduction" class="text-base-content/70 mb-8 max-w-2xl">{{ field.introduction }}</p>
+      <p v-if="field.introduction" class="text-base-content/70 mb-8 max-w-2xl">
+        {{ field.introduction }}
+      </p>
 
-      <div v-if="regularTerms.length === 0 && personTerms.length === 0" class="text-center text-base-content/50 py-16">
+      <div
+        v-if="regularTerms.length === 0 && personTerms.length === 0"
+        class="text-center text-base-content/50 py-16"
+      >
         Aucun terme dans ce champ lexical.
       </div>
 
@@ -46,7 +54,9 @@
             </div>
 
             <p v-if="term.strategy" class="text-sm text-blue-600">{{ term.strategy }}</p>
-            <p v-if="term.description" class="text-sm text-base-content/70">{{ term.description }}</p>
+            <p v-if="term.description" class="text-sm text-base-content/70">
+              {{ term.description }}
+            </p>
 
             <div class="flex gap-2 flex-wrap">
               <a
@@ -102,32 +112,49 @@ onMounted(async () => {
   }
 })
 
-const regularTerms = computed(() => terms.value.filter((t: Record<string, unknown>) => !t.is_person))
+const regularTerms = computed(() =>
+  terms.value.filter((t: Record<string, unknown>) => !t.is_person),
+)
 
 const personTerms = computed(() => {
   const persons = terms.value.filter((t: Record<string, unknown>) => t.is_person)
   return persons.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
     const aActive = isActive(a)
     const bActive = isActive(b)
-    if (aActive !== bActive) {return aActive ? -1 : 1}
+    if (aActive !== bActive) {
+      return aActive ? -1 : 1
+    }
     // Both active or both inactive: sort by start_date desc
-    if (a.start_date && b.start_date) {return b.start_date.localeCompare(a.start_date)}
-    if (a.start_date) {return -1}
-    if (b.start_date) {return 1}
+    if (a.start_date && b.start_date) {
+      return b.start_date.localeCompare(a.start_date)
+    }
+    if (a.start_date) {
+      return -1
+    }
+    if (b.start_date) {
+      return 1
+    }
     return a.term.localeCompare(b.term)
   })
 })
 
 const isActive = (term: Record<string, unknown>) => {
-  if (!term.end_date) {return true}
+  if (!term.end_date) {
+    return true
+  }
   return new Date(term.end_date) >= new Date()
 }
 
 const formatDateRange = (start: string, end: string) => {
   const parts = []
-  if (start) {parts.push(new Date(start).getFullYear())}
-  if (end) {parts.push(new Date(end).getFullYear())}
-  else if (start) {parts.push('présent')}
+  if (start) {
+    parts.push(new Date(start).getFullYear())
+  }
+  if (end) {
+    parts.push(new Date(end).getFullYear())
+  } else if (start) {
+    parts.push('présent')
+  }
   return parts.join(' – ')
 }
 </script>

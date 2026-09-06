@@ -58,38 +58,44 @@ const termPayload = (t: LocalTerm, fieldId: string) => ({
   Person: t.Person || undefined,
 })
 
-watch(visible, async (isVisible) => {
-  if (!isVisible) {return}
-  if (!props.fieldId) {
-    // Reset form when modal is opened in create mode
-    form.value = { name: '', introduction: '', Roles: [], Categories: [] }
-    terms.value = []
-    originalTermIds.value = []
-    return
-  }
-  const field = await loadLexicalField(props.fieldId)
-  form.value = {
-    id: field.id,
-    name: field.name,
-    slug: field.slug,
-    introduction: field.introduction || '',
-    Roles: field.Roles || [],
-    Categories: field.Categories || [],
-  }
-  const loaded = await loadTermsByField(props.fieldId)
-  terms.value = loaded.map(t => ({
-    id: t.id,
-    term: t.term,
-    Sign: t.Sign || '',
-    is_person: t.is_person || false,
-    description: t.description || '',
-    strategy: t.strategy || '',
-    start_date: t.start_date || '',
-    end_date: t.end_date || '',
-    Person: t.Person || '',
-  }))
-  originalTermIds.value = loaded.map(t => t.id)
-}, { immediate: true })
+watch(
+  visible,
+  async isVisible => {
+    if (!isVisible) {
+      return
+    }
+    if (!props.fieldId) {
+      // Reset form when modal is opened in create mode
+      form.value = { name: '', introduction: '', Roles: [], Categories: [] }
+      terms.value = []
+      originalTermIds.value = []
+      return
+    }
+    const field = await loadLexicalField(props.fieldId)
+    form.value = {
+      id: field.id,
+      name: field.name,
+      slug: field.slug,
+      introduction: field.introduction || '',
+      Roles: field.Roles || [],
+      Categories: field.Categories || [],
+    }
+    const loaded = await loadTermsByField(props.fieldId)
+    terms.value = loaded.map(t => ({
+      id: t.id,
+      term: t.term,
+      Sign: t.Sign || '',
+      is_person: t.is_person || false,
+      description: t.description || '',
+      strategy: t.strategy || '',
+      start_date: t.start_date || '',
+      end_date: t.end_date || '',
+      Person: t.Person || '',
+    }))
+    originalTermIds.value = loaded.map(t => t.id)
+  },
+  { immediate: true },
+)
 
 const save = async () => {
   saving.value = true
@@ -106,7 +112,9 @@ const save = async () => {
       }
       // Create or update
       for (const t of terms.value) {
-        if (!t.term.trim()) {continue}
+        if (!t.term.trim()) {
+          continue
+        }
         if (t.id) {
           await updateTerm(t.id, termPayload(t, props.fieldId))
         } else {
@@ -114,7 +122,7 @@ const save = async () => {
         }
       }
     } else {
-      const field = await addLexicalField(form.value) as { id: string }
+      const field = (await addLexicalField(form.value)) as { id: string }
       for (const t of terms.value) {
         if (t.term.trim()) {
           await addTerm(termPayload(t, field.id))

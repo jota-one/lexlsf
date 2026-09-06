@@ -26,7 +26,9 @@ const emit = defineEmits<{
 
 const accuracy = computed(() => {
   const total = props.stats.known + props.stats.unknown
-  if (total === 0) {return 0}
+  if (total === 0) {
+    return 0
+  }
   return Math.round((props.stats.known / total) * 100)
 })
 
@@ -40,7 +42,9 @@ const score = computed(() =>
 const hasErrors = computed(() => props.stats.unknown > 0)
 
 const formatDuration = (ms?: number) => {
-  if (!ms) {return '-'}
+  if (!ms) {
+    return '-'
+  }
 
   return dayjs.duration(ms, 'millisecond').humanize()
 }
@@ -56,10 +60,7 @@ const formatDuration = (ms?: number) => {
     <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
       <div class="stat">
         <div class="stat-title">Score</div>
-        <div
-          class="stat-value"
-          :class="scoreColorClass(score)"
-        >
+        <div class="stat-value" :class="scoreColorClass(score)">
           {{ score }}
         </div>
         <div class="stat-desc">{{ accuracy }}% de réussite brute</div>

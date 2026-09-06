@@ -45,8 +45,12 @@ const durationAvg = computed(() =>
 const formatDuration = (seconds: number) => {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
-  if (m === 0) {return `${s}s`}
-  if (m < 60) {return s > 0 ? `${m}m ${s}s` : `${m} min`}
+  if (m === 0) {
+    return `${s}s`
+  }
+  if (m < 60) {
+    return s > 0 ? `${m}m ${s}s` : `${m} min`
+  }
   const h = Math.floor(m / 60)
   const rem = m % 60
   return rem > 0 ? `${h}h ${rem}min` : `${h}h`
@@ -65,8 +69,8 @@ const speeds = computed(() =>
 
 const speedMin = computed(() => Math.min(...speeds.value))
 const speedMax = computed(() => Math.max(...speeds.value))
-const speedAvg = computed(() =>
-  Math.round((speeds.value.reduce((a, b) => a + b, 0) / speeds.value.length) * 10) / 10,
+const speedAvg = computed(
+  () => Math.round((speeds.value.reduce((a, b) => a + b, 0) / speeds.value.length) * 10) / 10,
 )
 
 // — Taux de réussite brute (%) —
@@ -86,8 +90,12 @@ const successAvg = computed(() =>
 )
 
 const successBarClass = (rate: number) => {
-  if (rate >= 80) {return 'progress-success'}
-  if (rate >= 50) {return 'progress-warning'}
+  if (rate >= 80) {
+    return 'progress-success'
+  }
+  if (rate >= 50) {
+    return 'progress-warning'
+  }
   return 'progress-error'
 }
 
@@ -96,9 +104,7 @@ const lastSessionDate = computed(() => {
   const sorted = [...props.sessions]
     .filter(s => s.completed_at)
     .sort((a, b) => dayjs(b.completed_at).valueOf() - dayjs(a.completed_at).valueOf())
-  return sorted[0]?.completed_at
-    ? dayjs(sorted[0].completed_at).format('DD/MM/YYYY')
-    : '–'
+  return sorted[0]?.completed_at ? dayjs(sorted[0].completed_at).format('DD/MM/YYYY') : '–'
 })
 
 // — Graphique ligne (20 dernières sessions, ordre chronologique) —
@@ -180,15 +186,21 @@ const chartOptions = {
       <div class="flex gap-6 text-sm">
         <div class="flex items-center gap-1.5">
           <span class="text-base-content/40 text-xs">↓</span>
-          <span class="font-mono font-semibold" :class="scoreColorClass(scoreMin)">{{ scoreMin }}</span>
+          <span class="font-mono font-semibold" :class="scoreColorClass(scoreMin)">{{
+            scoreMin
+          }}</span>
         </div>
         <div class="flex items-center gap-1.5">
           <span class="text-base-content/50 text-xs">≈</span>
-          <span class="font-mono font-bold text-base" :class="scoreColorClass(scoreAvg)">{{ scoreAvg }}</span>
+          <span class="font-mono font-bold text-base" :class="scoreColorClass(scoreAvg)">{{
+            scoreAvg
+          }}</span>
         </div>
         <div class="flex items-center gap-1.5">
           <span class="text-base-content/40 text-xs">↑</span>
-          <span class="font-mono font-semibold" :class="scoreColorClass(scoreMax)">{{ scoreMax }}</span>
+          <span class="font-mono font-semibold" :class="scoreColorClass(scoreMax)">{{
+            scoreMax
+          }}</span>
         </div>
       </div>
       <div v-if="chartSessions.length > 1" class="h-36">
@@ -247,7 +259,11 @@ const chartOptions = {
         </p>
         <div class="space-y-1.5 text-sm">
           <div
-            v-for="[label, rate] in [['↓', successMin], ['≈', successAvg], ['↑', successMax]]"
+            v-for="[label, rate] in [
+              ['↓', successMin],
+              ['≈', successAvg],
+              ['↑', successMax],
+            ]"
             :key="label"
             class="flex items-center gap-2"
           >

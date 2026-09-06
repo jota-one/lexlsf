@@ -125,8 +125,8 @@
         <div class="text-xs space-y-2">
           <p><strong>CSV:</strong> Les colonnes attendues sont : {{ columnsList }}.</p>
           <p>
-            <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules.
-            Exemples: <code>student</code> ou <code>student,visitor</code>.
+            <strong>Roles:</strong> utiliser les slugs de roles séparés par des virgules. Exemples:
+            <code>student</code> ou <code>student,visitor</code>.
           </p>
           <p>
             <strong>Category:</strong> utiliser les slugs de categories séparés par des virgules.
@@ -210,7 +210,9 @@ const handleExportCSV = async () => {
 }
 
 const handleImport = async () => {
-  if (!selectedFile.value) {return}
+  if (!selectedFile.value) {
+    return
+  }
 
   try {
     if (!selectedFile.value.name.endsWith('.csv')) {

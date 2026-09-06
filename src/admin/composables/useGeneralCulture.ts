@@ -22,7 +22,9 @@ export const emptyForm = (): TGeneralCulture.TForm => ({
 const appendRelation = (formData: FormData, key: string, ids: string[] | undefined) => {
   const list = ids || []
   list.forEach(id => formData.append(key, id))
-  if (list.length === 0) { formData.append(key, '') }
+  if (list.length === 0) {
+    formData.append(key, '')
+  }
 }
 
 const buildFormData = (payload: TGeneralCulture.TForm, isUpdate: boolean) => {

@@ -71,7 +71,6 @@ const setFormData = (payload: TPerson.TForm) => {
 }
 
 export default function usePersons() {
-
   const persons = ref<TPerson.TRecord[]>([])
   const loadPersons = async () => {
     persons.value = await pb.collection<TPerson.TRecord>('person').getFullList({
@@ -83,10 +82,12 @@ export default function usePersons() {
   }
 
   const loadPerson = async (id: string) => {
-    return pb.collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person').getOne(id, {
-      fields: '*',
-      expand: 'Category,Activities,Sign,Videos,Roles',
-    })
+    return pb
+      .collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person')
+      .getOne(id, {
+        fields: '*',
+        expand: 'Category,Activities,Sign,Videos,Roles',
+      })
   }
 
   const addPerson = async (payload: TPerson.TForm) => {
@@ -108,7 +109,9 @@ export default function usePersons() {
   }
 
   const getIllustrationUrl = (person: TPerson.TRecord): string => {
-    if (!person.illustration) {return ''}
+    if (!person.illustration) {
+      return ''
+    }
     return `${config.apiBaseUrl}/api/files/person/${person.id}/${person.illustration}`
   }
 

@@ -17,24 +17,24 @@ Actions.
 
 **Overall verdict**: the project is functional and the domain modeling is sound
 (types namespaces, PB migrations discipline, roles/visibility model). The main
-weaknesses are *systematic duplication* (the same code pasted 2–16×), *no shared
-core layer* (public code imports from `@admin`), *client-only rendering that makes
-the SSR adapter pointless*, *inconsistent auth/error handling*, and *near-zero test
-coverage*. None of these are hard to fix; most are mechanical.
+weaknesses are _systematic duplication_ (the same code pasted 2–16×), _no shared
+core layer_ (public code imports from `@admin`), _client-only rendering that makes
+the SSR adapter pointless_, _inconsistent auth/error handling_, and _near-zero test
+coverage_. None of these are hard to fix; most are mechanical.
 
 ## 2. Scorecard
 
-| Area | Grade | Summary |
-|---|---|---|
-| Domain modeling / types | B+ | Good namespaced types, but `any` leaks everywhere in components |
-| Code duplication | D | Composables, modals, slug logic, option lists duplicated wholesale |
-| Rendering architecture | C− | SSR adapter + 100% `client:only` + `prerender=false` = worst of both worlds |
-| Auth & security | C+ | Server-side rules OK; client auth state split across 2 storages; filter injection |
-| Error handling | C | Toast system exists but applied to ~half the admin modals; public side silent |
-| Backend (Go) | B | Clean hooks, but unbounded ffmpeg concurrency + deploy-pipeline doubt |
-| CI/CD | B− | Solid infra-side Go build & bundle system; minor: race-prone run matching, Node version mismatch |
-| Tests | D− | 1 test file (`strings.test.ts`), no vitest config, pure logic untested |
-| Docs / hygiene | C | README is the untouched Astro starter template; ROADMAP.md is excellent |
+| Area                    | Grade | Summary                                                                                          |
+| ----------------------- | ----- | ------------------------------------------------------------------------------------------------ |
+| Domain modeling / types | B+    | Good namespaced types, but `any` leaks everywhere in components                                  |
+| Code duplication        | D     | Composables, modals, slug logic, option lists duplicated wholesale                               |
+| Rendering architecture  | C−    | SSR adapter + 100% `client:only` + `prerender=false` = worst of both worlds                      |
+| Auth & security         | C+    | Server-side rules OK; client auth state split across 2 storages; filter injection                |
+| Error handling          | C     | Toast system exists but applied to ~half the admin modals; public side silent                    |
+| Backend (Go)            | B     | Clean hooks, but unbounded ffmpeg concurrency + deploy-pipeline doubt                            |
+| CI/CD                   | B−    | Solid infra-side Go build & bundle system; minor: race-prone run matching, Node version mismatch |
+| Tests                   | D−    | 1 test file (`strings.test.ts`), no vitest config, pure logic untested                           |
+| Docs / hygiene          | C     | README is the untouched Astro starter template; ROADMAP.md is excellent                          |
 
 ## 3. Findings
 
@@ -59,7 +59,7 @@ How it actually works (documented here because it is non-obvious from this repo)
   only matters for rollback-to-upstream, so its drift from go.mod is harmless.
 
 Residual (🔵, optional): `pb/README.md`'s "Recommandation" section still describes
-adding a Go build step to *this* repo's workflow as if it were pending — update it
+adding a Go build step to _this_ repo's workflow as if it were pending — update it
 to describe the mechanism above so future readers (and AI assistants) don't
 re-raise this false alarm.
 
@@ -68,7 +68,7 @@ re-raise this false alarm.
 Every single page sets `export const prerender = false` and mounts its component
 with `client:only`. The Node server therefore renders empty HTML shells at request
 time, for no benefit (no SEO — content is behind login anyway — no faster first
-paint, no data preloading). Meanwhile the custom PocketBase binary *already* serves
+paint, no data preloading). Meanwhile the custom PocketBase binary _already_ serves
 `pb_public` statically (`pb/main.go:58`).
 
 Two coherent options:
@@ -94,7 +94,7 @@ slug helper, formatting helpers, option lists.
 ### 3.4 🟠 28 separate `new PocketBase(...)` instances
 
 Every composable and several components create their own client
-(`grep -rn "new PocketBase" src` → 28 hits). It *happens* to work because the SDK's
+(`grep -rn "new PocketBase" src` → 28 hits). It _happens_ to work because the SDK's
 default `LocalAuthStore` shares the token via `localStorage`, but:
 
 - it's implicit coupling that nobody chose;
@@ -119,7 +119,7 @@ Fix: one exported singleton in `src/lib/pb.ts`.
   `verificationStatusOptions`) and level translation (`translateNumericLevel`)
   are pasted in both `useSigns` copies.
 
-Fix: public composables become thin *read-only* modules over a shared core; option
+Fix: public composables become thin _read-only_ modules over a shared core; option
 lists and converters move to `src/lib/`.
 
 ### 3.6 🟠 8 Add/Edit modal pairs = ~16 near-identical files
@@ -140,7 +140,7 @@ escapes quotes (and only quotes). User-typed search text flows in directly in
 `PersonMultiPicker.vue:94`, `LexicalFieldPicker.vue:92`.
 
 Impact is bounded by PB API rules (reads are role-gated), but a `"` in a search
-crashes the query, and filter manipulation could bypass *intra-collection*
+crashes the query, and filter manipulation could bypass _intra-collection_
 constraints. The SDK ships the fix:
 `pb.filter('name ~ {:q}', { q })`. Mechanical, low-risk change.
 
@@ -185,7 +185,7 @@ code (harmless, but worth a comment).
 1. `src/admin/helpers/strings.ts` (`createSlug` — the good one, tested)
 2. `src/components/lexique/composables/useSigns.ts:44` (naive, buggy — see 3.5)
 3. `scripts/migrate-slugs.js` (hand-copied duplicate of #1)
-4. `pb/hooks.go` (format validation + uniqueness — this one is *correct* layering)
+4. `pb/hooks.go` (format validation + uniqueness — this one is _correct_ layering)
 
 Client-side: one implementation in `src/lib/slug.ts`, imported everywhere including
 the script. Server-side validation stays. Also consider a **unique index** on
@@ -203,10 +203,10 @@ regressions will hurt.
 
 ### 3.14 🟡 CI/CD robustness
 
-- `deploy.yaml` matches the triggered infra run by *name* with `sleep 5` +
+- `deploy.yaml` matches the triggered infra run by _name_ with `sleep 5` +
   `gh run list -L 10` — race-prone (concurrent deploys, slow API). `gh workflow run`
-  + `gh run list --workflow ... --json` filtering by `run-external-id` is already
-  half-implemented; finish it or poll until found instead of sleeping once.
+  - `gh run list --workflow ... --json` filtering by `run-external-id` is already
+    half-implemented; finish it or poll until found instead of sleeping once.
 - CI uses Node 20; `package.json` volta pins 22.19. Align to 22.
 - `pnpm build` runs `astro check` (good) but no lint/test gates.
 
@@ -224,7 +224,7 @@ regressions will hurt.
 - `.env` is committed. It should contain only `PUBLIC_*` values — verify no secret
   ever lands there (secrets belong in `.env.local`, which is gitignored).
 - `docs/`-worthy: the multi-SPA islands pattern (5 routers, full page reloads
-  between sections) is a *deliberate and reasonable* architecture — document it so
+  between sections) is a _deliberate and reasonable_ architecture — document it so
   future contributors (human or AI) don't "fix" it into one mega-SPA.
 
 ## 4. What is already good (keep as-is)
@@ -240,15 +240,15 @@ regressions will hurt.
 - **Type namespaces** (`TSign.TRecord` / `TSign.TForm`): good pattern, just
   under-enforced.
 - **Multi-SPA islands**: reasonable for a site with such distinct sections; the
-  problem is the duplication *between* them, not the split itself.
+  problem is the duplication _between_ them, not the split itself.
 
 ## 5. Decisions required before implementation
 
-| # | Decision | Recommendation |
-|---|---|---|
-| D1 | ~~Verify prod PocketBase binary~~ | ✅ Resolved 2026-07-14 — custom binary confirmed in prod (see 3.1) |
-| D2 | Static output vs keep SSR (3.2) | Static (A); needs infra confirmation |
-| D3 | Modal unification style (3.6) | One `XxxModal` per entity with nullable `recordId`; **no** generic mega-abstraction |
-| D4 | Unique index on `slug` fields (3.12) | Yes, via new migration |
+| #   | Decision                             | Recommendation                                                                      |
+| --- | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| D1  | ~~Verify prod PocketBase binary~~    | ✅ Resolved 2026-07-14 — custom binary confirmed in prod (see 3.1)                  |
+| D2  | Static output vs keep SSR (3.2)      | Static (A); needs infra confirmation                                                |
+| D3  | Modal unification style (3.6)        | One `XxxModal` per entity with nullable `recordId`; **no** generic mega-abstraction |
+| D4  | Unique index on `slug` fields (3.12) | Yes, via new migration                                                              |
 
 The implementation plan sequences everything else without waiting on D1/D2.

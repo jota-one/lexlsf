@@ -44,7 +44,9 @@
         <div class="flex items-start gap-4">
           <label class="font-semibold w-60 pt-2">
             Date de fin
-            <span class="block text-xs font-normal text-base-content/50">Laisser vide si événement ponctuel</span>
+            <span class="block text-xs font-normal text-base-content/50"
+              >Laisser vide si événement ponctuel</span
+            >
           </label>
           <DatePartInput v-model="form.end_date" />
         </div>
@@ -93,7 +95,9 @@
         <div v-if="existingImages.length > 0">
           <p class="text-sm font-semibold mb-2">
             Images existantes
-            <span class="text-xs font-normal text-base-content/50 ml-2">Cliquer sur une image pour copier son lien markdown</span>
+            <span class="text-xs font-normal text-base-content/50 ml-2"
+              >Cliquer sur une image pour copier son lien markdown</span
+            >
           </p>
           <div class="flex flex-wrap gap-3">
             <div
@@ -106,7 +110,9 @@
               <img
                 :src="previewUrl(filename)"
                 class="w-24 h-20 object-cover rounded-lg border transition-all"
-                :class="copiedFilename === filename ? 'border-success opacity-70' : 'border-base-300'"
+                :class="
+                  copiedFilename === filename ? 'border-success opacity-70' : 'border-base-300'
+                "
                 :alt="filename"
               />
               <div
@@ -143,11 +149,7 @@
         <div v-if="newImagePreviews.length > 0">
           <p class="text-sm font-semibold mb-2">À uploader</p>
           <div class="flex flex-wrap gap-3">
-            <div
-              v-for="(preview, index) in newImagePreviews"
-              :key="index"
-              class="relative group"
-            >
+            <div v-for="(preview, index) in newImagePreviews" :key="index" class="relative group">
               <img
                 :src="preview.url"
                 class="w-24 h-20 object-cover rounded-lg border border-base-300"
@@ -165,12 +167,15 @@
           </div>
         </div>
 
-        <p v-if="existingImages.length === 0 && newImagePreviews.length === 0" class="text-sm text-base-content/50">
+        <p
+          v-if="existingImages.length === 0 && newImagePreviews.length === 0"
+          class="text-sm text-base-content/50"
+        >
           Aucune image pour le moment.
         </p>
 
         <p class="text-xs text-base-content/40">
-          Les URLs des images uploadées pourront être utilisées dans la description markdown.<br>
+          Les URLs des images uploadées pourront être utilisées dans la description markdown.<br />
           Format: <code>/api/files/general_culture/{record_id}/{filename}</code>
         </p>
       </TabPanel>
@@ -250,11 +255,15 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const previewUrl = (filename: string) =>
-  pb.files.getURL({ id: props.recordId, collectionName: 'general_culture' }, filename, { thumb: '400x300' })
+  pb.files.getURL({ id: props.recordId, collectionName: 'general_culture' }, filename, {
+    thumb: '400x300',
+  })
 
 const onFilesChange = (e: Event) => {
   const input = e.target as HTMLInputElement
-  if (!input.files) {return}
+  if (!input.files) {
+    return
+  }
   const files = Array.from(input.files)
   const previews = files.map(file => ({
     url: URL.createObjectURL(file),
@@ -284,24 +293,34 @@ const copyMarkdown = async (filename: string) => {
   const markdown = `![image](${url})`
   await copy(markdown)
   copiedFilename.value = filename
-  setTimeout(() => { copiedFilename.value = '' }, 2000)
+  setTimeout(() => {
+    copiedFilename.value = ''
+  }, 2000)
 }
 
 // Roles
 watch(roles, () => {
   adminRoleId.value = roles.value.find(r => r.slug === 'admin')?.id || ''
-  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {return}
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
+    return
+  }
   form.value.Roles = form.value.Roles.filter(id => id !== adminRoleId.value)
 })
 
 const isRoleSelected = (roleId: string) => {
-  if (!roleId) {return false}
-  if (roleId === adminRoleId.value) {return true}
+  if (!roleId) {
+    return false
+  }
+  if (roleId === adminRoleId.value) {
+    return true
+  }
   return (form.value.Roles || []).includes(roleId)
 }
 
 const toggleRole = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return}
+  if (role.slug === 'admin') {
+    return
+  }
   if ((form.value.Roles || []).includes(role.id)) {
     form.value.Roles = (form.value.Roles || []).filter(id => id !== role.id)
     return
@@ -310,18 +329,27 @@ const toggleRole = (role: { id: string; slug: string }) => {
 }
 
 const roleBadgeClass = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return 'badge-primary opacity-60 cursor-not-allowed'}
+  if (role.slug === 'admin') {
+    return 'badge-primary opacity-60 cursor-not-allowed'
+  }
   return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
 }
 
 // Slug
 const regenerateSlug = () => {
-  if (form.value.name) {form.value.slug = createSlug(form.value.name)}
+  if (form.value.name) {
+    form.value.slug = createSlug(form.value.name)
+  }
 }
 
-watch(() => form.value.name, (val) => {
-  if (!form.value.slug && val) {form.value.slug = createSlug(val)}
-})
+watch(
+  () => form.value.name,
+  val => {
+    if (!form.value.slug && val) {
+      form.value.slug = createSlug(val)
+    }
+  },
+)
 
 onMounted(() => {
   rolesLoading.value = true

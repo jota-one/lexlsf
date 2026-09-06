@@ -80,11 +80,7 @@
           <div class="flex items-start gap-2">
             <div class="flex-1 space-y-3">
               <!-- Terme -->
-              <InputText
-                v-model="termItem.term"
-                class="w-full"
-                placeholder="Terme français..."
-              />
+              <InputText v-model="termItem.term" class="w-full" placeholder="Terme français..." />
 
               <!-- Est une personne -->
               <div class="flex items-center gap-3">
@@ -126,24 +122,18 @@
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <p class="text-xs text-base-content/50 mb-1">Début d'activité</p>
-                    <InputText
-                      v-model="termItem.start_date"
-                      type="date"
-                      class="w-full text-sm"
-                    />
+                    <InputText v-model="termItem.start_date" type="date" class="w-full text-sm" />
                   </div>
                   <div>
                     <p class="text-xs text-base-content/50 mb-1">Fin d'activité</p>
-                    <InputText
-                      v-model="termItem.end_date"
-                      type="date"
-                      class="w-full text-sm"
-                    />
+                    <InputText v-model="termItem.end_date" type="date" class="w-full text-sm" />
                   </div>
                 </div>
 
                 <div>
-                  <p class="text-xs text-base-content/50 mb-1">Personne liée dans Culture (optionnel)</p>
+                  <p class="text-xs text-base-content/50 mb-1">
+                    Personne liée dans Culture (optionnel)
+                  </p>
                   <PersonPicker v-model="termItem.Person" />
                 </div>
               </template>
@@ -167,10 +157,7 @@
 
       <!-- Onglet Catégories -->
       <TabPanel :value="2">
-        <CategoriesPickerForm
-          v-model="selectedCategories"
-          entity="lexical_field"
-        />
+        <CategoriesPickerForm v-model="selectedCategories" entity="lexical_field" />
       </TabPanel>
     </TabPanels>
   </Tabs>
@@ -219,40 +206,64 @@ const selectedCategories = ref<{ [parentId: string]: string[] }>({})
 const categoriesInitialized = ref(false)
 
 // When categories load, initialize selectedCategories from form.Categories (edit mode)
-watch([categories, () => form.value.Categories], () => {
-  if (categoriesInitialized.value) {return}
-  if (!categories.value.length) {return}
-  categoriesInitialized.value = true
-  const flatIds = form.value.Categories || []
-  const result: { [parentId: string]: string[] } = {}
-  for (const parent of categories.value.filter((c: TCategory.TRecord) => !c.Parent)) {
-    const children = (parent.expand?.category_via_Parent || []) as TCategory.TRecord[]
-    result[parent.id] = children.filter((c: TCategory.TRecord) => flatIds.includes(c.id)).map((c: TCategory.TRecord) => c.id)
-  }
-  selectedCategories.value = result
-}, { immediate: true })
+watch(
+  [categories, () => form.value.Categories],
+  () => {
+    if (categoriesInitialized.value) {
+      return
+    }
+    if (!categories.value.length) {
+      return
+    }
+    categoriesInitialized.value = true
+    const flatIds = form.value.Categories || []
+    const result: { [parentId: string]: string[] } = {}
+    for (const parent of categories.value.filter((c: TCategory.TRecord) => !c.Parent)) {
+      const children = (parent.expand?.category_via_Parent || []) as TCategory.TRecord[]
+      result[parent.id] = children
+        .filter((c: TCategory.TRecord) => flatIds.includes(c.id))
+        .map((c: TCategory.TRecord) => c.id)
+    }
+    selectedCategories.value = result
+  },
+  { immediate: true },
+)
 
 // Sync selectedCategories → form.Categories
-watch(selectedCategories, (val) => {
-  if (!categoriesInitialized.value) {return}
-  form.value.Categories = Object.values(val).flat()
-}, { deep: true })
+watch(
+  selectedCategories,
+  val => {
+    if (!categoriesInitialized.value) {
+      return
+    }
+    form.value.Categories = Object.values(val).flat()
+  },
+  { deep: true },
+)
 
 const adminRoleId = ref('')
 watch(roles, () => {
   adminRoleId.value = roles.value.find(r => r.slug === 'admin')?.id || ''
-  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {return}
+  if (!adminRoleId.value || !Array.isArray(form.value.Roles)) {
+    return
+  }
   form.value.Roles = form.value.Roles.filter(id => id !== adminRoleId.value)
 })
 
 const isRoleSelected = (roleId: string) => {
-  if (!roleId) {return false}
-  if (roleId === adminRoleId.value) {return true}
+  if (!roleId) {
+    return false
+  }
+  if (roleId === adminRoleId.value) {
+    return true
+  }
   return (form.value.Roles || []).includes(roleId)
 }
 
 const toggleRole = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return}
+  if (role.slug === 'admin') {
+    return
+  }
   if ((form.value.Roles || []).includes(role.id)) {
     form.value.Roles = (form.value.Roles || []).filter(id => id !== role.id)
     return
@@ -261,7 +272,9 @@ const toggleRole = (role: { id: string; slug: string }) => {
 }
 
 const roleBadgeClass = (role: { id: string; slug: string }) => {
-  if (role.slug === 'admin') {return 'badge-primary opacity-60 cursor-not-allowed'}
+  if (role.slug === 'admin') {
+    return 'badge-primary opacity-60 cursor-not-allowed'
+  }
   return isRoleSelected(role.id) ? 'badge-primary cursor-pointer' : 'cursor-pointer'
 }
 
@@ -271,11 +284,14 @@ const regenerateSlug = () => {
   }
 }
 
-watch(() => form.value.name, (val) => {
-  if (!form.value.slug && val) {
-    form.value.slug = createSlug(val)
-  }
-})
+watch(
+  () => form.value.name,
+  val => {
+    if (!form.value.slug && val) {
+      form.value.slug = createSlug(val)
+    }
+  },
+)
 
 const addTerm = () => {
   terms.value = [...terms.value, { term: '', Sign: '', is_person: false }]

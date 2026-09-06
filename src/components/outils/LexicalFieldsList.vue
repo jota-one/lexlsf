@@ -1,7 +1,9 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-2">Champs lexicaux</h1>
-    <p class="text-base-content/60 mb-8">Regroupements thématiques de termes en langue française.</p>
+    <p class="text-base-content/60 mb-8">
+      Regroupements thématiques de termes en langue française.
+    </p>
 
     <div v-if="loading" class="flex justify-center py-16">
       <span class="loading loading-spinner loading-lg"></span>
@@ -15,10 +17,14 @@
           class="card card-border hover:shadow-md transition-shadow p-5"
         >
           <h2 class="text-xl font-semibold mb-2">{{ field.name }}</h2>
-          <p v-if="field.introduction" class="text-sm text-base-content/70 line-clamp-3">{{ field.introduction }}</p>
+          <p v-if="field.introduction" class="text-sm text-base-content/70 line-clamp-3">
+            {{ field.introduction }}
+          </p>
         </a>
       </div>
-      <p v-if="fields.length === 0" class="text-center text-base-content/50 py-16">Aucun champ lexical disponible.</p>
+      <p v-if="fields.length === 0" class="text-center text-base-content/50 py-16">
+        Aucun champ lexical disponible.
+      </p>
     </template>
   </div>
 </template>

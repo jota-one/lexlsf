@@ -94,10 +94,10 @@ const handleItemsSelectedAll = async (items: Array<{ type: string; id: string }>
   try {
     await addQuizItems(
       quizId.value,
-      items.map((item) => ({
+      items.map(item => ({
         item_type: item.type,
         item_id: item.id,
-      }))
+      })),
     )
     // Refresh items list
     itemsRefreshKey.value++
