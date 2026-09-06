@@ -44,6 +44,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-06] Correctif prod — le site retournait une erreur 500 sur toutes les pages : le serveur de rendu ne trouvait plus la librairie de composants d'interface, désormais entièrement embarquée dans la version déployée.
 - [2026-09-06] Champs lexicaux — outil de rapprochement des signes : depuis l'onglet Termes, propose un signe pour chaque terme qui n'en a pas (correspondance insensible aux accents, mot contenu, faute de frappe légère), avec revue et alternatives avant application en une fois.
 - [2026-09-06] Champs lexicaux — les types de terme deviennent un sous-ensemble de catégories (« Types de terme ») gérable depuis la page Catégories, avec un script one-shot pour installer la liste de référence.
 - [2026-09-06] Champs lexicaux — page publique en cartes : une carte par type de terme, 3 par ligne, repliées pour tenir 9 cartes à l'écran et dépliables à la demande ; note affichée avant la stratégie ; un lien vers un terme lié déplie sa carte et met le terme en évidence. Import/export des termes aligné sur les autres : liste `related` séparée par des virgules, et fichiers CSV acceptés aussi bien avec des virgules qu'avec des points-virgules entre colonnes (tous les imports).
