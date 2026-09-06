@@ -16,11 +16,23 @@ type PbImportError = {
 type TGetFieldsConfig = () => TImportExport.FieldConfig[]
 type TGetFieldConfig = (key: string) => TImportExport.FieldConfig | undefined
 
+type TOptions = {
+  /** Relations to expand on export. Defaults to the historical per-collection value. */
+  expand?: string
+  /** Column used to label a row in the error report. Defaults to 'name'. */
+  labelKey?: string
+  /** Extra filter applied on export, e.g. to scope records to a parent record. */
+  exportFilter?: string
+  /** Second pass, run once every row has been created/updated. */
+  onAfterImport?: (rows: string[][], headers: string[]) => Promise<void>
+}
+
 export default function useImportExport(
   collectionName: string,
   getExportableFields: TGetFieldsConfig,
   getImportableFields: TGetFieldsConfig,
   getFieldConfig: TGetFieldConfig,
+  options: TOptions = {},
 ) {
   const isExporting = ref(false)
   const isImporting = ref(false)
@@ -44,9 +56,12 @@ export default function useImportExport(
   const exportToCSV = async () => {
     isExporting.value = true
     try {
-      const expand = ['sign', 'person'].includes(collectionName) ? 'Category,Roles' : 'Category'
+      const defaultExpand = ['sign', 'person'].includes(collectionName)
+        ? 'Category,Roles'
+        : 'Category'
       const records = await pb.collection(collectionName).getFullList({
-        expand,
+        expand: options.expand ?? defaultExpand,
+        ...(options.exportFilter ? { filter: options.exportFilter } : {}),
       })
 
       const exportableFields = getExportableFields()
@@ -232,20 +247,36 @@ export default function useImportExport(
             errorMessage = err.message
           }
 
+          const rowLabel = values[headers.indexOf(options.labelKey ?? 'name')] || 'Inconnu'
+
           logImport('warn', 'erreur import ligne', {
             line: i + 1,
-            name: values[headers.indexOf('name')] || 'Inconnu',
+            name: rowLabel,
             error: errorMessage,
           })
 
           result.errors.push({
             line: i + 1,
-            name: values[headers.indexOf('name')] || 'Inconnu',
+            name: rowLabel,
             error: errorMessage,
           })
         } finally {
           result.processed++
           result.success = result.created + result.updated + result.unchanged
+        }
+      }
+
+      // Second pass: relations that can only be resolved once every row exists
+      if (options.onAfterImport) {
+        try {
+          await options.onAfterImport(rows.slice(1), headers)
+        } catch (error) {
+          logImport('error', 'erreur seconde passe', { error: String(error) })
+          result.errors.push({
+            line: 0,
+            name: 'Liens',
+            error: error instanceof Error ? error.message : String(error),
+          })
         }
       }
     } finally {
