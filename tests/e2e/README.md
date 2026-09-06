@@ -7,8 +7,10 @@ Browser tests that drive the real admin SPA against a running PocketBase.
 - PocketBase running locally: `pnpm db` (serves on `http://127.0.0.1:8090`)
 - Playwright's Chromium: `pnpm exec playwright install chromium` (once)
 
-Astro itself is started automatically by Playwright on port **4330** (so it never
-clashes with a dev server on 4321). An already-running server on 4330 is reused.
+The project's Astro dev server is reused if already running (whatever port it
+picked) and started otherwise. Astro 7 daemonizes `astro dev`, so `run.sh`
+manages it and detects its URL via `astro dev status` — Playwright's own
+`webServer` cannot drive a daemonized process.
 
 ## Running
 

@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
-// tests/e2e/.env is sourced by tests/e2e/run.sh before this config loads.
-const BASE_URL = process.env.BASE_URL || 'http://localhost:4330'
+// run.sh detects the project's dev server URL and exports BASE_URL before this
+// config loads; the fallback is Astro's default dev port.
+const BASE_URL = process.env.BASE_URL || 'http://localhost:4321'
 
 export default defineConfig({
   testDir: './tests/e2e/specs',
@@ -17,14 +18,8 @@ export default defineConfig({
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
   },
-  // Astro is started on a dedicated port (4330) so it never clashes with a dev
-  // server already running on 4321. PocketBase must be started separately
-  // (pnpm db) — the tests talk to it at PB_URL.
-  webServer: {
-    command: 'pnpm dev --port 4330',
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  // The dev server (port 4330) and PocketBase are started by tests/e2e/run.sh,
+  // not by Playwright: Astro 7 daemonizes `astro dev`, which Playwright's
+  // webServer treats as an early exit. Always run the suite via `pnpm test:e2e`.
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 })
