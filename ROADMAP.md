@@ -17,7 +17,6 @@ Liste des petites améliorations et refactorings potentiels.
 - Culture générale — import/export des items (sur le même modèle que les signes).
 - Culture générale — intégration dans la recherche globale du site.
 
-
 ## Nouvelles fonctionnalités
 
 ### Admin personnes/organismes — onglet Liens / Bibliographie
@@ -38,6 +37,20 @@ Il doit avoir accès à des statistiques, des charts illustrant sa progression d
 
 Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
 
+### Amélioration des champs lexicaux
+
+En vrac, voici ce qu'on veut améliorer ici:
+
+- virer la partie "ce terme est une personne". Pas utile dans les champs lexicaux.
+- Un terme doit contenir les champs suivants: le terme, la stratégie, notes personnelles, une catégorie de terme (liste limitée), des liens éventuels sur d'autres termes du champ lexical
+- On veut pouvoir importer tout ça via un CSV
+- L'UI de l'admin des termes est horrible. A partir de 3 termes on y voit plus rien.
+- Côté Frontend, on veut une liste plus compacte avec le nom du terme, et en-dessous la stratégie (en bleu, car tout ce qui concerne les sourds c'est bleu), puis la note perso en noir normal. S'il y a un signe associé, on veut le lien vers le signe sous forme d'icône (déjà fait ailleurs).
+
+### Nouveau module "Situation d'interprétation"
+
+C'est le module utltime. Il va reposer sur tout le reste et permettre de remonter toutes les infos utiles du site pour une sitation d'interprétation en particulier.
+On peut imaginer par exemple la situation "Assemblée générale d'une association de docteurs en médecine légale". Ca va déjà toucher à plusieurs champs lexicaux, ça va faire appel à des expressions françaises, etc.
 
 ## Historique (fait)
 
@@ -75,7 +88,8 @@ Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: N
 
 ARCHIVE des demandes plus anciennes (dans Telegram)
 LEXIQUE
-Admin: 
+Admin:
+
 - choisir catégories avec boutons au lieu de drop down
 - pareil pour statut du signe, source d'apprentissage
 - Source d'app : enlever famille. recherche
@@ -84,18 +98,20 @@ Admin:
 - mouvements : boutons à cliquer
 
 Front end
+
 - Catégories : changer en menu déroulant, enlever la photo
 - Titres ok, catégories en noir
 
-Mouvements : boutons images + champ autre à remplir 
+Mouvements : boutons images + champ autre à remplir
 Orientation : ajouter
 Direction : boutons images (reste a faire)
 Mouvement
-ENLEVER : mouvement de chemin,  type de main, trajectoire, mouvement interne (x3) et tout ce qu'il y après
+ENLEVER : mouvement de chemin, type de main, trajectoire, mouvement interne (x3) et tout ce qu'il y après
 Ajouter champ précision
-Répétiion : x2, 
+Répétiion : x2,
 
 Pied de page :
+
 - d'une autre couleur contrastée
 - Textes en colonne à droit et a gauche : qui prenne moins de place verticalement
 
@@ -109,6 +125,7 @@ Form Person:
 ✅ Né(e) de famille sourde/ né(e) de famille entendante
 ✅ Précision sur la famille
 ✅ Activité (utiliser sous ensemble de catégories)
+
 - Récompenses (reconnaissance institutionnelle)
 
 - Liens (label + url)
@@ -117,11 +134,10 @@ Catégories:
 ✅ Pouvoir sélectionner plusieurs sous-catégories dans une catégorie parente
 ✅ Ajouter entité "personne activité"
 
-
 Front:
 Page personne:
 ✅ Bloc gris du haut: né + lieu -> ligne de séparation, activités
-✅ Biographie à gauche (colonne 1/3). 
+✅ Biographie à gauche (colonne 1/3).
 ✅ Autre descriptions à venir (colonne 2/3). Même système que biographique. Description en markdown. Police un peu plus grande que bio (plutôt comme dans la carte du haut).
 
 Page signes
@@ -134,17 +150,18 @@ Page signes
 ✅ Image emplacement tête, enlever les arrondis en bas
 
 - Fixer taille image (max 300px de large)
-✅ Ajouter champ prénom
-✅ Tri par nom, prénom dans les listes
+  ✅ Ajouter champ prénom
+  ✅ Tri par nom, prénom dans les listes
 - Edit du slug
 - Formulaire pour gérer les liens
 - Afficher les liens en-dessous de la description avec un trait de séparation
 - Ajouter champ "décédé" + "date décès" dans fiche personne
-✅ Dans résultat de recherche: mettre tag à droite au lieu de gauche (signe, personne, etc.)
-✅ Agrandir titres "Main droite", "Main gauche" et utiliser les couleurs standard rose et bleu
+  ✅ Dans résultat de recherche: mettre tag à droite au lieu de gauche (signe, personne, etc.)
+  ✅ Agrandir titres "Main droite", "Main gauche" et utiliser les couleurs standard rose et bleu
 - Personne associée: changer le design et faire plus discret.
 
 ✅ 1. Import/Export (personne):
+
 - nom
 - prénom
 - birthdate
@@ -152,19 +169,21 @@ Page signes
 - métier (catégorie)
 
 ✅ 2. Import/Export (signe):
+
 - Tout ce qu'il y a dans les 2 premiers onglets (sauf vidéo)
 
 ✅ 3. Sécuriser le site complet par mot de passe
 
 4. Révision:
-✅ S'inspirer de Quizlet
-✅ Créer un quizz de révision selon des critères de recherche (niveau, catégorie, date d'ajout, etc.)
+   ✅ S'inspirer de Quizlet
+   ✅ Créer un quizz de révision selon des critères de recherche (niveau, catégorie, date d'ajout, etc.)
+
 - Champ "à réviser" dans un signe ou une personne (cochable par utilisateur et par quizz)
-✅ Ajouter filtre par date d'ajout
-✅ Mettre pouce en l'air, pouce en bas au lieu de "Je savais", "je savais pas"
-✅ Remonter les boutons "passer", "retourner", etc juste en-dessous de la flip-card.
+  ✅ Ajouter filtre par date d'ajout
+  ✅ Mettre pouce en l'air, pouce en bas au lieu de "Je savais", "je savais pas"
+  ✅ Remonter les boutons "passer", "retourner", etc juste en-dessous de la flip-card.
 - Mettre des cases à cocher et un bouton "save" au lieu du bouton "+" et du "ajouter tous"
-✅ Corriger bug "Supprimer un quiz"
+  ✅ Corriger bug "Supprimer un quiz"
 
 General:
 ✅ Hauteur flipcard pas correct. Si trop de contenu, override les boutons.
@@ -175,15 +194,19 @@ General:
 ✅ Ajouter un menu d'édition du profil de la personne connectée
 
 Culture:
+
 - Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz
 
 Admin signes:
+
 - Renommer LS Internationale en LSI (migration db)
 - Ajouter 2 colonnes dans UI list (type de langue et learning source)
 
 Admin Quizz:
+
 - Geetha n'arrive pas à supprimer un certain quizz "test"
 - Admin doit pouvoir partager un quizz avec d'autres utilisateurs
 
 Accès "Etudiant":
+
 - Doivent pouvoir voir les quizz partagé avec eux
