@@ -16,6 +16,11 @@ Liste des petites améliorations et refactorings potentiels.
 - Culture générale — affichage visuel distinct selon le mode : événements ponctuels en vue verticale (comme la timeline d'une personne dans Culture), périodes en vue horizontale avec des rectangles illustrant la durée et le nom au-dessus. La fiche détail s'ouvre en-dessous en mode horizontal, à droite en mode vertical.
 - Culture générale — import/export des items (sur le même modèle que les signes).
 - Culture générale — intégration dans la recherche globale du site.
+- Design général: Header - le logo dépasse un peu du header (en bas), il faudrait agrandir légèrement le header afin que logo ne dépasse plus. Ca permettra aussi au champ de recherche d'être moins collé vers le bas du header.
+- Design général: Il faut adapter les couleurs primary et secondary (bleu et rose) aux couleurs du logo.
+- Design général: menu lexique - le hover des cartes est rose, il faudrait qu'il soit bleu. C'est plus logique car le bleu est la couleur des Sourds.
+- Champ lexicaux: les liens entre termes doivent être mono-directionnel finalement.
+- Champ lexicaux - front: le cadre autour d'un type de terme doit être plus visible et mettre le fond du titre en jaune. Dedans il va contenir uniquement les termes (pas le détail), affichés sur 2 colonnes pour un maximum visible à la fois. Le détail doit être affiché au survol du mot (chargé à la volée ou pas, voir perfs). La couleur du highlight lorsqu'on va sur un terme lié doit être grise (pas bleue). Lorsqu'on expand un type, il faut aussi pouvoir le collapse depuis le haut (ptite icône > et la même qui pointe vers le bas).
 
 ## Nouvelles fonctionnalités
 
