@@ -44,6 +44,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-07] Lexique — un signe sans vidéo n'affiche plus un lecteur vide : un cadre gris de la taille du lecteur indique « Vidéo non disponible ».
 - [2026-09-07] Admin — les modales de confirmation ouvrent avec le bouton « Confirmer » déjà sélectionné : au clavier, Entrée valide directement.
 - [2026-09-07] Champs lexicaux — la liste des champs adopte les cartes des catégories du lexique et de la culture : carré gris, nom centré, nombre de termes en badge, survol jaune.
 - [2026-09-07] Champs lexicaux — page publique repensée : cadre plus marqué et titre sur fond jaune pour chaque type, la carte ne liste plus que les termes sur 2 colonnes, les termes portant une note ou une stratégie sont soulignés pour se repérer sans survoler, le détail (note, stratégie, termes liés, signe) s'affiche au survol, juste sous le terme, le terme atteint par un lien est surligné en gris, et un chevron dans le titre permet aussi de replier/déplier.

@@ -19,9 +19,21 @@
       <div class="grid grid-cols-12 gap-4">
         <div class="card card-md col-span-12 md:col-span-7 shadow-sm">
           <div class="card-body">
-            <video autoplay controls>
+            <video v-if="hasVideo" autoplay controls>
               <source :src="videoUrl" type="video/mp4" />
             </video>
+            <!--
+              Same footprint as a loaded player, so the page does not reflow when
+              a video is added: every sign video is 4:3 (720x540).
+            -->
+            <div
+              v-else
+              class="aspect-[4/3] w-full rounded-box bg-base-300 flex flex-col items-center justify-center gap-2 text-base-content/50"
+            >
+              <span class="i-ic-round-videocam-off text-4xl"></span>
+              <!-- A span, not a <p>: DaisyUI grows paragraphs inside a card-body. -->
+              <span class="text-sm">Vidéo non disponible</span>
+            </div>
             <div class="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <div
@@ -193,6 +205,8 @@ onMounted(async () => {
 })
 
 const personRecord = computed(() => record.value?.expand?.person_via_Sign?.[0] ?? null)
+
+const hasVideo = computed(() => Boolean(record.value?.video))
 
 const videoUrl = computed(() =>
   record.value
