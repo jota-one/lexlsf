@@ -63,7 +63,7 @@
         :maxSelectedLabels="3"
       />
       <p class="text-xs text-base-content/40 mt-1">
-        Les liens sont réciproques : l'autre terme pointera aussi vers celui-ci.
+        Les liens sont à sens unique : l'autre terme ne pointera pas vers celui-ci.
       </p>
     </div>
   </div>

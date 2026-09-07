@@ -127,8 +127,9 @@ type TTermRow = { id: string; term: string; LexicalField: string; RelatedTerms: 
 /**
  * Second import pass: resolve the `related` column by term name.
  *
- * Links are additive — the column only ever adds links (on both sides),
- * never removes existing ones. Unlinking is done from the admin UI.
+ * Links are one-way and additive — the column only ever adds links from the
+ * row's term to the named ones, never removes existing ones. Unlinking is done
+ * from the admin UI.
  */
 export const applyRelatedTerms = async (fieldId: string, rows: string[][], headers: string[]) => {
   const termIndex = headers.indexOf('term')
@@ -191,7 +192,6 @@ export const applyRelatedTerms = async (fieldId: string, rows: string[][], heade
         continue
       }
       addLink(self.id, target.id)
-      addLink(target.id, self.id)
     }
   }
 

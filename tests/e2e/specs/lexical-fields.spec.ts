@@ -4,7 +4,7 @@ import { LexicalFieldEditPage } from '../pages/LexicalFieldEditPage'
 
 /**
  * End-to-end coverage of the lexical fields rework: admin term CRUD with a
- * type and reciprocal links, CSV import (two-pass link resolution), and the
+ * type and one-way links, CSV import (two-pass link resolution), and the
  * type-grouped public page.
  */
 
@@ -62,7 +62,7 @@ test.describe('Champs lexicaux — admin', () => {
     await deleteLexicalField(admin, id!)
   })
 
-  test('adds terms and links them reciprocally', async ({ adminPage, admin }) => {
+  test('adds terms and links them one way only', async ({ adminPage, admin }) => {
     const field = await createField(admin, 'Liens')
     // Unique term names so the suite never collides with real data in the dev DB
     // (the related-terms picker searches every field).
@@ -78,13 +78,13 @@ test.describe('Champs lexicaux — admin', () => {
 
       await edit.linkTerm(a, b)
 
-      // The link must exist on both sides.
+      // The link only exists on the edited term.
       await expect(async () => {
         const terms = await listTerms(admin, field.id)
         const termA = terms.find(t => t.term === a)
         const termB = terms.find(t => t.term === b)
         expect(termA?.RelatedTerms).toContain(termB?.id)
-        expect(termB?.RelatedTerms).toContain(termA?.id)
+        expect(termB?.RelatedTerms).not.toContain(termA?.id)
       }).toPass({ timeout: 5000 })
 
       // The type set on the first term must be persisted.
@@ -134,7 +134,8 @@ test.describe('Champs lexicaux — admin', () => {
         const basse = terms.find(t => t.term === basseName)
         expect(haute, 'haute imported and cleaned').toBeTruthy()
         expect(basse, 'basse imported').toBeTruthy()
-        // The link resolved despite the messy `related` value.
+        // Each row declares its own link, so both resolved despite the messy
+        // `related` values.
         expect(haute?.RelatedTerms).toContain(basse?.id)
         expect(basse?.RelatedTerms).toContain(haute?.id)
       }).toPass({ timeout: 5000 })
@@ -181,11 +182,12 @@ test.describe('Champs lexicaux — admin', () => {
         const second = terms.find(t => t.term === depute)
         const third = terms.find(t => t.term === scrutin)
         expect(first, 'columns split on the semicolon').toBeTruthy()
-        // Both names of the comma-separated `related` list resolved.
+        // Both names of the comma-separated `related` list resolved...
         expect(first?.RelatedTerms).toContain(second?.id)
         expect(first?.RelatedTerms).toContain(third?.id)
-        expect(second?.RelatedTerms).toContain(first?.id)
-        expect(third?.RelatedTerms).toContain(first?.id)
+        // ...and only in that direction.
+        expect(second?.RelatedTerms).not.toContain(first?.id)
+        expect(third?.RelatedTerms).not.toContain(first?.id)
       }).toPass({ timeout: 5000 })
     } finally {
       await deleteLexicalField(admin, field.id)

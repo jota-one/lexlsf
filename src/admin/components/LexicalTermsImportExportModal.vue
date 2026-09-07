@@ -129,9 +129,9 @@
           </p>
           <p>
             <strong>related :</strong> les noms des termes liés séparés par des virgules. Exemple :
-            <code>Ministre,Parlement</code>. Les liens sont réciproques et peuvent pointer vers des
-            termes d'autres champs lexicaux. Ils sont résolus après la création de tous les termes
-            du fichier, et sont uniquement ajoutés — jamais supprimés.
+            <code>Ministre,Parlement</code>. Les liens sont à sens unique et peuvent pointer vers
+            des termes d'autres champs lexicaux. Ils sont résolus après la création de tous les
+            termes du fichier, et sont uniquement ajoutés — jamais supprimés.
           </p>
           <p class="text-warning">
             <strong>Note :</strong> le signe associé n'est pas importable. Il se renseigne depuis la
