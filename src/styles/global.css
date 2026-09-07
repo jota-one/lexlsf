@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @theme {
   --font-display: 'Oswald Variable', 'sans-serif';
+  /* Straight from the logo, for accents that must match it exactly. */
+  --color-logo-yellow: oklch(92.57% 0.178 104.88);
 }
 @plugin "daisyui";
 
@@ -13,10 +15,12 @@
   --color-base-200: oklch(98% 0 0);
   --color-base-300: oklch(95% 0 0);
   --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(65% 0.241 354.308);
-  --color-primary-content: oklch(94% 0.028 342.258);
-  --color-secondary: oklch(54% 0.281 293.009);
-  --color-secondary-content: oklch(94% 0.029 294.588);
+  /* Logo blue (#9cdae3), darkened so it stays readable as text and as a fill. */
+  --color-primary: oklch(55% 0.11 207.3);
+  --color-primary-content: oklch(97% 0.013 207.3);
+  /* Logo pink (#f7b5ca), darkened for the same reason. */
+  --color-secondary: oklch(68% 0.13 358.2);
+  --color-secondary-content: oklch(28% 0.06 358.2);
   --color-accent: oklch(77% 0.152 181.912);
   --color-accent-content: oklch(38% 0.063 188.416);
   --color-neutral: oklch(14% 0.005 285.823);
@@ -47,10 +51,11 @@
   --color-base-200: oklch(23.26% 0.014 253.1);
   --color-base-300: oklch(21.15% 0.012 254.09);
   --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(65% 0.241 354.308);
-  --color-primary-content: oklch(94% 0.028 342.258);
-  --color-secondary: oklch(58% 0.233 277.117);
-  --color-secondary-content: oklch(96% 0.018 272.314);
+  /* Same logo hues, lightened so they read against the dark base. */
+  --color-primary: oklch(72% 0.115 207.3);
+  --color-primary-content: oklch(24% 0.045 207.3);
+  --color-secondary: oklch(76% 0.12 358.2);
+  --color-secondary-content: oklch(26% 0.05 358.2);
   --color-accent: oklch(77% 0.152 181.912);
   --color-accent-content: oklch(38% 0.063 188.416);
   --color-neutral: oklch(14% 0.005 285.823);

@@ -9,7 +9,8 @@
           <div
             v-for="person in persons"
             :key="person.id"
-            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md hover:bg-primary transition-all"
+            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md transition-all"
+            :class="SECTION_ACCENTS.culture.cardHover"
             @click="goToPerson(person.slug)"
           >
             <figure v-if="person.illustration" class="aspect-square overflow-hidden">
@@ -37,6 +38,7 @@ import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TCategory, TPerson } from '../../types'
 import usePersons from '@components/culture/composables/usePersons'
+import { SECTION_ACCENTS } from '@config/sectionAccents'
 
 const props = defineProps<{ subcategory: string; categories: TCategory.TRecord[] }>()
 const { loadPersons, persons, getIllustrationUrl } = usePersons()

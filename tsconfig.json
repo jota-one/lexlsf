@@ -12,6 +12,7 @@
       "@styles/*": ["./src/styles/*"],
       "@images/*": ["./src/assets/*"],
       "@config": ["./src/config/index.ts"],
+      "@config/*": ["./src/config/*"],
       "@types": ["./src/types/index.ts"]
     },
     "jsx": "preserve"

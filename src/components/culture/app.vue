@@ -3,6 +3,7 @@
     :categories="categories"
     :category-counts="categoryCounts"
     entity-label="personne"
+    section="culture"
   ></router-view>
 </template>
 

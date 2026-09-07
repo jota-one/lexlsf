@@ -9,7 +9,8 @@
           <div
             v-for="sign in signs"
             :key="sign.id"
-            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md hover:bg-primary transition-all aspect-square"
+            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md transition-all aspect-square"
+            :class="SECTION_ACCENTS.lexique.cardHover"
             @click="goToSign(sign.slug)"
           >
             <div class="card-body items-center justify-center p-4">
@@ -27,6 +28,7 @@ import { watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { TSign, TCategory } from '../../types'
 import useSigns from '@components/lexique/composables/useSigns'
+import { SECTION_ACCENTS } from '@config/sectionAccents'
 
 const props = defineProps<{ subcategory: string; categories: TCategory.TRecord[] }>()
 const { loadSigns, signs } = useSigns()

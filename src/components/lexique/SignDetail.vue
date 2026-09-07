@@ -7,7 +7,7 @@
           <a
             v-if="personRecord"
             :href="`/culture/person/${personRecord.slug}`"
-            class="btn btn-primary hover:bg-pink-600 ml-2"
+            class="btn btn-primary ml-2"
             :aria-label="`Voir la personne ${personRecord.firstname ? personRecord.firstname + ' ' : ''}${personRecord.name}`"
           >
             <span class="i-fa-solid-user"></span>

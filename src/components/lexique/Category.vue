@@ -18,7 +18,8 @@
         <div
           v-for="subcat in visibleSubCategories"
           :key="subcat.id"
-          class="card bg-base-200 shadow-sm cursor-pointer hover:shadow-md hover:bg-primary transition-all aspect-square"
+          class="card bg-base-200 shadow-sm cursor-pointer hover:shadow-md transition-all aspect-square"
+          :class="accent.cardHover"
           @click="toggleSubcategory(subcat.slug)"
         >
           <div class="card-body items-center justify-center p-4 gap-2">
@@ -31,7 +32,7 @@
       </div>
 
       <!-- Grille des signes -->
-      <router-view :categories="visibleSubCategories"></router-view>
+      <router-view :categories="visibleSubCategories" :section="section"></router-view>
     </div>
   </transition>
 </template>
@@ -40,13 +41,17 @@
 import { ref, computed, watch } from 'vue'
 import type { TCategory } from '../../types'
 import { useRouter, useRoute } from 'vue-router'
+import { SECTION_ACCENTS, type TSection } from '@config/sectionAccents'
 
-const props = defineProps<{
+type Props = {
   category: string
   categories: TCategory.TRecord[]
   categoryCounts?: Record<string, number>
   entityLabel?: string
-}>()
+  section?: TSection
+}
+const props = withDefaults(defineProps<Props>(), { section: 'lexique' })
+const accent = computed(() => SECTION_ACCENTS[props.section])
 const router = useRouter()
 const route = useRoute()
 

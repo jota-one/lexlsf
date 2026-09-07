@@ -17,7 +17,8 @@
       <div
         v-for="cat in visibleParentCategories"
         :key="cat.id"
-        class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:bg-primary aspect-square"
+        class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md aspect-square"
+        :class="accent.cardHover"
         @click="toggleParent(cat.slug)"
       >
         <div class="card-body items-center justify-center p-4 gap-2">
@@ -34,6 +35,7 @@
       :categories="categories"
       :category-counts="categoryCounts"
       :entity-label="entityLabel"
+      :section="section"
     ></router-view>
   </div>
 </template>
@@ -42,12 +44,16 @@
 import { ref, computed } from 'vue'
 import type { TCategory } from '../../types'
 import { useRoute, useRouter } from 'vue-router'
+import { SECTION_ACCENTS, type TSection } from '@config/sectionAccents'
 
-const props = defineProps<{
+type Props = {
   categories: TCategory.TRecord[]
   categoryCounts?: Record<string, number>
   entityLabel?: string
-}>()
+  section?: TSection
+}
+const props = withDefaults(defineProps<Props>(), { section: 'lexique' })
+const accent = computed(() => SECTION_ACCENTS[props.section])
 const router = useRouter()
 const route = useRoute()
 

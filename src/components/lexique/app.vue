@@ -1,5 +1,9 @@
 <template>
-  <router-view :categories="categories" :category-counts="categoryCounts"></router-view>
+  <router-view
+    :categories="categories"
+    :category-counts="categoryCounts"
+    section="lexique"
+  ></router-view>
 </template>
 
 <script setup lang="ts">

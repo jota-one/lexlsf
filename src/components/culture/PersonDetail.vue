@@ -82,7 +82,7 @@
               <button
                 v-for="cat in record.expand.Category"
                 :key="cat.id"
-                class="badge badge-primary badge-lg hover:badge-primary-focus transition-colors cursor-pointer"
+                class="badge badge-secondary badge-lg hover:badge-secondary-focus transition-colors cursor-pointer"
                 @click="goToCategory(cat)"
               >
                 {{ cat.tag }}
@@ -106,13 +106,13 @@
             <div class="timeline timeline-vertical timeline-snap-icon timeline-compact">
               <li v-for="highlight in record.timeline" :key="highlight.title">
                 <div class="timeline-middle">
-                  <span class="i-fa-solid-circle text-primary"></span>
+                  <span class="i-fa-solid-circle text-secondary"></span>
                 </div>
                 <div class="timeline-start mb-10">
                   <time class="font-bold text-[16px]">{{ highlight.title }}</time>
                   <p class="mt-2 text-base-content/80">{{ highlight.description }}</p>
                 </div>
-                <hr class="bg-primary" />
+                <hr class="bg-secondary" />
               </li>
             </div>
           </div>
