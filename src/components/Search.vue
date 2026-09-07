@@ -113,6 +113,9 @@ const onSearch = async (event: { query?: string }) => {
         type: 'lexical_field',
         label: item.term,
         definition: `dans : ${item.expand.LexicalField.name}`,
+        // Land on the term itself — unfolded and highlighted — the way a link
+        // between two terms does, rather than at the top of its field.
+        hash: `#term-${item.id}`,
       }))
     const french = (frenchRes.items || []).map((item: Record<string, unknown>) => ({
       ...item,
@@ -141,7 +144,7 @@ const onSearch = async (event: { query?: string }) => {
   }
 }
 
-const onSelect = (event: { value?: { slug?: string; type?: string } }) => {
+const onSelect = (event: { value?: { slug?: string; type?: string; hash?: string } }) => {
   const selected = event.value
   if (!selected?.slug) {
     return
@@ -155,7 +158,7 @@ const onSelect = (event: { value?: { slug?: string; type?: string } }) => {
     pi_deaf_expression: '/outils/expressions-pi-sourdes',
   }
   const base = routes[selected.type] || '/signs'
-  window.location.href = `${base}/${selected.slug}`
+  window.location.href = `${base}/${selected.slug}${selected.hash || ''}`
 }
 
 const badgeClass = (type: string) => {

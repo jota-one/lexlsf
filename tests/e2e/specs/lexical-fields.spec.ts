@@ -314,6 +314,53 @@ test.describe('Champs lexicaux — admin', () => {
     }
   })
 
+  test('reaches a term from the global search, unfolded and highlighted', async ({
+    adminPage,
+    admin,
+  }) => {
+    const field = await createField(admin, 'Recherche')
+    const prefix = `E2E${stamp()}`
+    try {
+      // Enough terms in the typed card that it renders collapsed.
+      const ids: string[] = []
+      for (let i = 1; i <= 12; i++) {
+        const res = await pbFetch(
+          '/api/collections/lexical_term/records',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              term: `${prefix}-R${String(i).padStart(2, '0')}`,
+              LexicalField: field.id,
+              Type: type.id,
+            }),
+          },
+          admin.token,
+        )
+        ids.push((await res.json()).id)
+      }
+      const targetId = ids[ids.length - 1]
+
+      // The search box lives in the site header, on every page but the home.
+      await adminPage.goto('/lexique')
+      await adminPage.locator('nav input').fill(`${prefix}-R12`)
+      await adminPage
+        .locator('.p-autocomplete-option', { hasText: `${prefix}-R12` })
+        .first()
+        .click()
+
+      // Landing on the field page, the card unfolds and the term is highlighted
+      // — exactly like following a link from another term.
+      await expect(adminPage).toHaveURL(`/outils/champs-lexicaux/${field.slug}#term-${targetId}`)
+      await expect(adminPage.getByRole('button', { name: 'Réduire' })).toBeVisible()
+      await expect(adminPage.locator(`li#term-${targetId}`)).toHaveCSS(
+        'box-shadow',
+        /3px 0px 0px 0px inset/,
+      )
+    } finally {
+      await deleteLexicalField(admin, field.id)
+    }
+  })
+
   test('proposes and applies signs for terms that have none', async ({ adminPage, admin }) => {
     const prefix = `E2E${stamp()}`
     const signName = `${prefix}-Sénat`
