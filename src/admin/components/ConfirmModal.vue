@@ -5,19 +5,21 @@
     </div>
     <div class="flex justify-end gap-2 pt-4">
       <Button type="button" label="Annuler" severity="secondary" @click="visible = false"></Button>
-      <Button type="button" label="Confirmer" severity="danger" @click="confirm"></Button>
+      <!-- Confirming is the intent in almost every case: PrimeVue's Dialog focuses
+           the `[autofocus]` element on open, so Enter confirms without tabbing. -->
+      <Button type="button" label="Confirmer" severity="danger" autofocus @click="confirm"></Button>
     </div>
   </Dialog>
 </template>
 <script setup lang="ts">
-// filepath: /Users/joelpoulin/Sites/astro/lexlsf/src/admin/components/ConfirmModal.vue
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 
-const props = defineProps<{
+type Props = {
   title: string
   message: string
-}>()
+}
+defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'confirm'): void

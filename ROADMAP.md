@@ -44,6 +44,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-07] Admin — les modales de confirmation ouvrent avec le bouton « Confirmer » déjà sélectionné : au clavier, Entrée valide directement.
 - [2026-09-07] Champs lexicaux — la liste des champs adopte les cartes des catégories du lexique et de la culture : carré gris, nom centré, nombre de termes en badge, survol jaune.
 - [2026-09-07] Champs lexicaux — page publique repensée : cadre plus marqué et titre sur fond jaune pour chaque type, la carte ne liste plus que les termes sur 2 colonnes, le détail (note, stratégie, termes liés, signe) s'affiche au survol, juste sous le terme, le terme atteint par un lien est surligné en gris, et un chevron dans le titre permet aussi de replier/déplier.
 - [2026-09-07] Champs lexicaux — les liens entre termes deviennent à sens unique : lier un terme à un autre ne crée plus le lien retour, à la saisie comme à l'import CSV.
