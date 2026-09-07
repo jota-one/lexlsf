@@ -16,11 +16,6 @@ Liste des petites améliorations et refactorings potentiels.
 - Culture générale — affichage visuel distinct selon le mode : événements ponctuels en vue verticale (comme la timeline d'une personne dans Culture), périodes en vue horizontale avec des rectangles illustrant la durée et le nom au-dessus. La fiche détail s'ouvre en-dessous en mode horizontal, à droite en mode vertical.
 - Culture générale — import/export des items (sur le même modèle que les signes).
 - Culture générale — intégration dans la recherche globale du site.
-- Design général: Header - le logo dépasse un peu du header (en bas), il faudrait agrandir légèrement le header afin que logo ne dépasse plus. Ca permettra aussi au champ de recherche d'être moins collé vers le bas du header.
-- Design général: Il faut adapter les couleurs primary et secondary (bleu et rose) aux couleurs du logo.
-- Design général: menu lexique - le hover des cartes est rose, il faudrait qu'il soit bleu. C'est plus logique car le bleu est la couleur des Sourds.
-- Champ lexicaux: les liens entre termes doivent être mono-directionnel finalement.
-- Champ lexicaux - front: le cadre autour d'un type de terme doit être plus visible et mettre le fond du titre en jaune. Dedans il va contenir uniquement les termes (pas le détail), affichés sur 2 colonnes pour un maximum visible à la fois. Le détail doit être affiché au survol du mot (chargé à la volée ou pas, voir perfs). La couleur du highlight lorsqu'on va sur un terme lié doit être grise (pas bleue). Lorsqu'on expand un type, il faut aussi pouvoir le collapse depuis le haut (ptite icône > et la même qui pointe vers le bas).
 
 ## Nouvelles fonctionnalités
 
@@ -49,6 +44,11 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-07] Champs lexicaux — la liste des champs adopte les cartes des catégories du lexique et de la culture : carré gris, nom centré, nombre de termes en badge, survol jaune.
+- [2026-09-07] Champs lexicaux — page publique repensée : cadre plus marqué et titre sur fond jaune pour chaque type, la carte ne liste plus que les termes sur 2 colonnes, le détail (note, stratégie, termes liés, signe) s'affiche au survol, juste sous le terme, le terme atteint par un lien est surligné en gris, et un chevron dans le titre permet aussi de replier/déplier.
+- [2026-09-07] Champs lexicaux — les liens entre termes deviennent à sens unique : lier un terme à un autre ne crée plus le lien retour, à la saisie comme à l'import CSV.
+- [2026-09-07] Design — code couleur par section, repris des couleurs du logo : le Lexique passe en bleu (la couleur des Sourds), la Culture en rose et les outils en jaune, cartes de catégories et fiches comprises.
+- [2026-09-07] Design — en-tête agrandi : le logo ne déborde plus sous la barre et le champ de recherche n'est plus collé à son bord inférieur.
 - [2026-09-06] Correctif prod — le site retournait une erreur 500 sur toutes les pages : le serveur de rendu ne trouvait plus la librairie de composants d'interface, désormais entièrement embarquée dans la version déployée.
 - [2026-09-06] Champs lexicaux — outil de rapprochement des signes : depuis l'onglet Termes, propose un signe pour chaque terme qui n'en a pas (correspondance insensible aux accents, mot contenu, faute de frappe légère), avec revue et alternatives avant application en une fois.
 - [2026-09-06] Champs lexicaux — les types de terme deviennent un sous-ensemble de catégories (« Types de terme ») gérable depuis la page Catégories, avec un script one-shot pour installer la liste de référence.
