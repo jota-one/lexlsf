@@ -9,7 +9,7 @@ const isHome = Astro.url.pathname === '/';
 const { navBg = 'bg-transparent' } = Astro.props;
 
 const navClasses =
-  'fixed top-0 left-0 w-full h-20 backdrop-blur-md shadow-lg p-5 z-50 ' + navBg
+  'fixed top-0 left-0 w-full h-24 flex items-center backdrop-blur-md shadow-lg px-5 z-50 ' + navBg
 const logoContainerClasses = isHome ? 'flex-1' : 'w-40';
 ---
 
@@ -18,11 +18,11 @@ const logoContainerClasses = isHome ? 'flex-1' : 'w-40';
     <nav
       class={navClasses}
     >
-      <div class="container flex justify-between items-center mx-auto">
+      <div class="container w-full flex justify-between items-center mx-auto">
         <div class={logoContainerClasses}>
           <h1 class="text-xl md:text-3xl font-semibold">
             <a href="/" class="flex items-center text-white" aria-label="Lexique LSF">
-              <LsflexLogo class="h-20 w-auto absolute" />
+              <LsflexLogo class="h-20 w-auto absolute top-1/2 -translate-y-1/2" />
             </a>
           </h1>
         </div>
