@@ -34,7 +34,9 @@
           @mouseleave="scheduleClose"
           @focusout="scheduleClose"
         >
-          <span class="font-medium">{{ term.term }}</span>
+          <span class="font-medium" :class="{ 'is-annotated': isAnnotated(term) }">
+            {{ term.term }}
+          </span>
           <span
             v-if="term.expand?.Sign"
             class="i-ic-round-sign-language align-middle ml-1 text-info"
@@ -152,6 +154,13 @@ let closeTimer: ReturnType<typeof setTimeout> | undefined
 const hasDetail = (term: TLexicalTerm.TRecord) =>
   Boolean(term.note || term.strategy || term.expand?.Sign || term.expand?.RelatedTerms?.length)
 
+/**
+ * A note or a strategy is text that only the hover panel shows, so the term is
+ * underlined to announce it. A sign already has its own icon, and related terms
+ * are reachable from the other side of the link.
+ */
+const isAnnotated = (term: TLexicalTerm.TRecord) => Boolean(term.note || term.strategy)
+
 const keepOpen = () => clearTimeout(closeTimer)
 
 /** Short grace period so the pointer can travel from the term to the panel. */
@@ -240,6 +249,13 @@ onMounted(async () => {
 /* Hints that hovering the term reveals its detail. */
 .term-list li.has-detail {
   cursor: help;
+}
+
+/* Announces a note or a strategy before the term is hovered. */
+.term-list .is-annotated {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
 }
 
 .term-list li.has-detail:hover,

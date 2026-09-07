@@ -370,6 +370,7 @@ test.describe('Champs lexicaux — admin', () => {
     const field = await createField(admin, 'Public')
     const typed = `E2E${stamp()}-Typé`
     const untyped = `E2E${stamp()}-Libre`
+    const bare = `E2E${stamp()}-Nu`
     try {
       // Seed one typed and one untyped term via API.
       const typedRes = await pbFetch(
@@ -398,6 +399,13 @@ test.describe('Champs lexicaux — admin', () => {
         },
         admin.token,
       )
+      // A term with neither note nor strategy, to check it stays plain.
+      const bareRes = await pbFetch(
+        '/api/collections/lexical_term/records',
+        { method: 'POST', body: JSON.stringify({ term: bare, LexicalField: field.id }) },
+        admin.token,
+      )
+      const bareId = (await bareRes.json()).id
 
       await adminPage.goto(`/outils/champs-lexicaux/${field.slug}`)
 
@@ -406,6 +414,16 @@ test.describe('Champs lexicaux — admin', () => {
       await expect(adminPage.getByText(untyped)).toBeVisible()
       // Untyped terms fall under a default "Non classés" heading.
       await expect(adminPage.getByRole('heading', { name: 'Non classés' })).toBeVisible()
+
+      // A note or a strategy is announced by an underline, before any hover.
+      await expect(adminPage.locator(`li#term-${typedId} span`).first()).toHaveCSS(
+        'text-decoration-line',
+        'underline',
+      )
+      await expect(adminPage.locator(`li#term-${bareId} span`).first()).toHaveCSS(
+        'text-decoration-line',
+        'none',
+      )
 
       // The cards list terms only: the strategy shows in the hover panel.
       await expect(adminPage.getByText('signe administration')).toHaveCount(0)
