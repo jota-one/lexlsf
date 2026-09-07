@@ -1,55 +1,45 @@
 <template>
-  <article class="card card-border bg-base-100 break-inside-avoid mb-4">
-    <header class="flex items-center justify-between gap-2 px-4 py-3 border-b border-base-300">
-      <h2 class="text-sm font-semibold uppercase tracking-wide text-base-content/50 truncate">
+  <article
+    class="card border-2 border-base-content/25 bg-base-100 shadow-md break-inside-avoid mb-4 overflow-hidden"
+  >
+    <header class="flex items-center gap-1 pl-1 pr-3 py-2 bg-logo-yellow text-neutral">
+      <button
+        type="button"
+        class="btn btn-ghost btn-xs px-1 text-neutral hover:bg-neutral/10"
+        :aria-expanded="expanded"
+        :aria-label="`${expanded ? 'Replier' : 'Déplier'} ${label}`"
+        @click="expanded = !expanded"
+      >
+        <span :class="expanded ? 'i-fa-solid-chevron-down' : 'i-fa-solid-chevron-right'"></span>
+      </button>
+      <h2 class="flex-1 text-sm font-bold uppercase tracking-wide truncate">
         {{ label }}
       </h2>
-      <span class="badge badge-sm badge-ghost shrink-0">{{ terms.length }}</span>
+      <span class="badge badge-sm border-0 bg-neutral text-neutral-content shrink-0">
+        {{ terms.length }}
+      </span>
     </header>
 
     <div ref="body" class="term-list" :class="{ 'is-collapsed': !expanded }">
-      <ul class="divide-y divide-base-300">
+      <ul class="columns-2 gap-0">
         <li
           v-for="term in terms"
           :id="`term-${term.id}`"
           :key="term.id"
-          class="px-4 py-3"
-          :class="{ 'is-highlighted': term.id === highlightedId }"
+          class="break-inside-avoid px-3 py-1.5 text-sm border-b border-base-200"
+          :class="{ 'is-highlighted': term.id === highlightedId, 'has-detail': hasDetail(term) }"
+          :tabindex="hasDetail(term) ? 0 : undefined"
+          @mouseenter="openDetail(term, $event)"
+          @focusin="openDetail(term, $event)"
+          @mouseleave="scheduleClose"
+          @focusout="scheduleClose"
         >
-          <div class="flex items-start gap-2">
-            <div class="flex-1 min-w-0">
-              <span class="font-medium">{{ term.term }}</span>
-
-              <p v-if="term.note" class="text-sm whitespace-pre-line">
-                {{ term.note }}
-              </p>
-
-              <p v-if="term.strategy" class="text-sm text-info whitespace-pre-line">
-                {{ term.strategy }}
-              </p>
-
-              <div v-if="term.expand?.RelatedTerms?.length" class="flex flex-wrap gap-1 mt-1">
-                <a
-                  v-for="related in term.expand.RelatedTerms"
-                  :key="related.id"
-                  :href="relatedHref(related)"
-                  class="badge badge-sm badge-ghost hover:badge-neutral"
-                >
-                  {{ related.term }}
-                </a>
-              </div>
-            </div>
-
-            <a
-              v-if="term.expand?.Sign"
-              :href="`/lexique/sign/${term.expand.Sign.slug}`"
-              class="btn btn-sm btn-info hover:bg-sky-500 shrink-0"
-              :aria-label="`Voir le signe ${term.expand.Sign.name}`"
-              :title="`Voir le signe ${term.expand.Sign.name}`"
-            >
-              <span class="i-ic-round-sign-language"></span>
-            </a>
-          </div>
+          <span class="font-medium">{{ term.term }}</span>
+          <span
+            v-if="term.expand?.Sign"
+            class="i-ic-round-sign-language align-middle ml-1 text-info"
+            aria-hidden="true"
+          ></span>
         </li>
       </ul>
     </div>
@@ -64,10 +54,57 @@
       <span :class="expanded ? 'i-fa-solid-chevron-up' : 'i-fa-solid-chevron-down'"></span>
     </button>
   </article>
+
+  <!--
+    Teleported so the panel escapes the card's clipped, multi-column layout;
+    the terms are already loaded, so nothing is fetched on hover.
+  -->
+  <Teleport to="body">
+    <div
+      v-if="detailed"
+      ref="popover"
+      class="term-detail card bg-base-100 border border-base-content/25 shadow-xl p-3 space-y-2"
+      :style="popoverStyle"
+      @mouseenter="keepOpen"
+      @focusin="keepOpen"
+      @mouseleave="scheduleClose"
+      @focusout="scheduleClose"
+    >
+      <p class="font-semibold text-sm">{{ detailed.term }}</p>
+
+      <p v-if="detailed.note" class="text-sm whitespace-pre-line">
+        {{ detailed.note }}
+      </p>
+
+      <p v-if="detailed.strategy" class="text-sm text-info whitespace-pre-line">
+        {{ detailed.strategy }}
+      </p>
+
+      <div v-if="detailed.expand?.RelatedTerms?.length" class="flex flex-wrap gap-1">
+        <a
+          v-for="related in detailed.expand.RelatedTerms"
+          :key="related.id"
+          :href="relatedHref(related)"
+          class="badge badge-sm badge-ghost hover:badge-neutral"
+        >
+          {{ related.term }}
+        </a>
+      </div>
+
+      <a
+        v-if="detailed.expand?.Sign"
+        :href="`/lexique/sign/${detailed.expand.Sign.slug}`"
+        class="btn btn-sm btn-info w-full gap-2"
+      >
+        <span class="i-ic-round-sign-language"></span>
+        Voir le signe
+      </a>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, useTemplateRef } from 'vue'
+import { nextTick, onMounted, onBeforeUnmount, ref, useTemplateRef } from 'vue'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import type { TLexicalTerm } from '../../types'
 
@@ -103,6 +140,58 @@ const measure = () => {
 }
 
 useResizeObserver(bodyRef, measure)
+
+/* ---- Hover detail ---- */
+
+const popoverRef = useTemplateRef<HTMLElement>('popover')
+const detailed = ref<TLexicalTerm.TRecord | null>(null)
+const popoverStyle = ref<Record<string, string>>({})
+let closeTimer: ReturnType<typeof setTimeout> | undefined
+
+/** The list only shows the term itself, so a term with nothing else stays flat. */
+const hasDetail = (term: TLexicalTerm.TRecord) =>
+  Boolean(term.note || term.strategy || term.expand?.Sign || term.expand?.RelatedTerms?.length)
+
+const keepOpen = () => clearTimeout(closeTimer)
+
+/** Short grace period so the pointer can travel from the term to the panel. */
+const scheduleClose = () => {
+  clearTimeout(closeTimer)
+  closeTimer = setTimeout(() => (detailed.value = null), 150)
+}
+
+const openDetail = async (term: TLexicalTerm.TRecord, event: Event) => {
+  keepOpen()
+  if (!hasDetail(term)) {
+    detailed.value = null
+    return
+  }
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  detailed.value = term
+  // Render it off-screen first so it can be measured before being placed.
+  popoverStyle.value = { left: '0px', top: '0px', visibility: 'hidden' }
+  await nextTick()
+
+  const el = popoverRef.value
+  if (!el || detailed.value !== term) {
+    return
+  }
+  const { offsetWidth: width, offsetHeight: height } = el
+  // Directly under the term, edge to edge: the pointer has to reach the panel
+  // to click the links it holds, so it must not have to cross a gap.
+  const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))
+  const fitsBelow = rect.bottom + height <= window.innerHeight - 8
+  popoverStyle.value = {
+    left: `${left}px`,
+    top: `${fitsBelow ? rect.bottom : Math.max(8, rect.top - height)}px`,
+  }
+}
+
+// The panel is anchored to a viewport position, so it must not linger.
+useEventListener(window, 'scroll', () => (detailed.value = null), { passive: true })
+onBeforeUnmount(() => clearTimeout(closeTimer))
+
+/* ---- Deep links ---- */
 
 /**
  * Related terms link to `#term-<id>`, which may sit in a collapsed card: expand
@@ -148,16 +237,37 @@ onMounted(async () => {
   max-height: max(8rem, calc((100dvh - 34rem) / 3));
 }
 
+/* Hints that hovering the term reveals its detail. */
+.term-list li.has-detail {
+  cursor: help;
+}
+
+.term-list li.has-detail:hover,
+.term-list li.has-detail:focus-visible {
+  background-color: color-mix(in oklch, var(--color-base-content) 6%, transparent);
+  outline: none;
+}
+
 /* The term a related link points at stays highlighted, after a short flash. */
 .term-list li.is-highlighted {
-  background-color: color-mix(in oklch, var(--color-info) 12%, transparent);
-  box-shadow: inset 3px 0 0 var(--color-info);
+  background-color: color-mix(in oklch, var(--color-base-content) 14%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in oklch, var(--color-base-content) 55%, transparent);
   animation: term-flash 1.2s ease-out;
 }
 
 @keyframes term-flash {
   from {
-    background-color: color-mix(in oklch, var(--color-info) 45%, transparent);
+    background-color: color-mix(in oklch, var(--color-base-content) 40%, transparent);
   }
+}
+</style>
+
+<style>
+/* Teleported to <body>, so it sits outside the scoped-style tree. */
+.term-detail {
+  position: fixed;
+  z-index: 60;
+  width: 18rem;
+  max-width: calc(100vw - 1rem);
 }
 </style>

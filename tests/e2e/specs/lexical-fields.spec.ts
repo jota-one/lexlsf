@@ -220,7 +220,7 @@ test.describe('Champs lexicaux — admin', () => {
       }
       const targetId = ids[ids.length - 1]
       // An untyped term linking to the last one, buried in the collapsed card.
-      await pbFetch(
+      const sourceRes = await pbFetch(
         '/api/collections/lexical_term/records',
         {
           method: 'POST',
@@ -232,10 +232,13 @@ test.describe('Champs lexicaux — admin', () => {
         },
         admin.token,
       )
+      const sourceId = (await sourceRes.json()).id
 
       await adminPage.goto(`/outils/champs-lexicaux/${field.slug}`)
       await expect(adminPage.getByRole('button', { name: 'Réduire' })).toHaveCount(0)
 
+      // The links live in the detail panel revealed by hovering the term.
+      await adminPage.locator(`li#term-${sourceId}`).hover()
       await adminPage.getByRole('link', { name: `${prefix}-T12` }).click()
 
       // The card holding the target unfolds...
@@ -245,6 +248,10 @@ test.describe('Champs lexicaux — admin', () => {
         'box-shadow',
         /3px 0px 0px 0px inset/,
       )
+
+      // An expanded card can also be folded back from its header chevron.
+      await adminPage.getByRole('button', { name: 'Replier E2E-Institution' }).click()
+      await expect(adminPage.getByRole('button', { name: 'Voir les 12 termes' })).toBeVisible()
     } finally {
       await deleteLexicalField(admin, field.id)
     }
@@ -273,7 +280,7 @@ test.describe('Champs lexicaux — admin', () => {
         ids.push((await res.json()).id)
       }
       const targetTermId = ids[ids.length - 1]
-      await pbFetch(
+      const departRes = await pbFetch(
         '/api/collections/lexical_term/records',
         {
           method: 'POST',
@@ -285,8 +292,10 @@ test.describe('Champs lexicaux — admin', () => {
         },
         admin.token,
       )
+      const departId = (await departRes.json()).id
 
       await adminPage.goto(`/outils/champs-lexicaux/${source.slug}`)
+      await adminPage.locator(`li#term-${departId}`).hover()
       await adminPage.getByRole('link', { name: `${prefix}-C12` }).click()
 
       // Landing on the other field's page, the card unfolds and the term is
@@ -363,7 +372,7 @@ test.describe('Champs lexicaux — admin', () => {
     const untyped = `E2E${stamp()}-Libre`
     try {
       // Seed one typed and one untyped term via API.
-      await pbFetch(
+      const typedRes = await pbFetch(
         '/api/collections/lexical_term/records',
         {
           method: 'POST',
@@ -376,6 +385,7 @@ test.describe('Champs lexicaux — admin', () => {
         },
         admin.token,
       )
+      const typedId = (await typedRes.json()).id
       await pbFetch(
         '/api/collections/lexical_term/records',
         {
@@ -393,10 +403,14 @@ test.describe('Champs lexicaux — admin', () => {
 
       await expect(adminPage.getByRole('heading', { name: 'E2E-Institution' })).toBeVisible()
       await expect(adminPage.getByText(typed)).toBeVisible()
-      await expect(adminPage.getByText('signe administration')).toBeVisible()
       await expect(adminPage.getByText(untyped)).toBeVisible()
       // Untyped terms fall under a default "Non classés" heading.
       await expect(adminPage.getByRole('heading', { name: 'Non classés' })).toBeVisible()
+
+      // The cards list terms only: the strategy shows in the hover panel.
+      await expect(adminPage.getByText('signe administration')).toHaveCount(0)
+      await adminPage.locator(`li#term-${typedId}`).hover()
+      await expect(adminPage.getByText('signe administration')).toBeVisible()
     } finally {
       await deleteLexicalField(admin, field.id)
     }
