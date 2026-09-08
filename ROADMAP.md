@@ -44,6 +44,7 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-08] Recherche — choix des collections cherchées (signes, culture, champs lexicaux, expressions françaises, expressions pi-sourdes) : boutons sous le champ sur l'accueil, bouton de filtre dans l'en-tête, choix mémorisé d'une page à l'autre et d'une visite à l'autre. Une collection décochée n'est plus interrogée du tout.
 - [2026-09-07] Recherche — choisir un terme de champ lexical dans la recherche du site amène directement sur ce terme, sa carte dépliée et le terme mis en évidence, comme un lien entre termes.
 - [2026-09-07] Lexique — un signe sans vidéo n'affiche plus un lecteur vide : un cadre gris de la taille du lecteur indique « Vidéo non disponible ».
 - [2026-09-07] Admin — les modales de confirmation ouvrent avec le bouton « Confirmer » déjà sélectionné : au clavier, Entrée valide directement.

@@ -342,7 +342,7 @@ test.describe('Champs lexicaux — admin', () => {
 
       // The search box lives in the site header, on every page but the home.
       await adminPage.goto('/lexique')
-      await adminPage.locator('nav input').fill(`${prefix}-R12`)
+      await adminPage.locator('nav input[role="combobox"]').fill(`${prefix}-R12`)
       await adminPage
         .locator('.p-autocomplete-option', { hasText: `${prefix}-R12` })
         .first()
