@@ -1,0 +1,13 @@
+{
+  "name": "lsf-video-splitter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local tool that splits a continuous LSF recording into one clip per sign.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0"
+  }
+}
