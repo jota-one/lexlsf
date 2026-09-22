@@ -8,3 +8,23 @@ updates:
       all-actions:
         patterns:
           - '*'
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      all-dependencies:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: gomod
+    directory: /pb
+    schedule:
+      interval: weekly
+    groups:
+      all-dependencies:
+        update-types:
+          - minor
+          - patch
