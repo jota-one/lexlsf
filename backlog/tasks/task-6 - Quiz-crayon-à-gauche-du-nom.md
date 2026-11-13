@@ -1,9 +1,10 @@
 ---
 id: TASK-6
 title: 'Quiz : crayon à gauche du nom'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-13T07:49:00Z'
+updated_date: '2026-11-13T17:32:00Z'
 labels:
   - quiz
   - admin
@@ -24,6 +25,6 @@ Demande de Geetha (13.11.2026) : dans la liste des quiz de l'admin, le crayon po
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Le crayon d'édition est juste à gauche du nom du quiz
-- [ ] #2 Partager et supprimer restent dans la colonne Actions
+- [x] #1 Le crayon d'édition est juste à gauche du nom du quiz
+- [x] #2 Partager et supprimer restent dans la colonne Actions
 <!-- AC:END -->

@@ -110,12 +110,21 @@ const handleQuizSaved = async () => {
         <!-- Title column -->
         <Column field="title" header="Titre" :sortable="true" style="min-width: 250px">
           <template #body="slotProps">
-            <RouterLink
-              :to="`/quizzes/${slotProps.data.id}/edit`"
-              class="link link-primary font-semibold"
-            >
-              {{ slotProps.data.title }}
-            </RouterLink>
+            <div class="flex items-center gap-2">
+              <RouterLink
+                :to="`/quizzes/${slotProps.data.id}/edit`"
+                class="btn btn-xs btn-ghost"
+                title="Éditer"
+              >
+                <span class="i-fa-solid-pen"></span>
+              </RouterLink>
+              <RouterLink
+                :to="`/quizzes/${slotProps.data.id}/edit`"
+                class="link link-primary font-semibold"
+              >
+                {{ slotProps.data.title }}
+              </RouterLink>
+            </div>
           </template>
         </Column>
 
@@ -153,16 +162,9 @@ const handleQuizSaved = async () => {
         </Column>
 
         <!-- Actions column -->
-        <Column header="Actions" style="min-width: 160px">
+        <Column header="Actions" style="min-width: 100px">
           <template #body="slotProps">
             <div class="flex gap-1">
-              <RouterLink
-                :to="`/quizzes/${slotProps.data.id}/edit`"
-                class="btn btn-xs btn-ghost"
-                title="Éditer"
-              >
-                <span class="i-fa-solid-pen"></span>
-              </RouterLink>
               <button
                 class="btn btn-xs btn-ghost"
                 title="Partager"
