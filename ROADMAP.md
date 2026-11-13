@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-13] Révisions — ouvrir un quiz supprimé ou non partagé ramène à la liste avec un message, au lieu d'une page blanche. Les messages d'erreur des révisions s'affichent enfin.
 - [2026-11-13] Admin — la liste des signes montre enfin les 800+ signes, page par page (25, 50 ou 100 par page). La recherche porte sur tous les signes, un filtre isole ceux avec ou sans vidéo, et le crayon d'édition passe à gauche du terme.
 - [2026-11-13] Admin — sur mobile, le menu se referme dès qu'on choisit une page.
 - [2026-11-13] Mobile — les tuiles des catégories, des signes, des personnes et des champs lexicaux s'affichent deux par ligne, avec une marge sur les côtés.

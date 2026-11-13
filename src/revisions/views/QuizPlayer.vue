@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
+import { ClientResponseError } from 'pocketbase'
+import { useToast } from 'primevue/usetoast'
 import useQuizzes from '@admin/composables/useQuizzes'
 import useQuizSession from '@admin/composables/useQuizSession'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
@@ -29,6 +31,7 @@ const {
   loading,
 } = useQuizSession()
 const { showPbError } = usePbErrorToast()
+const toast = useToast()
 
 const quizTitle = ref('')
 const quizItemType = ref<'sign' | 'person' | 'mixed'>('sign')
@@ -71,8 +74,18 @@ onMounted(async () => {
       onlyComplete: true,
     })
   } catch (error) {
-    showPbError(error)
-    router.replace('/revisions')
+    // A deleted quiz and one that isn't shared with the user both answer 404.
+    if (error instanceof ClientResponseError && error.status === 404) {
+      toast.add({
+        severity: 'warn',
+        summary: 'Quiz indisponible',
+        detail: "Ce quiz n'existe plus ou n'est pas partagé avec vous.",
+        life: 8000,
+      })
+    } else {
+      showPbError(error)
+    }
+    router.replace('/')
   }
 })
 
