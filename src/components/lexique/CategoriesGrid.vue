@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="w-full px-4 lg:px-0">
     <!-- Catégorie parente active en pleine largeur -->
     <div v-if="activeParent" class="mb-6">
       <div
@@ -13,7 +13,7 @@
     </div>
 
     <!-- Grille des catégories parentes -->
-    <div v-if="!activeParent" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    <div v-if="!activeParent" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
       <div
         v-for="cat in visibleParentCategories"
         :key="cat.id"
@@ -21,8 +21,8 @@
         :class="accent.cardHover"
         @click="toggleParent(cat.slug)"
       >
-        <div class="card-body items-center justify-center p-4 gap-2">
-          <h2 class="card-title text-xl md:text-2xl text-center">{{ cat.tag }}</h2>
+        <div class="card-body items-center justify-center p-3 sm:p-4 gap-2">
+          <h2 class="card-title text-base sm:text-xl md:text-2xl text-center">{{ cat.tag }}</h2>
           <span v-if="categoryCounts" class="badge badge-sm bg-base-content/10 border-0">
             {{ signLabel(parentCount(cat)) }}
           </span>

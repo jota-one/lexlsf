@@ -14,7 +14,7 @@
       </div>
 
       <!-- Grille des sous-catégories -->
-      <div v-if="!activeSubcategory" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div v-if="!activeSubcategory" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         <div
           v-for="subcat in visibleSubCategories"
           :key="subcat.id"
@@ -22,8 +22,8 @@
           :class="accent.cardHover"
           @click="toggleSubcategory(subcat.slug)"
         >
-          <div class="card-body items-center justify-center p-4 gap-2">
-            <h2 class="card-title text-lg md:text-xl text-center">{{ subcat.tag }}</h2>
+          <div class="card-body items-center justify-center p-3 sm:p-4 gap-2">
+            <h2 class="card-title text-base sm:text-lg md:text-xl text-center">{{ subcat.tag }}</h2>
             <span v-if="categoryCounts" class="badge badge-sm bg-base-content/10 border-0">
               {{ signLabel(props.categoryCounts?.[subcat.id] ?? 0) }}
             </span>

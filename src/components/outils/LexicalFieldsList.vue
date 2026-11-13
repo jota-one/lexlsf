@@ -9,7 +9,7 @@
       <span class="loading loading-spinner loading-lg"></span>
     </div>
     <template v-else>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         <a
           v-for="field in fields"
           :key="field.id"
@@ -17,8 +17,10 @@
           class="card bg-base-300 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md aspect-square"
           :class="SECTION_ACCENTS.outils.cardHover"
         >
-          <div class="card-body items-center justify-center p-4 gap-2">
-            <h2 class="card-title text-xl md:text-2xl text-center">{{ field.name }}</h2>
+          <div class="card-body items-center justify-center p-3 sm:p-4 gap-2">
+            <h2 class="card-title text-base sm:text-xl md:text-2xl text-center">
+              {{ field.name }}
+            </h2>
             <span class="badge badge-sm bg-base-content/10 border-0">
               {{ termLabel(termCounts[field.id] ?? 0) }}
             </span>

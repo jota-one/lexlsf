@@ -5,7 +5,7 @@
         <div v-if="signs.length === 0" class="text-center py-10 opacity-70">
           Aucun signe trouvé.
         </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
           <div
             v-for="sign in signs"
             :key="sign.id"
@@ -13,8 +13,10 @@
             :class="SECTION_ACCENTS.lexique.cardHover"
             @click="goToSign(sign.slug)"
           >
-            <div class="card-body items-center justify-center p-4">
-              <h2 class="card-title text-lg md:text-xl text-center">{{ sign.name }}</h2>
+            <div class="card-body items-center justify-center p-3 sm:p-4">
+              <h2 class="card-title text-base sm:text-lg md:text-xl text-center">
+                {{ sign.name }}
+              </h2>
             </div>
           </div>
         </div>

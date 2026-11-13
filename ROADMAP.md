@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-13] Mobile — les tuiles des catégories, des signes, des personnes et des champs lexicaux s'affichent deux par ligne, avec une marge sur les côtés.
 - [2026-11-13] Mobile — le bouton Login s'affiche enfin sur téléphone (le site y était inaccessible). Une fois connecté, le menu du compte reprend la navigation (Lexique, Culture, outils, admin), et l'en-tête laisse plus de place à la recherche.
 - [2026-11-13] Admin — la feuille de route se construit à partir du backlog : demandes en cours d'abord, puis par priorité. Chaque demande s'ouvre sur sa description et ce qui est prévu.
 - [2026-09-09] Outillage — dans l'application de découpage, chaque clip peut être renommé après coup (le nom du signe, accents et espaces compris) et un bouton les déplace tous d'un coup vers le dossier de son choix, sans jamais écraser un fichier existant. Relancer un découpage par-dessus des clips déjà produits demande confirmation.

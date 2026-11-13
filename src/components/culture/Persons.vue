@@ -5,7 +5,7 @@
         <div v-if="persons.length === 0" class="text-center py-10 opacity-70">
           Aucun signe trouvé.
         </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
           <div
             v-for="person in persons"
             :key="person.id"
@@ -21,10 +21,12 @@
               />
             </figure>
             <div
-              class="card-body items-center justify-center p-4"
+              class="card-body items-center justify-center p-3 sm:p-4"
               :class="{ 'aspect-square': !person.illustration }"
             >
-              <h2 class="card-title text-lg md:text-xl text-center">{{ displayName(person) }}</h2>
+              <h2 class="card-title text-base sm:text-lg md:text-xl text-center">
+                {{ displayName(person) }}
+              </h2>
             </div>
           </div>
         </div>
