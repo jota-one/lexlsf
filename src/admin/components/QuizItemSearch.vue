@@ -21,8 +21,7 @@ type SearchResult = {
 }
 
 type Events = {
-  select: [item: SearchResult]
-  'select-all': [items: SearchResult[]]
+  add: [items: SearchResult[]]
 }
 
 const props = defineProps<Props>()
@@ -34,6 +33,35 @@ const excludeSet = computed(() => new Set(props.excludeKeys || []))
 const filteredResults = computed(() =>
   results.value.filter(item => !excludeSet.value.has(`${item.type}:${item.id}`)),
 )
+
+// Ticked results, keyed like excludeKeys ("type:id").
+const resultKey = (item: SearchResult) => `${item.type}:${item.id}`
+const selectedKeys = ref<string[]>([])
+const selectedItems = computed(() =>
+  filteredResults.value.filter(item => selectedKeys.value.includes(resultKey(item))),
+)
+const allSelected = computed(
+  () =>
+    filteredResults.value.length > 0 && selectedItems.value.length === filteredResults.value.length,
+)
+const someSelected = computed(() => selectedItems.value.length > 0 && !allSelected.value)
+
+const isSelected = (item: SearchResult) => selectedKeys.value.includes(resultKey(item))
+const toggleItem = (item: SearchResult) => {
+  const key = resultKey(item)
+  selectedKeys.value = isSelected(item)
+    ? selectedKeys.value.filter(k => k !== key)
+    : [...selectedKeys.value, key]
+}
+const toggleAll = () => {
+  selectedKeys.value = allSelected.value ? [] : filteredResults.value.map(resultKey)
+}
+
+// A new search or an item added elsewhere drops ticks on results no longer shown.
+watch(filteredResults, list => {
+  const shown = new Set(list.map(resultKey))
+  selectedKeys.value = selectedKeys.value.filter(key => shown.has(key))
+})
 
 const hasActiveFilters = computed(
   () =>
@@ -83,11 +111,13 @@ const handleClear = () => {
   selectedLevel.value = ''
   deafFilter.value = 'both'
   addedSince.value = ''
+  selectedKeys.value = []
   clear()
 }
 
-const handleAddAll = () => {
-  emit('select-all', filteredResults.value)
+const addSelection = () => {
+  emit('add', selectedItems.value)
+  selectedKeys.value = []
 }
 
 // Auto-search on filter changes (debounced)
@@ -187,16 +217,43 @@ watch(addedSince, () => {
 
     <!-- Search Results -->
     <div v-if="filteredResults.length > 0" class="mt-6 space-y-2">
-      <h3 class="text-sm font-semibold text-base-content/70">
-        {{ filteredResults.length }} résultat(s)
-      </h3>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold">
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm"
+            :checked="allSelected"
+            :indeterminate="someSelected"
+            @change="toggleAll"
+          />
+          Tout cocher
+          <span class="font-normal text-base-content/70">
+            ({{ filteredResults.length }} résultat{{ filteredResults.length > 1 ? 's' : '' }})
+          </span>
+        </label>
+        <Button
+          type="button"
+          :label="`Ajouter la sélection (${selectedItems.length})`"
+          icon="i-fa-solid-plus"
+          size="small"
+          :disabled="selectedItems.length === 0"
+          @click="addSelection"
+        />
+      </div>
       <div class="space-y-2">
-        <div
+        <label
           v-for="item in filteredResults"
-          :key="item.id"
-          class="p-3 border border-base-200 rounded-lg hover:bg-base-100/50 cursor-pointer transition"
+          :key="resultKey(item)"
+          class="flex items-start gap-3 p-3 border border-base-200 rounded-lg hover:bg-base-100/50 cursor-pointer transition"
+          :class="{ 'border-secondary': isSelected(item) }"
         >
-          <div class="flex items-start justify-between">
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm mt-0.5"
+            :checked="isSelected(item)"
+            @change="toggleItem(item)"
+          />
+          <div class="flex items-start justify-between flex-1">
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <span
@@ -211,16 +268,8 @@ watch(addedSince, () => {
                 {{ item.details }}
               </p>
             </div>
-            <button
-              type="button"
-              class="btn btn-xs btn-ghost"
-              title="Ajouter au quiz"
-              @click="emit('select', item)"
-            >
-              <span class="i-fa-solid-plus"></span>
-            </button>
           </div>
-        </div>
+        </label>
       </div>
     </div>
 
@@ -251,14 +300,6 @@ watch(addedSince, () => {
         severity="secondary"
         size="small"
         @click="handleClear"
-      />
-      <Button
-        v-if="filteredResults.length > 1"
-        type="button"
-        label="Ajouter tous"
-        severity="success"
-        size="small"
-        @click="handleAddAll"
       />
     </div>
   </div>

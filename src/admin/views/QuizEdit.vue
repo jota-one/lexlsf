@@ -75,22 +75,7 @@ const cancel = () => {
   router.push('/quizzes')
 }
 
-const handleItemSelected = async (item: { type: 'sign' | 'person'; id: string }) => {
-  try {
-    await addQuizItems(quizId.value, [
-      {
-        item_type: item.type,
-        item_id: item.id,
-      },
-    ])
-    // Refresh items list
-    itemsRefreshKey.value++
-  } catch (error) {
-    showPbError(error)
-  }
-}
-
-const handleItemsSelectedAll = async (items: Array<{ type: 'sign' | 'person'; id: string }>) => {
+const handleAddItems = async (items: Array<{ type: 'sign' | 'person'; id: string }>) => {
   try {
     await addQuizItems(
       quizId.value,
@@ -161,6 +146,19 @@ const handleItemsLoaded = (keys: string[]) => {
           </TabPanel>
           <TabPanel value="1">
             <div class="p-6 space-y-6">
+              <!-- Search & Add -->
+              <div>
+                <h3 class="text-lg font-semibold mb-4">Ajouter des éléments</h3>
+                <QuizItemSearch
+                  :item-type="form.item_type"
+                  :exclude-keys="existingItemKeys"
+                  @add="handleAddItems"
+                />
+              </div>
+
+              <!-- Divider -->
+              <div class="divider"></div>
+
               <!-- Current Items -->
               <div>
                 <h3 class="text-lg font-semibold mb-4">Éléments actuels</h3>
@@ -170,20 +168,6 @@ const handleItemsLoaded = (keys: string[]) => {
                   :item-type="form.item_type"
                   @delete="handleItemsRefresh"
                   @loaded="handleItemsLoaded"
-                />
-              </div>
-
-              <!-- Divider -->
-              <div class="divider"></div>
-
-              <!-- Search & Add -->
-              <div>
-                <h3 class="text-lg font-semibold mb-4">Ajouter des éléments</h3>
-                <QuizItemSearch
-                  :item-type="form.item_type"
-                  :exclude-keys="existingItemKeys"
-                  @select="handleItemSelected"
-                  @select-all="handleItemsSelectedAll"
                 />
               </div>
             </div>
