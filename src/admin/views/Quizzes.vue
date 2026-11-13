@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import dayjs from 'dayjs'
+import { ClientResponseError } from 'pocketbase'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import useQuizzes from '@admin/composables/useQuizzes'
@@ -55,7 +56,12 @@ const confirmDelete = async () => {
     await deleteQuiz(quizToDelete.value.id)
     await loadQuizzes()
   } catch (error) {
-    const backendMessage = error?.response?.message || error?.message || ''
+    const backendMessage =
+      error instanceof ClientResponseError
+        ? String(error.response?.message || error.message)
+        : error instanceof Error
+          ? error.message
+          : ''
     const isRelationBlocked =
       backendMessage.includes('required relation reference') ||
       backendMessage.includes('Failed to delete record')

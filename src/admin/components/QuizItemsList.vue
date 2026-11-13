@@ -46,17 +46,18 @@ const loadItems = async () => {
     items.value = await Promise.all(
       quizItems.map(async item => {
         const itemType = item.item_type as 'sign' | 'person'
-        const collection = itemType === 'sign' ? 'sign' : 'person'
-
         // Fetch the actual item data
-        const itemData = await pb.collection(collection).getOne(item.item_id)
-
-        const label =
-          itemType === 'sign'
-            ? itemData.name
-            : itemData.firstname
-              ? `${itemData.firstname} ${itemData.name}`
-              : itemData.name
+        let label: string
+        let details: string
+        if (itemType === 'sign') {
+          const sign = await pb.collection('sign').getOne(item.item_id)
+          label = sign.name
+          details = sign.definition
+        } else {
+          const person = await pb.collection('person').getOne(item.item_id)
+          label = person.firstname ? `${person.firstname} ${person.name}` : person.name
+          details = person.description
+        }
 
         return {
           id: item.id,
@@ -64,7 +65,7 @@ const loadItems = async () => {
           itemType,
           itemId: item.item_id,
           label,
-          details: itemType === 'sign' ? itemData.definition : itemData.description,
+          details,
         }
       }),
     )

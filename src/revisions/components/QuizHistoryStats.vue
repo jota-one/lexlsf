@@ -5,14 +5,20 @@ import Chart from 'primevue/chart'
 import { computeQuizScore, scoreColorClass } from '../../helpers/quizScore'
 
 type SessionStats = { known: number; unknown: number; skipped: number; total: number }
-type Session = { id: string; started_at: string; completed_at?: string; stats: SessionStats }
+type Session = { id: string; started_at: string; completed_at?: string; stats?: SessionStats }
+type ScoredSession = Session & { completed_at: string; stats: SessionStats }
+
+/** Only a finished session with its stats can be scored. */
+const isScored = (session: Session): session is ScoredSession =>
+  Boolean(session.completed_at && session.started_at && session.stats)
 
 const props = defineProps<{ sessions: Session[] }>()
 
+const scoredSessions = computed(() => props.sessions.filter(isScored))
+
 // — Scores —
 const scores = computed(() =>
-  props.sessions
-    .filter(s => s.completed_at && s.started_at)
+  scoredSessions.value
     .map(s =>
       computeQuizScore({
         ...s.stats,
@@ -58,8 +64,8 @@ const formatDuration = (seconds: number) => {
 
 // — Vitesse (secondes par carte) —
 const speeds = computed(() =>
-  props.sessions
-    .filter(s => s.completed_at && s.started_at && s.stats.total > 0)
+  scoredSessions.value
+    .filter(s => s.stats.total > 0)
     .map(s => {
       const dur = dayjs(s.completed_at).diff(dayjs(s.started_at), 'second')
       return Math.round((dur / s.stats.total) * 10) / 10 // 1 décimale
@@ -75,7 +81,7 @@ const speedAvg = computed(
 
 // — Taux de réussite brute (%) —
 const successRates = computed(() =>
-  props.sessions
+  scoredSessions.value
     .map(s => {
       const answered = s.stats.known + s.stats.unknown
       return answered > 0 ? Math.round((s.stats.known / answered) * 100) : null
@@ -109,8 +115,7 @@ const lastSessionDate = computed(() => {
 
 // — Graphique ligne (20 dernières sessions, ordre chronologique) —
 const chartSessions = computed(() =>
-  [...props.sessions]
-    .filter(s => s.completed_at)
+  [...scoredSessions.value]
     .sort((a, b) => dayjs(a.completed_at).valueOf() - dayjs(b.completed_at).valueOf())
     .slice(-20),
 )

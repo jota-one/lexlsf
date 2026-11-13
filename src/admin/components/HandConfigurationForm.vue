@@ -19,8 +19,9 @@
 </template>
 <script setup lang="ts">
 import InputText from 'primevue/inputtext'
+import type { THandConfiguration } from '@types'
 
-const form = defineModel<Record<string, unknown>>({ required: true })
+const form = defineModel<THandConfiguration.TForm>({ required: true })
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement

@@ -29,9 +29,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import type { TPiDeafExpression } from '@types'
 
 const { pb, isAuthenticated } = useAuth()
-const expressions = ref<Array<Record<string, unknown>>>([])
+const expressions = ref<TPiDeafExpression.TRecord[]>([])
 const loading = ref(true)
 
 onMounted(async () => {
@@ -43,7 +44,7 @@ onMounted(async () => {
   try {
     expressions.value = await pb
       .collection('pi_deaf_expression')
-      .getFullList({ expand: 'Sign', sort: 'name' })
+      .getFullList<TPiDeafExpression.TRecord>({ expand: 'Sign', sort: 'name' })
   } finally {
     loading.value = false
   }

@@ -195,6 +195,10 @@ const goBack = () => {
 }
 
 const handleSubmit = async () => {
+  if (!user.value) {
+    return
+  }
+  const userId = user.value.id
   isLoading.value = true
 
   try {
@@ -258,7 +262,7 @@ const handleSubmit = async () => {
     }
 
     // Mise à jour du profil
-    await pb.collection('users').update(user.value.id, formData)
+    await pb.collection('users').update(userId, formData)
 
     toast.add({
       severity: 'success',

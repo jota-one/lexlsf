@@ -18,7 +18,7 @@ type QuizAttemptRecord = QuizAttempt & {
   updated: string
 }
 
-type DeckItem = {
+export type DeckItem = {
   quizItemId: string
   itemType: 'sign' | 'person'
   itemId: string

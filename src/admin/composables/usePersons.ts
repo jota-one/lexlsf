@@ -1,7 +1,13 @@
 import { ref } from 'vue'
 import config from '../../config'
 import { pb } from '@lib/pb'
-import type { TPerson } from '../../types'
+import type {
+  CategoryResponse,
+  RolesResponse,
+  SignResponse,
+  TPerson,
+  VideoResponse,
+} from '@types'
 import { createSlug } from '@lib/slug'
 
 const setFormData = (payload: TPerson.TForm) => {
@@ -83,7 +89,17 @@ export default function usePersons() {
 
   const loadPerson = async (id: string) => {
     return pb
-      .collection<TPerson.TRecord & { expand?: Record<string, unknown> }>('person')
+      .collection<
+        TPerson.TRecord & {
+          expand?: {
+            Category?: CategoryResponse[]
+            Activities?: CategoryResponse[]
+            Sign?: SignResponse
+            Videos?: VideoResponse[]
+            Roles?: RolesResponse[]
+          }
+        }
+      >('person')
       .getOne(id, {
         fields: '*',
         expand: 'Category,Activities,Sign,Videos,Roles',

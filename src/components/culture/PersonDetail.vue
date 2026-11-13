@@ -191,13 +191,14 @@ import { marked } from 'marked'
 import dayjs from 'dayjs'
 import useAuth from '@admin/composables/useAuth'
 import config from '@config'
+import type { TPerson } from '@types'
 
 const props = defineProps<{ slug: string }>()
 
 const { pb, isAuthenticated } = useAuth()
 const router = useRouter()
 
-const record = ref<Record<string, unknown> | null>(null)
+const record = ref<TPerson.TDetail | null>(null)
 const error = ref(false)
 
 onMounted(async () => {
@@ -209,7 +210,7 @@ onMounted(async () => {
   try {
     record.value = await pb
       .collection('person')
-      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+      .getFirstListItem<TPerson.TDetail>(pb.filter('slug = {:slug}', { slug: props.slug }), {
         expand: 'Category,Category.Parent,Sign,Videos,Activities',
       })
   } catch {
@@ -230,29 +231,24 @@ const displayName = computed(() => {
 const imageUrl = computed(() =>
   record.value?.illustration
     ? `${config.apiBaseUrl}/api/files/person/${record.value.id}/${record.value.illustration}`
-    : null,
+    : undefined,
 )
 
 const imageThumbUrl = computed(() =>
   record.value?.illustration
     ? `${config.apiBaseUrl}/api/files/person/${record.value.id}/${record.value.illustration}?thumb=600x600`
-    : null,
+    : undefined,
 )
 
 const descriptionHtml = computed(() =>
-  record.value?.description ? String(marked.parse(String(record.value.description))) : '',
+  record.value?.description ? String(marked.parse(record.value.description)) : '',
 )
 
 const activitiesList = computed(() => {
   if (!record.value) {
     return []
   }
-  if (Array.isArray(record.value.expand?.Activities)) {
-    return record.value.expand.Activities.map(
-      (a: Record<string, unknown>) => a.name ?? a.title ?? a.tag ?? a.label ?? String(a),
-    ).filter(Boolean)
-  }
-  return Array.isArray(record.value.activities) ? record.value.activities : []
+  return (record.value.expand?.Activities ?? []).map(activity => activity.tag).filter(Boolean)
 })
 
 function formatDate(date: string) {

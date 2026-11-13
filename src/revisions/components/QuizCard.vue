@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { QuizMode } from '@admin/config/quizModes'
+import type { DeckItem } from '@admin/composables/useQuizSession'
 
 type Props = {
   mode: QuizMode
-  card: Record<string, unknown>
+  card: DeckItem
   getFileUrl: (collection: string, id: string, filename: string) => string
   isFlipped: boolean
 }
@@ -11,15 +12,15 @@ type Props = {
 const props = defineProps<Props>()
 
 const renderFieldValue = (field: string | undefined) => {
-  if (!field || !props.card?.itemData) {
+  if (!field) {
     return ''
   }
-  return props.card.itemData[field] ?? ''
+  return props.card.itemData?.[field] ?? ''
 }
 
 const mediaUrl = (fieldKey: string) => {
-  const file = props.card?.itemData?.[fieldKey]
-  if (!file) {
+  const file = props.card.itemData?.[fieldKey]
+  if (typeof file !== 'string' || !file) {
     return ''
   }
   return props.getFileUrl(

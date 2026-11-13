@@ -1,4 +1,10 @@
 import type { TCategory, THandConfiguration } from '.'
+import type {
+  CategoryResponse,
+  HandConfigurationsResponse,
+  PersonResponse,
+  SignResponse,
+} from './pocketbase-types'
 
 export type TPlacement = {
   right: string[]
@@ -11,7 +17,7 @@ export type TMovement = {
   amplitude?: string
   speed?: string
   precision?: string
-  repetitions?: string
+  repetitions?: number
 }
 
 export type TMovements = {
@@ -78,3 +84,14 @@ export type TForm = Omit<
   ConfigurationRight: Partial<THandConfiguration.TRecord>
   ConfigurationLeft: Partial<THandConfiguration.TRecord>
 }
+
+/** A sign as the public detail page loads it, with its relations expanded. */
+export type TDetail = SignResponse<
+  TPlacement,
+  {
+    Category?: CategoryResponse[]
+    ConfigurationRight?: HandConfigurationsResponse
+    ConfigurationLeft?: HandConfigurationsResponse
+    person_via_Sign?: PersonResponse[]
+  }
+>

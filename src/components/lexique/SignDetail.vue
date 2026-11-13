@@ -166,7 +166,7 @@ import useAuth from '@admin/composables/useAuth'
 import FaceZonesOverlay from '@admin/components/FaceZonesOverlay.vue'
 import BodyZonesOverlay from '@admin/components/BodyZonesOverlay.vue'
 import config from '@config'
-import type { TCategory } from '../../types'
+import type { TCategory, TSign } from '@types'
 import { verificationStatusOptions, learningSourceOptions } from '@lib/signOptions'
 
 const props = defineProps<{ slug: string }>()
@@ -174,7 +174,7 @@ const props = defineProps<{ slug: string }>()
 const { pb, isAuthenticated } = useAuth()
 const router = useRouter()
 
-const record = ref<Record<string, unknown> | null>(null)
+const record = ref<TSign.TDetail | null>(null)
 const mainCategories = ref<TCategory.TRecord[]>([])
 const error = ref(false)
 
@@ -188,7 +188,7 @@ onMounted(async () => {
 
   try {
     const [signRecord, cats] = await Promise.all([
-      pb.collection('sign').getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+      pb.collection('sign').getFirstListItem<TSign.TDetail>(pb.filter('slug = {:slug}', { slug: props.slug }), {
         expand: 'Category,ConfigurationRight,ConfigurationLeft,person_via_Sign',
       }),
       pb.collection<TCategory.TRecord>('category').getFullList({
@@ -227,20 +227,19 @@ const configurationLeftUrl = computed(() => {
 })
 
 const signCategories = computed(() => {
-  if (!record.value || !mainCategories.value.length) {
+  const signCategoryList = record.value?.expand?.Category ?? []
+  if (!signCategoryList.length || !mainCategories.value.length) {
     return []
   }
   return mainCategories.value
     .map(mainCat => ({
       ...mainCat,
-      subcategories: (record.value.expand?.Category || []).filter(
-        (cat: TCategory.TRecord) => cat.Parent === mainCat.id,
-      ),
+      subcategories: signCategoryList.filter(cat => cat.Parent === mainCat.id),
     }))
     .filter(cat => cat.subcategories.length > 0)
 })
 
-const level = computed(() => ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(record.value?.level) + 1)
+const level = computed(() => ['a1', 'a2', 'b1', 'b2', 'c1'].indexOf(record.value?.level ?? '') + 1)
 
 const verificationStatusLabel = computed(
   () =>

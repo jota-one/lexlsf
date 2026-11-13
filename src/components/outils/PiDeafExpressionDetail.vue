@@ -45,12 +45,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
 import useAuth from '@admin/composables/useAuth'
+import type { TPiDeafExpression } from '@types'
 import config from '../../config'
 
 const props = defineProps<{ slug: string }>()
 
 const { pb, isAuthenticated } = useAuth()
-const expr = ref<Record<string, unknown> | null>(null)
+const expr = ref<TPiDeafExpression.TRecord | null>(null)
 const strategiesHtml = ref('')
 const loading = ref(true)
 
@@ -66,13 +67,14 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb
+    const record = await pb
       .collection('pi_deaf_expression')
-      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+      .getFirstListItem<TPiDeafExpression.TRecord>(pb.filter('slug = {:slug}', { slug: props.slug }), {
         expand: 'Sign',
       })
-    if (expr.value.strategies) {
-      strategiesHtml.value = String(await marked.parse(String(expr.value.strategies)))
+    expr.value = record
+    if (record.strategies) {
+      strategiesHtml.value = String(await marked.parse(record.strategies))
     }
   } finally {
     loading.value = false

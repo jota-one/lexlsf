@@ -143,9 +143,11 @@ import Button from 'primevue/button'
 import CategoryFormModal from '../components/CategoryFormModal.vue'
 import type { TCategory } from '../../types'
 
-type PopoverInstance = { hide?: () => void; toggle?: (event: Event) => void }
 import ConfirmModal from '../components/ConfirmModal.vue'
 import Popover from 'primevue/popover'
+import type { ComponentPublicInstance } from 'vue'
+
+type PopoverInstance = { hide: () => void; toggle: (event: Event) => void }
 
 const { categories, loadingCategories, loadCategories, deleteCategory } = useCategories()
 const showAddModal = ref(false)
@@ -199,9 +201,9 @@ const toggleContext = (ctx: string) => {
 
 // Helper to set popover ref for each child
 function setPopoverRef(id: string) {
-  return (el: PopoverInstance | null) => {
+  return (el: Element | ComponentPublicInstance | null) => {
     if (el) {
-      popoverRefs.value[id] = el
+      popoverRefs.value[id] = el as ComponentPublicInstance & PopoverInstance
     } else {
       delete popoverRefs.value[id]
     }
@@ -231,7 +233,7 @@ const openEditModalChild = (category: TCategory.TRecord) => {
 const togglePopover = (id: string, event: Event) => {
   // Hide any open popover except the one being toggled
   Object.entries(popoverRefs.value).forEach(([key, refPopover]) => {
-    if (key !== id && refPopover?.hide) {
+    if (key !== id) {
       refPopover.hide()
     }
   })

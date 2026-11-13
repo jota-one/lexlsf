@@ -13,7 +13,7 @@ export type TRecord = {
   expand?: {
     Roles?: Array<{ id: string; name: string; slug: string }>
     LexicalFields?: Array<{ id: string; name: string; slug: string }>
-    Signs?: Array<{ id: string; name: string }>
+    Signs?: Array<{ id: string; name: string; slug: string }>
     Persons?: Array<{ id: string; name: string; firstname: string; slug: string }>
   }
   created: string

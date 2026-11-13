@@ -1,3 +1,5 @@
+import type { CategoryResponse, PersonResponse, SignResponse, VideoResponse } from './pocketbase-types'
+
 export type TTimelineEntry = {
   id?: string
   title: string
@@ -49,3 +51,15 @@ export type TForm = Omit<
   Sign?: string
   timeline?: TTimelineEntry[]
 }
+
+/** A person as the public detail page loads it, with its relations expanded. */
+export type TDetail = PersonResponse<
+  unknown,
+  TTimelineEntry[],
+  {
+    Sign?: SignResponse
+    Category?: CategoryResponse<{ Parent?: CategoryResponse }>[]
+    Videos?: VideoResponse[]
+    Activities?: CategoryResponse[]
+  }
+>

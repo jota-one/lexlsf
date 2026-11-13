@@ -29,9 +29,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import useAuth from '@admin/composables/useAuth'
+import type { TFrenchExpression } from '@types'
 
 const { pb, isAuthenticated } = useAuth()
-const expressions = ref<Array<Record<string, unknown>>>([])
+const expressions = ref<TFrenchExpression.TRecord[]>([])
 const loading = ref(true)
 
 onMounted(async () => {
@@ -41,7 +42,7 @@ onMounted(async () => {
     return
   }
   try {
-    expressions.value = await pb.collection('french_expression').getFullList({ sort: 'expression' })
+    expressions.value = await pb.collection('french_expression').getFullList<TFrenchExpression.TRecord>({ sort: 'expression' })
   } finally {
     loading.value = false
   }

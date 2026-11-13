@@ -219,17 +219,28 @@ const onSearch = async (event: { query?: string }) => {
       type: 'lexical_field',
       label: item.name,
     }))
-    const lexicalTerms = (lexicalTermsRes.items || [])
-      .filter((item: Record<string, unknown>) => item.expand?.LexicalField)
-      .map((item: Record<string, unknown>) => ({
-        ...item.expand.LexicalField,
-        type: 'lexical_field',
-        label: item.term,
-        definition: `dans : ${item.expand.LexicalField.name}`,
-        // Land on the term itself — unfolded and highlighted — the way a link
-        // between two terms does, rather than at the top of its field.
-        hash: `#term-${item.id}`,
-      }))
+    type TermHit = {
+      id: string
+      term: string
+      expand?: { LexicalField?: { id: string; name: string; slug: string } }
+    }
+    const lexicalTerms = ((lexicalTermsRes.items || []) as TermHit[]).flatMap(item => {
+      const field = item.expand?.LexicalField
+      if (!field) {
+        return []
+      }
+      return [
+        {
+          ...field,
+          type: 'lexical_field',
+          label: item.term,
+          definition: `dans : ${field.name}`,
+          // Land on the term itself — unfolded and highlighted — the way a link
+          // between two terms does, rather than at the top of its field.
+          hash: `#term-${item.id}`,
+        },
+      ]
+    })
     const french = (frenchRes.items || []).map((item: Record<string, unknown>) => ({
       ...item,
       type: 'french_expression',
@@ -248,7 +259,7 @@ const onSearch = async (event: { query?: string }) => {
       ...lexicalTerms,
       ...french,
       ...piDeaf,
-    ].sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
+    ].sort((a, b) => String(a.label).localeCompare(String(b.label)))
   } catch (err) {
     console.error('Search error', err)
     suggestions.value = []
@@ -270,7 +281,7 @@ const onSelect = (event: { value?: { slug?: string; type?: string; hash?: string
     french_expression: '/outils/expressions-francaises',
     pi_deaf_expression: '/outils/expressions-pi-sourdes',
   }
-  const base = routes[selected.type] || '/signs'
+  const base = (selected.type && routes[selected.type]) || '/signs'
   window.location.href = `${base}/${selected.slug}${selected.hash || ''}`
 }
 

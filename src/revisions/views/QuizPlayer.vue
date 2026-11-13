@@ -6,6 +6,7 @@ import useQuizzes from '@admin/composables/useQuizzes'
 import useQuizSession from '@admin/composables/useQuizSession'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
 import { getQuizModes, getQuizMode, type QuizMode } from '@admin/config/quizModes'
+import type { QuizSession } from '@admin/types/quiz'
 import QuizCard from '../components/QuizCard.vue'
 import QuizSummary from '../components/QuizSummary.vue'
 import QuizHistoryStats from '../components/QuizHistoryStats.vue'
@@ -39,8 +40,8 @@ const isFlipped = ref(false)
 const cardStartTime = ref<number>(0)
 const sessionStartTime = ref<number>(0)
 const sessionDuration = ref<number>(0)
-const incompleteSessions = ref<Array<Record<string, unknown>>>([])
-const completedSessions = ref<Array<Record<string, unknown>>>([])
+const incompleteSessions = ref<QuizSession[]>([])
+const completedSessions = ref<QuizSession[]>([])
 const deletingSessionId = ref<string | null>(null)
 
 const availableModes = computed(() => {
@@ -109,6 +110,9 @@ const handleAttempt = async (result: 'known' | 'unknown' | 'skip') => {
     finished.value = true
   }
 }
+
+const answeredCount = (session: QuizSession) =>
+  (session.stats?.known ?? 0) + (session.stats?.unknown ?? 0) + (session.stats?.skipped ?? 0)
 
 const currentMode = computed(() => modes.value.find(m => m.key === selectedMode.value))
 
@@ -207,8 +211,8 @@ const handleBackToList = () => {
             <tr v-for="session in incompleteSessions" :key="session.id">
               <td>{{ getQuizMode(session.config_key)?.label }}</td>
               <td>
-                {{ session.stats.known + session.stats.unknown + session.stats.skipped }} /
-                {{ session.stats.total }}
+                {{ answeredCount(session) }} /
+                {{ session.stats?.total ?? 0 }}
               </td>
               <td>
                 {{

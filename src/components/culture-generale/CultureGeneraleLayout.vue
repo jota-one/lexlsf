@@ -135,7 +135,7 @@ const typeOptions = [
   { value: 'all', label: 'Tout' },
   { value: 'event', label: 'Événements' },
   { value: 'period', label: 'Périodes' },
-]
+] as const
 
 const activeSlug = computed(() => route.params.slug as string | undefined)
 

@@ -68,8 +68,9 @@ import Textarea from 'primevue/textarea'
 import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
 import { getCurrentInstance } from 'vue'
+import type { TSign } from '@types'
 
-const form = defineModel<Record<string, unknown>>({ required: true })
+const form = defineModel<TSign.TMovement>({ required: true })
 
 const instance = getCurrentInstance()
 const uniqueId = instance ? instance.uid : Math.random().toString(36).slice(2, 10)

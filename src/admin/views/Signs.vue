@@ -133,7 +133,7 @@ import { onMounted, ref, watch } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import dayjs from 'dayjs'
 import useSigns from '../composables/useSigns'
-import DataTable from 'primevue/datatable'
+import DataTable, { type DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Rating from 'primevue/rating'
 import Button from 'primevue/button'
@@ -171,9 +171,11 @@ const sortOrder = ref<1 | -1>(-1)
 
 const pbSort = () => `${sortOrder.value === -1 ? '-' : ''}${sortField.value}`
 
-const onSort = (event: { sortField: string; sortOrder: 1 | -1 }) => {
-  sortField.value = event.sortField
-  sortOrder.value = event.sortOrder
+const onSort = (event: DataTableSortEvent) => {
+  if (typeof event.sortField === 'string') {
+    sortField.value = event.sortField
+  }
+  sortOrder.value = event.sortOrder === -1 ? -1 : 1
   loadSigns(debouncedQuery.value, pbSort())
 }
 

@@ -20,7 +20,7 @@
         />
       </section>
 
-      <section v-if="expr.expand?.Signs?.length > 0">
+      <section v-if="expr.expand?.Signs?.length">
         <h2 class="text-lg font-semibold mb-3">Signes utiles</h2>
         <div class="flex flex-wrap gap-2">
           <a
@@ -41,11 +41,12 @@
 import { ref, onMounted } from 'vue'
 import { marked } from 'marked'
 import useAuth from '@admin/composables/useAuth'
+import type { TFrenchExpression } from '@types'
 
 const props = defineProps<{ slug: string }>()
 
 const { pb, isAuthenticated } = useAuth()
-const expr = ref<Record<string, unknown> | null>(null)
+const expr = ref<TFrenchExpression.TRecord | null>(null)
 const strategiesHtml = ref('')
 const loading = ref(true)
 
@@ -56,13 +57,14 @@ onMounted(async () => {
     return
   }
   try {
-    expr.value = await pb
+    const record = await pb
       .collection('french_expression')
-      .getFirstListItem(pb.filter('slug = {:slug}', { slug: props.slug }), {
+      .getFirstListItem<TFrenchExpression.TRecord>(pb.filter('slug = {:slug}', { slug: props.slug }), {
         expand: 'Signs',
       })
-    if (expr.value.strategies) {
-      strategiesHtml.value = String(await marked.parse(String(expr.value.strategies)))
+    expr.value = record
+    if (record.strategies) {
+      strategiesHtml.value = String(await marked.parse(record.strategies))
     }
   } finally {
     loading.value = false

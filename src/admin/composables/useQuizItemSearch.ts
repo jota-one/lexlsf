@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import type { RecordModel } from 'pocketbase'
+import type { PersonResponse, SignResponse } from '@types'
 import { pb } from '@lib/pb'
 import type { ItemType } from '@admin/types/quiz'
 
@@ -83,27 +83,23 @@ export default function useQuizItemSearch() {
   /**
    * Format search result based on type
    */
-  const formatResult = (record: RecordModel, type: 'sign' | 'person'): SearchItem => {
-    if (type === 'sign') {
-      return {
-        id: record.id,
-        type: 'sign',
-        name: record.name,
-        label: record.name,
-        details: record.definition,
-        expand: record.expand,
-      }
-    } else {
-      return {
-        id: record.id,
-        type: 'person',
-        name: record.name,
-        label: record.firstname ? `${record.firstname} ${record.name}` : record.name,
-        details: record.description,
-        expand: record.expand,
-      }
-    }
-  }
+  const formatSign = (record: SignResponse): SearchItem => ({
+    id: record.id,
+    type: 'sign',
+    name: record.name,
+    label: record.name,
+    details: record.definition,
+    expand: record.expand as SearchItem['expand'],
+  })
+
+  const formatPerson = (record: PersonResponse): SearchItem => ({
+    id: record.id,
+    type: 'person',
+    name: record.name,
+    label: record.firstname ? `${record.firstname} ${record.name}` : record.name,
+    details: record.description,
+    expand: record.expand as SearchItem['expand'],
+  })
 
   /**
    * Search for quiz items (signs and/or persons based on itemType)
@@ -125,7 +121,7 @@ export default function useQuizItemSearch() {
           limit: 50,
         })
 
-        allResults.push(...signResults.map(r => formatResult(r, 'sign')))
+        allResults.push(...signResults.map(formatSign))
       }
 
       // Search persons if applicable
@@ -137,7 +133,7 @@ export default function useQuizItemSearch() {
           limit: 50,
         })
 
-        allResults.push(...personResults.map(r => formatResult(r, 'person')))
+        allResults.push(...personResults.map(formatPerson))
       }
 
       results.value = allResults

@@ -24,6 +24,7 @@ import useHandConfigurations from '../composables/useHandConfigurations'
 import HandConfigurationForm from './HandConfigurationForm.vue'
 import PbErrorToast from './PbErrorToast.vue'
 import usePbErrorToast from '../composables/usePbErrorToast'
+import type { THandConfiguration } from '@types'
 
 type Props = {
   // undefined = create mode
@@ -42,9 +43,9 @@ const { addHandConfiguration, updateHandConfiguration, loadHandConfiguration } =
 const saving = ref(false)
 const { showPbError } = usePbErrorToast()
 
-const emptyForm = () => ({
+const emptyForm = (): THandConfiguration.TForm => ({
   name: '',
-  illustration: null as File | null,
+  illustration: null,
 })
 
 const form = ref(emptyForm())

@@ -1,3 +1,5 @@
+/// <reference types="astro/client" />
+
 interface ImportMetaEnv {
   readonly BASE_URL: string
   readonly MODE: string
@@ -17,3 +19,6 @@ declare module '*.vue' {
   const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>
   export default component
 }
+
+// The package ships no type declarations.
+declare module 'vue3-markdown'

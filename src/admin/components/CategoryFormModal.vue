@@ -133,7 +133,8 @@ watch(visible, v => {
       form.value.tag = props.categoryToEdit.tag
       form.value.slug = props.categoryToEdit.slug
       form.value.Parent = props.categoryToEdit.Parent ?? null
-      form.value.entities = props.categoryToEdit.entities ?? []
+      const entities = props.categoryToEdit.entities
+      form.value.entities = Array.isArray(entities) ? entities : entities ? [entities] : []
     } else {
       // Create mode: reset form
       form.value.id = ''

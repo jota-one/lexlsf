@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import config from '../../config'
 import { pb } from '@lib/pb'
+import type { THandConfiguration } from '@types'
 
 export default function useHandConfigurations() {
   const handConfigurations = ref([])
@@ -21,13 +22,15 @@ export default function useHandConfigurations() {
     })
   }
 
-  const addHandConfiguration = async (payload: { name: string; illustration: string | Blob }) => {
+  const addHandConfiguration = async (payload: THandConfiguration.TForm) => {
     loadingHandConfigurations.value = true
     const formData = new FormData()
 
     // set regular text field
     formData.append('name', payload.name)
-    formData.append('illustration', payload.illustration)
+    if (payload.illustration) {
+      formData.append('illustration', payload.illustration)
+    }
 
     // upload and create new record
     return pb.collection('hand_configurations').create(formData)
@@ -35,7 +38,7 @@ export default function useHandConfigurations() {
 
   const updateHandConfiguration = async (
     id: string,
-    payload: { name: string; illustration?: string | Blob },
+    payload: THandConfiguration.TForm,
   ) => {
     loadingHandConfigurations.value = true
     const formData = new FormData()
