@@ -1,9 +1,9 @@
 <template>
   <div class="drawer lg:drawer-open">
-    <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+    <input id="my-drawer" v-model="drawerOpen" type="checkbox" class="drawer-toggle" />
     <aside class="drawer-side">
       <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu bg-base-200 text-base-content min-h-full w-60 p-4">
+      <ul class="menu bg-base-200 text-base-content min-h-full w-60 p-4" @click="closeOnLink">
         <li>
           <RouterLink to="/" class="flex items-center gap-3" active-class="menu-active">
             <span class="i-fa6-solid-house text-xl"></span>
@@ -116,6 +116,17 @@
   </div>
 </template>
 <script setup lang="ts">
+import { ref } from 'vue'
+
+// Below lg the menu is a drawer over the page: following a link closes it.
+const drawerOpen = ref(false)
+
+const closeOnLink = (event: MouseEvent) => {
+  if ((event.target as Element).closest('a')) {
+    drawerOpen.value = false
+  }
+}
+
 const goOut = () => {
   window.location.href = '/'
 }
