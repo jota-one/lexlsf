@@ -1,46 +1,8 @@
 # RoadMap du projet ls-flex.com
 
-Ce document maintient la liste des changements planifiés pour le projet et sert de référence partagée pour la priorisation, le périmètre et l’avancement.
+Les demandes à faire et en cours sont suivies dans le backlog (`backlog/tasks/`, géré avec [Backlog.md](https://github.com/MrLesk/Backlog.md)). Ce document garde l'historique de ce qui est livré.
 
-Format recommandé pour le suivi: `- [AAAA-MM-JJ] Titre — note courte`.
-
-## Améliorations, refactorings
-
-Liste des petites améliorations et refactorings potentiels.
-
-- Culture, galerie photo des personnes: ne pas faire apparaître le nom dans la carte, juste la photo et faire apparaître le nom en blanc sur un overlay un peu foncé au survol de la photo
-- Culture: ajouter un mode "liste" en plus du mode (implicite) galerie actuel. Le mode liste va afficher une liste des personnes, bcp plus compacte, sans photo.
-- Quizz création: Mettre des cases à cocher et un bouton "save" au lieu du bouton "+" et du "ajouter tous"
-- Quizz exécution: Ajouter un champ "à réviser" dans un signe ou une personne (cochable par utilisateur et par quizz)
-- Expression pi-sourde: créer un signe, mais le lier à une catégorie spéciale qui l'exclut du lexique et qui le met que dans les expressions pi-sourde. Pourquoi? Parce qu'on ne peut pas traduire en français. D'où l'existence de ce menu spécifique. Cela implique d'avoir un nouveau groupe de catégories pour les expressions pi-sourde.
-- Culture générale — affichage visuel distinct selon le mode : événements ponctuels en vue verticale (comme la timeline d'une personne dans Culture), périodes en vue horizontale avec des rectangles illustrant la durée et le nom au-dessus. La fiche détail s'ouvre en-dessous en mode horizontal, à droite en mode vertical.
-- Culture générale — import/export des items (sur le même modèle que les signes).
-- Culture générale — intégration dans la recherche globale du site.
-
-## Nouvelles fonctionnalités
-
-### Admin personnes/organismes — onglet Liens / Bibliographie
-
-Ajouter un onglet « Liens / Bibliographie » avec CRUD de liens web, sur le même modèle que l'onglet des vidéos YouTube.
-Dans la partie publique, afficher ces liens sous la description, séparés par un trait.
-
-### Signes — finaliser l'implémentation des mouvements
-
-L’UI admin est déjà en place via `HandMovementForm` dans `SignForm`, et les formulaires initient `movements` pour la main droite/gauche. Il manque la persistance côté PocketBase (ajouter le champ/migration si nécessaire et sérialiser `movements` dans `useSigns.setFormData`), puis l’affichage côté public : remplacer les placeholders « Mouvement main ... (bientôt disponible) » dans la page signe par un rendu des données sauvegardées. Vérifier aussi la cohérence main gauche (si pas de configuration gauche, ne pas stocker/afficher). Enfin, clarifier le rôle de la collection `hand_movements`/composable associé (utiliser pour des options dynamiques ou le supprimer).
-
-### Reporting sur les sessions de révision
-
-Un utilisateur doit pouvoir consulter un maximum d'informations sur les sessions de révision qu'il a effectuées.
-Il doit avoir accès à des statistiques, des charts illustrant sa progression dans différents aspects (vitesse, précision, etc.)
-
-### Trombinoscope des personnages/organisations culturels
-
-Créer une espèce de trombinoscope avec des flipCards. Face A: photo. Face B: Nom + vidéo du signe s'il y en a une. L'utilité de cet outil c'est d'avoir une vue d'ensemble des infos principales des personnes et organismes, sans devoir passer par les quiz.
-
-### Nouveau module "Situation d'interprétation"
-
-C'est le module utltime. Il va reposer sur tout le reste et permettre de remonter toutes les infos utiles du site pour une sitation d'interprétation en particulier.
-On peut imaginer par exemple la situation "Assemblée générale d'une association de docteurs en médecine légale". Ca va déjà toucher à plusieurs champs lexicaux, ça va faire appel à des expressions françaises, etc.
+Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
