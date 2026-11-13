@@ -28,6 +28,18 @@ const itemTypeLabel = (type: string): string => {
   }
   return labels[type] || type
 }
+
+/**
+ * Signs are blue, the colour of the Deaf, and persons take the Culture pink.
+ * The Start button is yellow, the one logo colour neither badge uses.
+ */
+const itemTypeBadge = (type: string): string => {
+  const classes: Record<string, string> = {
+    sign: 'badge-primary',
+    person: 'badge-secondary',
+  }
+  return classes[type] ?? 'badge-ghost'
+}
 </script>
 
 <template>
@@ -53,7 +65,9 @@ const itemTypeLabel = (type: string): string => {
           <h2 class="card-title text-lg">{{ quiz.title }}</h2>
           <p class="text-sm text-base-content/60">{{ quiz.description }}</p>
           <div class="flex items-center gap-4 mt-4 text-sm">
-            <div class="badge badge-ghost">{{ itemTypeLabel(quiz.item_type) }}</div>
+            <div class="badge" :class="itemTypeBadge(quiz.item_type)">
+              {{ itemTypeLabel(quiz.item_type) }}
+            </div>
             <div class="flex items-center gap-1">
               <span class="i-fa-solid-layer-group"></span>
               <span>{{ quizItemCounts[quiz.id] ?? 0 }} cartes</span>
@@ -61,7 +75,9 @@ const itemTypeLabel = (type: string): string => {
           </div>
         </div>
         <div class="card-actions justify-end p-4">
-          <button class="btn btn-secondary btn-sm">Commencer</button>
+          <button class="btn btn-sm border-none bg-logo-yellow text-neutral hover:brightness-95">
+            Commencer
+          </button>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 - [2026-11-13] Admin — dans les éléments d'un quiz, la recherche passe en haut ; on coche les résultats (ou « Tout cocher ») et un seul bouton les ajoute d'un coup.
 - [2026-11-13] Culture — un bouton passe de la galerie de photos à une liste compacte des personnes, et le choix est retenu.
 - [2026-11-13] Culture — les cartes des personnes ne montrent que la photo ; le nom apparaît en blanc sur un voile sombre au survol (et reste affiché sur téléphone).
-- [2026-11-13] Révisions — le bouton « Commencer » des quiz passe en rose, et le type du quiz (Signes, Personnes…) devient une étiquette grise : on ne les confond plus.
+- [2026-11-13] Révisions — le bouton « Commencer » des quiz passe en jaune : on ne le confond plus avec l'étiquette du type, bleue pour les signes, rose pour les personnes.
 - [2026-11-13] Admin — dans la liste des quiz, le crayon d'édition est à gauche du titre ; partager et supprimer restent dans les actions.
 - [2026-11-13] Révisions — ouvrir un quiz supprimé ou non partagé ramène à la liste avec un message, au lieu d'une page blanche. Les messages d'erreur des révisions s'affichent enfin.
 - [2026-11-13] Admin — la liste des signes montre enfin les 800+ signes, page par page (25, 50 ou 100 par page). La recherche porte sur tous les signes, un filtre isole ceux avec ou sans vidéo, et le crayon d'édition passe à gauche du terme.
