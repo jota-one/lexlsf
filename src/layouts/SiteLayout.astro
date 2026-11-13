@@ -10,7 +10,7 @@ const { navBg = 'bg-transparent' } = Astro.props;
 
 const navClasses =
   'fixed top-0 left-0 w-full h-24 flex items-center backdrop-blur-md shadow-lg px-5 z-50 ' + navBg
-const logoContainerClasses = isHome ? 'flex-1' : 'w-40';
+const logoContainerClasses = isHome ? 'flex-1' : 'w-24 shrink-0 sm:w-40';
 ---
 
 <BaseLayout>
@@ -22,7 +22,7 @@ const logoContainerClasses = isHome ? 'flex-1' : 'w-40';
         <div class={logoContainerClasses}>
           <h1 class="text-xl md:text-3xl font-semibold">
             <a href="/" class="flex items-center text-white" aria-label="Lexique LSF">
-              <LsflexLogo class="h-20 w-auto absolute top-1/2 -translate-y-1/2" />
+              <LsflexLogo class="h-14 sm:h-20 w-auto absolute top-1/2 -translate-y-1/2" />
             </a>
           </h1>
         </div>
@@ -35,7 +35,7 @@ const logoContainerClasses = isHome ? 'flex-1' : 'w-40';
             <AdminLink client:only />
           </ul>
         </div>
-        <div class="hidden lg:flex gap-5">
+        <div class="flex gap-5 shrink-0">
           <UserAuth client:only />
         </div>
       </div>

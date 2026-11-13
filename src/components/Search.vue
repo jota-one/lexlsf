@@ -28,7 +28,10 @@
           </div>
         </template>
       </AutoComplete>
-      <label>Chercher quelque-chose...</label>
+      <label>
+        <span class="sm:hidden">Chercher…</span>
+        <span class="hidden sm:inline">Chercher quelque-chose...</span>
+      </label>
     </FloatLabel>
 
     <!--
