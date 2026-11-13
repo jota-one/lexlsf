@@ -19,3 +19,10 @@ export const itemTypeBadge = (type: string): string => {
   }
   return classes[type] ?? 'badge-ghost'
 }
+
+/** "1 signe", "19 signes", "3 personnes", "0 élément"… for a quiz of that type. */
+export const itemCountLabel = (type: string, count: number): string => {
+  const nouns: Record<string, string> = { sign: 'signe', person: 'personne' }
+  const noun = nouns[type] ?? 'élément'
+  return `${count} ${noun}${count > 1 ? 's' : ''}`
+}

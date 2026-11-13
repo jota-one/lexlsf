@@ -12,6 +12,7 @@ import QuizItemsList from '@admin/components/QuizItemsList.vue'
 import QuizShareModal from '@admin/components/QuizShareModal.vue'
 import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
+import { itemCountLabel } from '@admin/helpers/quizItemType'
 
 const route = useRoute()
 const router = useRouter()
@@ -161,7 +162,12 @@ const handleItemsLoaded = (keys: string[]) => {
 
               <!-- Current Items -->
               <div>
-                <h3 class="text-lg font-semibold mb-4">Éléments actuels</h3>
+                <h3 class="text-lg font-semibold mb-4">
+                  Éléments actuels
+                  <span class="font-normal text-base-content/60">
+                    · {{ itemCountLabel(form.item_type, existingItemKeys.length) }}
+                  </span>
+                </h3>
                 <QuizItemsList
                   :key="itemsRefreshKey"
                   :quiz-id="quizId"
