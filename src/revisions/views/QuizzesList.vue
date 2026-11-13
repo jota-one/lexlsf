@@ -53,7 +53,7 @@ const itemTypeLabel = (type: string): string => {
           <h2 class="card-title text-lg">{{ quiz.title }}</h2>
           <p class="text-sm text-base-content/60">{{ quiz.description }}</p>
           <div class="flex items-center gap-4 mt-4 text-sm">
-            <div class="badge badge-primary">{{ itemTypeLabel(quiz.item_type) }}</div>
+            <div class="badge badge-ghost">{{ itemTypeLabel(quiz.item_type) }}</div>
             <div class="flex items-center gap-1">
               <span class="i-fa-solid-layer-group"></span>
               <span>{{ quizItemCounts[quiz.id] ?? 0 }} cartes</span>
@@ -61,7 +61,7 @@ const itemTypeLabel = (type: string): string => {
           </div>
         </div>
         <div class="card-actions justify-end p-4">
-          <button class="btn btn-primary btn-sm">Commencer</button>
+          <button class="btn btn-secondary btn-sm">Commencer</button>
         </div>
       </div>
     </div>

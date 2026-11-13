@@ -1,9 +1,10 @@
 ---
 id: TASK-7
 title: 'Quiz : bouton « Commencer » d''une autre couleur'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-13T07:49:00Z'
+updated_date: '2026-11-13T17:33:00Z'
 labels:
   - quiz
   - revisions
@@ -24,5 +25,5 @@ Demande de Geetha (13.11.2026) : sur la liste des quiz côté révisions, le bou
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Le bouton « Commencer » ne partage plus sa couleur avec le badge de type du quiz
+- [x] #1 Le bouton « Commencer » ne partage plus sa couleur avec le badge de type du quiz
 <!-- AC:END -->
