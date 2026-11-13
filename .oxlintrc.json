@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["pb/pb_migrations/**"],
+  "ignorePatterns": ["pb/pb_migrations/**", "src/types/pocketbase-types.ts"],
   "rules": {
     "eqeqeq": "error",
     "curly": "error",

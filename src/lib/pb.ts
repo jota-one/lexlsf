@@ -1,7 +1,8 @@
 import PocketBase from 'pocketbase'
 import config from '@config'
+import type { TypedPocketBase } from '@types'
 
-export const pb = new PocketBase(config.apiBaseUrl)
+export const pb = new PocketBase(config.apiBaseUrl) as TypedPocketBase
 pb.autoCancellation(false)
 
 // PB record ids are alphanumeric; drop anything else before joining into a filter

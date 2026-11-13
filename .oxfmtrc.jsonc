@@ -5,5 +5,5 @@
   "trailingComma": "all",
   "quoteProps": "as-needed",
   "arrowParens": "avoid",
-  "ignorePatterns": ["pb/pb_migrations", ".vscode"],
+  "ignorePatterns": ["pb/pb_migrations", ".vscode", "src/types/pocketbase-types.ts"],
 }

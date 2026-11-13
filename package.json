@@ -8,6 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "oxlint --type-aware",
+    "typecheck": "vue-tsc --noEmit",
+    "typegen": "node --disable-warning=ExperimentalWarning scripts/typegen.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "bash tests/e2e/run.sh",
@@ -50,9 +52,11 @@
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
     "oxlint-tsgolint": "^7.0.2006",
+    "pocketbase-typegen": "^1.6.0",
     "sortablejs": "^1.15.7",
     "typescript": "^6.0.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14"
   },
   "volta": {
     "node": "22.23.4"

@@ -1,6 +1,8 @@
 allowBuilds:
   esbuild: true
   sharp: true
+  # Only pocketbase-typegen needs it, and scripts/typegen.js reads the schema without it.
+  better-sqlite3: false
 
 overrides:
   fast-uri: ^3.1.9
