@@ -40,7 +40,19 @@
               :class="SECTION_ACCENTS.culture.cardHover"
               @click="goToPerson(person.slug)"
             >
-              <span class="font-medium">{{ displayName(person) }}</span>
+              <span class="flex items-center gap-3 min-w-0">
+                <!-- Same width with or without a photo, so the names stay aligned. -->
+                <span class="w-8 h-8 shrink-0 rounded-full overflow-hidden bg-base-200">
+                  <img
+                    v-if="person.illustration"
+                    :src="getIllustrationUrl(person)"
+                    alt=""
+                    loading="lazy"
+                    class="w-full h-full object-cover"
+                  />
+                </span>
+                <span class="font-medium truncate">{{ displayName(person) }}</span>
+              </span>
               <span v-if="person.organism" class="text-xs opacity-60">Organisme</span>
             </button>
           </li>
