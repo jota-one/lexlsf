@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-13] Culture — un bouton passe de la galerie de photos à une liste compacte des personnes, et le choix est retenu.
 - [2026-11-13] Culture — les cartes des personnes ne montrent que la photo ; le nom apparaît en blanc sur un voile sombre au survol (et reste affiché sur téléphone).
 - [2026-11-13] Révisions — le bouton « Commencer » des quiz passe en rose, et le type du quiz (Signes, Personnes…) devient une étiquette grise : on ne les confond plus.
 - [2026-11-13] Admin — dans la liste des quiz, le crayon d'édition est à gauche du titre ; partager et supprimer restent dans les actions.
