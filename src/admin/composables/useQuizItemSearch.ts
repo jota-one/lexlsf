@@ -20,8 +20,13 @@ export type QuizItemSearchQuery = {
   addedSince?: string
 }
 
+/** Results fetched per collection; a broader search asks to be narrowed down. */
+export const SEARCH_LIMIT = 100
+
 export default function useQuizItemSearch() {
   const results = ref<SearchItem[]>([])
+  /** How many items match, which can be more than the results shown. */
+  const total = ref(0)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -31,19 +36,19 @@ export default function useQuizItemSearch() {
   const buildSignFilter = (search: string, level?: string, addedSince?: string): string => {
     const filters: string[] = []
 
-    if (search.trim()) {
+    const q = search.trim()
+    if (q) {
       // Search in name, definition, or Category.tag
-      filters.push(
-        `(name ~ "${search.trim()}" || definition ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`,
-      )
+      filters.push(pb.filter('(name ~ {:q} || definition ~ {:q} || Category.tag ~ {:q})', { q }))
     }
 
     if (level) {
-      filters.push(`level = "${level}"`)
+      filters.push(pb.filter('level = {:level}', { level }))
     }
 
     if (addedSince) {
-      filters.push(`created >= "${addedSince}"`)
+      // A Date is formatted the way PocketBase stores datetimes.
+      filters.push(pb.filter('created >= {:since}', { since: new Date(addedSince) }))
     }
 
     return filters.join(' && ')
@@ -59,10 +64,14 @@ export default function useQuizItemSearch() {
   ): string => {
     const filters: string[] = []
 
-    if (search.trim()) {
+    const q = search.trim()
+    if (q) {
       // Search in name, firstname, description, Activities.tag, or Category.tag
       filters.push(
-        `(name ~ "${search.trim()}" || firstname ~ "${search.trim()}" || description ~ "${search.trim()}" || Activities.tag ~ "${search.trim()}" || Category.tag ~ "${search.trim()}")`,
+        pb.filter(
+          '(name ~ {:q} || firstname ~ {:q} || description ~ {:q} || Activities.tag ~ {:q} || Category.tag ~ {:q})',
+          { q },
+        ),
       )
     }
 
@@ -74,7 +83,7 @@ export default function useQuizItemSearch() {
     // 'both' means no filter on the deaf field
 
     if (addedSince) {
-      filters.push(`created >= "${addedSince}"`)
+      filters.push(pb.filter('created >= {:since}', { since: new Date(addedSince) }))
     }
 
     return filters.join(' && ')
@@ -108,35 +117,40 @@ export default function useQuizItemSearch() {
     loading.value = true
     error.value = null
     results.value = []
+    total.value = 0
 
     try {
       const allResults: SearchItem[] = []
+      let matching = 0
 
       // Search signs if applicable
       if (query.itemType === 'sign' || query.itemType === 'mixed') {
         const filter = buildSignFilter(query.search, query.level, query.addedSince)
-        const signResults = await pb.collection('sign').getFullList({
+        const signResults = await pb.collection('sign').getList(1, SEARCH_LIMIT, {
           filter: filter || undefined,
           expand: 'Category',
-          limit: 50,
+          sort: 'name',
         })
 
-        allResults.push(...signResults.map(formatSign))
+        allResults.push(...signResults.items.map(formatSign))
+        matching += signResults.totalItems
       }
 
       // Search persons if applicable
       if (query.itemType === 'person' || query.itemType === 'mixed') {
         const filter = buildPersonFilter(query.search, query.deafFilter, query.addedSince)
-        const personResults = await pb.collection('person').getFullList({
+        const personResults = await pb.collection('person').getList(1, SEARCH_LIMIT, {
           filter: filter || undefined,
           expand: 'Category,Activities',
-          limit: 50,
+          sort: 'name',
         })
 
-        allResults.push(...personResults.map(formatPerson))
+        allResults.push(...personResults.items.map(formatPerson))
+        matching += personResults.totalItems
       }
 
       results.value = allResults
+      total.value = matching
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la recherche'
       results.value = []
@@ -150,11 +164,13 @@ export default function useQuizItemSearch() {
    */
   const clear = () => {
     results.value = []
+    total.value = 0
     error.value = null
   }
 
   return {
     results: computed(() => results.value),
+    total: computed(() => total.value),
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     search,

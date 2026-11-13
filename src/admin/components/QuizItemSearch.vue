@@ -27,7 +27,7 @@ type Events = {
 const props = defineProps<Props>()
 const emit = defineEmits<Events>()
 
-const { results, loading, error, search, clear } = useQuizItemSearch()
+const { results, total, loading, error, search, clear } = useQuizItemSearch()
 
 const excludeSet = computed(() => new Set(props.excludeKeys || []))
 const filteredResults = computed(() =>
@@ -95,8 +95,19 @@ const deafFilterOptions = [
 const showLevelFilter = () => props.itemType === 'sign' || props.itemType === 'mixed'
 const showDeafFilter = () => props.itemType === 'person' || props.itemType === 'mixed'
 
+/**
+ * A date field reports every keystroke of the year as a valid date (0002, 0020,
+ * 0202, 2026…): only a full, plausible date is worth a search.
+ */
+const usableAddedSince = computed(() => {
+  const value = addedSince.value
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && dayjs(value).year() >= 2000 ? value : ''
+})
+
 const performSearch = async () => {
-  const addedSinceIso = addedSince.value ? dayjs(addedSince.value).toISOString() : undefined
+  const addedSinceIso = usableAddedSince.value
+    ? dayjs(usableAddedSince.value).toISOString()
+    : undefined
   await search({
     search: searchTerm.value,
     level: selectedLevel.value || undefined,
@@ -129,7 +140,7 @@ const debouncedSearch = () => {
       searchTerm.value.length > 2 ||
       selectedLevel.value ||
       deafFilter.value !== 'both' ||
-      addedSince.value
+      usableAddedSince.value
     ) {
       performSearch()
     }
@@ -140,7 +151,7 @@ watch([searchTerm, selectedLevel, deafFilter], () => {
   debouncedSearch()
 })
 
-watch(addedSince, () => {
+watch(usableAddedSince, () => {
   debouncedSearch()
 })
 </script>
@@ -240,7 +251,12 @@ watch(addedSince, () => {
           @click="addSelection"
         />
       </div>
-      <div class="space-y-2">
+      <p v-if="total > results.length" class="text-xs text-warning">
+        {{ total }} éléments correspondent : seuls les {{ results.length }} premiers sont listés.
+        Précisez la recherche pour trouver les autres.
+      </p>
+      <!-- Scrolls on its own, so the quiz's items below stay in reach. -->
+      <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
         <label
           v-for="item in filteredResults"
           :key="resultKey(item)"
