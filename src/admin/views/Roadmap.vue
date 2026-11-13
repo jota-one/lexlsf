@@ -13,57 +13,85 @@
       </div>
 
       <!-- Nouvelles fonctionnalités -->
-      <p class="text-xs uppercase font-semibold tracking-widest opacity-40 mb-4">
-        Nouvelles fonctionnalités
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-        <div
-          v-for="feature in features"
-          :key="feature.title"
-          class="group bg-base-100 border border-base-200 rounded-xl p-5 cursor-pointer hover:border-primary hover:shadow-lg transition-all duration-200 flex flex-col gap-3"
-          @click="openFeature(feature)"
-        >
-          <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <span :class="[featureIcon(feature.title), 'text-primary text-base']"></span>
+      <template v-if="features.length">
+        <p class="text-xs uppercase font-semibold tracking-widest opacity-40 mb-4">
+          Nouvelles fonctionnalités
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+          <div
+            v-for="feature in features"
+            :key="feature.id"
+            class="group bg-base-100 border border-base-200 rounded-xl p-5 cursor-pointer hover:border-primary hover:shadow-lg transition-all duration-200 flex flex-col gap-3"
+            @click="openTask(feature)"
+          >
+            <div class="flex items-start gap-3">
+              <div
+                class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"
+              >
+                <span :class="[categoryIcon(feature), 'text-primary text-base']"></span>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <h4
+                  class="font-semibold text-sm leading-snug group-hover:text-primary transition-colors"
+                >
+                  {{ feature.title }}
+                </h4>
+                <div class="flex gap-1.5">
+                  <span class="badge badge-xs" :class="categoryBadgeClass(feature)">
+                    {{ categoryOf(feature) }}
+                  </span>
+                  <span v-if="isInProgress(feature)" class="badge badge-xs badge-success">
+                    En cours
+                  </span>
+                </div>
+              </div>
             </div>
-            <h4
-              class="font-semibold text-sm leading-snug group-hover:text-primary transition-colors"
-            >
-              {{ feature.title }}
-            </h4>
-          </div>
-          <p class="text-xs text-base-content/50 line-clamp-2 pl-12">{{ feature.excerpt }}</p>
-          <div class="flex justify-end">
-            <span
-              class="text-xs text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              Voir le détail
-              <span class="i-fa6-solid-arrow-right text-xs"></span>
-            </span>
+            <p class="text-xs text-base-content/50 line-clamp-2 pl-12">{{ excerpt(feature) }}</p>
+            <div class="flex justify-end">
+              <span
+                class="text-xs text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                Voir le détail
+                <span class="i-fa6-solid-arrow-right text-xs"></span>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <!-- Améliorations -->
-      <p class="text-xs uppercase font-semibold tracking-widest opacity-40 mb-4">
-        Améliorations prévues
-      </p>
-      <div class="flex flex-col gap-2">
-        <div
-          v-for="(imp, i) in improvements"
-          :key="i"
-          class="flex items-start gap-3 px-4 py-3 rounded-lg bg-base-100 border border-base-200"
-        >
-          <span
-            class="badge badge-sm mt-0.5 shrink-0 whitespace-nowrap"
-            :class="categoryBadgeClass(imp.category)"
+      <template v-if="improvements.length">
+        <p class="text-xs uppercase font-semibold tracking-widest opacity-40 mb-4">
+          Améliorations prévues
+        </p>
+        <div class="flex flex-col gap-2">
+          <button
+            v-for="improvement in improvements"
+            :key="improvement.id"
+            type="button"
+            class="flex items-start gap-3 px-4 py-3 rounded-lg bg-base-100 border border-base-200 text-left cursor-pointer hover:border-primary transition-colors"
+            @click="openTask(improvement)"
           >
-            {{ imp.category }}
-          </span>
-          <span class="text-sm text-base-content/80">{{ imp.text }}</span>
+            <span
+              class="badge badge-sm mt-0.5 shrink-0 whitespace-nowrap"
+              :class="categoryBadgeClass(improvement)"
+            >
+              {{ categoryOf(improvement) }}
+            </span>
+            <span class="text-sm text-base-content/80 flex-1">{{ improvement.title }}</span>
+            <span
+              v-if="isInProgress(improvement)"
+              class="badge badge-sm badge-success mt-0.5 shrink-0"
+            >
+              En cours
+            </span>
+          </button>
         </div>
-      </div>
+      </template>
+
+      <p v-if="!features.length && !improvements.length" class="text-sm opacity-50">
+        Rien sur le feu pour le moment.
+      </p>
     </section>
 
     <!-- ── TOUT JUSTE SORTI DU FOUR ───────────────────────────────────────── -->
@@ -92,10 +120,34 @@
       </ul>
     </section>
 
-    <!-- ── MODAL détail fonctionnalité ───────────────────────────────────── -->
-    <Dialog v-model:visible="showModal" modal :header="selectedFeature?.title" class="w-[55%]">
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <article class="prose prose-sm max-w-none" v-html="selectedFeatureHtml" />
+    <!-- ── MODAL détail d'une tâche ──────────────────────────────────────── -->
+    <Dialog v-model:visible="showModal" modal :header="selectedTask?.title" class="w-[55%]">
+      <template v-if="selectedTask">
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <article class="prose prose-sm max-w-none" v-html="selectedTaskHtml" />
+        <template v-if="selectedTask.acceptanceCriteria.length">
+          <p class="text-xs uppercase font-semibold tracking-widest opacity-40 mt-6 mb-3">
+            Ce qui est prévu
+          </p>
+          <ul class="flex flex-col gap-2">
+            <li
+              v-for="criterion in selectedTask.acceptanceCriteria"
+              :key="criterion.text"
+              class="flex items-start gap-2 text-sm"
+            >
+              <span
+                class="mt-0.5 shrink-0"
+                :class="
+                  criterion.done
+                    ? 'i-ic-outline-check-box text-success'
+                    : 'i-ic-outline-check-box-outline-blank opacity-40'
+                "
+              ></span>
+              <span :class="{ 'opacity-60': criterion.done }">{{ criterion.text }}</span>
+            </li>
+          </ul>
+        </template>
+      </template>
     </Dialog>
   </div>
 </template>
@@ -105,106 +157,112 @@ import { computed, ref } from 'vue'
 import { marked } from 'marked'
 import Dialog from 'primevue/dialog'
 import roadmapContent from '../../../ROADMAP.md?raw'
+import { openTasks, type BacklogTask } from '@admin/helpers/backlogTasks'
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// ─── Open work, from the backlog (backlog/tasks/*.md, read at build time) ────
 
-interface Feature {
-  title: string
-  excerpt: string
-  content: string
+const taskFiles = import.meta.glob<string>('../../../backlog/tasks/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+const tasks = openTasks(Object.values(taskFiles))
+
+const features = tasks.filter(task => task.type === 'feature')
+const improvements = tasks.filter(task => task.type !== 'feature')
+
+const isInProgress = (task: BacklogTask) => task.status === 'In Progress'
+
+const excerpt = (task: BacklogTask) =>
+  task.description
+    .replace(/`[^`]+`/g, '')
+    .split(/\.\s|\n/)[0]
+    .trim()
+
+// The first label naming an area of the site gives the task its category.
+const CATEGORIES: Record<string, { name: string; icon: string; badge: string }> = {
+  signes: { name: 'Signes', icon: 'i-fa6-solid-hands', badge: 'badge-primary' },
+  quiz: { name: 'Quiz', icon: 'i-fa6-solid-layer-group', badge: 'badge-info' },
+  revisions: { name: 'Révisions', icon: 'i-fa6-solid-chart-line', badge: 'badge-info' },
+  culture: { name: 'Culture', icon: 'i-fa6-solid-address-card', badge: 'badge-secondary' },
+  'culture-generale': {
+    name: 'Culture générale',
+    icon: 'i-fa6-solid-landmark',
+    badge: 'badge-accent',
+  },
+  expressions: { name: 'Expressions', icon: 'i-fa6-solid-comments', badge: 'badge-warning' },
+  recherche: { name: 'Recherche', icon: 'i-fa6-solid-magnifying-glass', badge: 'badge-ghost' },
+  outils: { name: 'Outils', icon: 'i-fa6-solid-scissors', badge: 'badge-neutral' },
+  interpretation: {
+    name: 'Interprétation',
+    icon: 'i-fa6-solid-people-arrows',
+    badge: 'badge-ghost',
+  },
+  admin: { name: 'Admin', icon: 'i-fa6-solid-gear', badge: 'badge-ghost' },
 }
-interface Improvement {
-  category: string
-  text: string
+const categoryKey = (task: BacklogTask) => task.labels.find(label => label in CATEGORIES)
+const categoryOf = (task: BacklogTask) => {
+  const key = categoryKey(task)
+  return key ? CATEGORIES[key].name : 'Général'
 }
+const categoryIcon = (task: BacklogTask) => {
+  const key = categoryKey(task)
+  return key ? CATEGORIES[key].icon : 'i-fa6-solid-star'
+}
+const categoryBadgeClass = (task: BacklogTask) => {
+  const key = categoryKey(task)
+  return key ? CATEGORIES[key].badge : 'badge-ghost'
+}
+
+// ─── Delivered work, from the history in ROADMAP.md ─────────────────────────
+
 interface HistoryEntry {
   date: string
   title: string
   detail: string
 }
 
-// ─── Parser ─────────────────────────────────────────────────────────────────
-
-function parseRoadmap(raw: string) {
+function parseHistory(raw: string): HistoryEntry[] {
   const archiveIdx = raw.indexOf('\nARCHIVE')
   const content = archiveIdx > -1 ? raw.slice(0, archiveIdx) : raw
-
-  const features: Feature[] = []
-  const improvements: Improvement[] = []
   const history: HistoryEntry[] = []
 
   for (const section of content.split(/^## /m).slice(1)) {
     const [heading, ...rest] = section.split('\n')
-    const body = rest.join('\n').trim()
-
-    if (heading.startsWith('Améliorations')) {
-      for (const line of body.split('\n')) {
-        const match = line.match(/^- (.+)/)
-        if (!match) {
-          continue
-        }
-        const text = match[1].trim()
-        improvements.push({ category: extractCategory(text), text })
+    if (!heading.startsWith('Historique')) {
+      continue
+    }
+    for (const line of rest) {
+      const match = line.match(/^- \[(\d{4}-\d{2}-\d{2})\] (.+)/)
+      if (!match) {
+        continue
       }
-    } else if (heading.startsWith('Nouvelles')) {
-      for (const sub of body.split(/^### /m).slice(1)) {
-        const [title, ...lines] = sub.split('\n')
-        const subContent = lines.join('\n').trim()
-        const excerpt = subContent
-          .replace(/`[^`]+`/g, '')
-          .split(/[.\n]/)[0]
-          .trim()
-        features.push({ title: title.trim(), excerpt, content: subContent })
-      }
-    } else if (heading.startsWith('Historique')) {
-      for (const line of body.split('\n')) {
-        const match = line.match(/^- \[(\d{4}-\d{2}-\d{2})\] (.+)/)
-        if (!match) {
-          continue
-        }
-        const [, date, rest2] = match
-        const sep = rest2.indexOf(' — ')
-        history.push({
-          date,
-          title: sep > -1 ? rest2.slice(0, sep).trim() : rest2.trim(),
-          detail: sep > -1 ? rest2.slice(sep + 3).trim() : '',
-        })
-      }
+      const [, date, text] = match
+      const sep = text.indexOf(' — ')
+      history.push({
+        date,
+        title: sep > -1 ? text.slice(0, sep).trim() : text.trim(),
+        detail: sep > -1 ? text.slice(sep + 3).trim() : '',
+      })
     }
   }
 
-  return { features, improvements, history }
+  return history
 }
 
-function extractCategory(text: string): string {
-  if (text.startsWith('Culture générale')) {
-    return 'Culture générale'
-  }
-  if (text.startsWith('Culture')) {
-    return 'Culture'
-  }
-  if (text.startsWith('Quizz')) {
-    return 'Quiz'
-  }
-  if (text.startsWith('Expression')) {
-    return 'Expressions'
-  }
-  return 'Général'
-}
-
-const { features, improvements, history } = parseRoadmap(roadmapContent)
+const history = parseHistory(roadmapContent)
 
 // ─── Modal ──────────────────────────────────────────────────────────────────
 
-const selectedFeature = ref<Feature | null>(null)
+const selectedTask = ref<BacklogTask | null>(null)
 const showModal = ref(false)
 
-const openFeature = (f: Feature) => {
-  selectedFeature.value = f
+const openTask = (task: BacklogTask) => {
+  selectedTask.value = task
   showModal.value = true
 }
-const selectedFeatureHtml = computed(() =>
-  selectedFeature.value ? String(marked.parse(selectedFeature.value.content)) : '',
+const selectedTaskHtml = computed(() =>
+  selectedTask.value ? String(marked.parse(selectedTask.value.description)) : '',
 )
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -227,26 +285,4 @@ const formatDate = (d: string) => {
   const [year, month, day] = d.split('-').map(Number)
   return `${day} ${MONTHS_FR[month - 1]} ${year}`
 }
-
-const ICONS: [string, string][] = [
-  ['lien', 'i-fa6-solid-link'],
-  ['bibliographie', 'i-fa6-solid-link'],
-  ['mouvement', 'i-fa6-solid-hand'],
-  ['reporting', 'i-fa6-solid-chart-line'],
-  ['révision', 'i-fa6-solid-chart-line'],
-  ['trombinoscope', 'i-fa6-solid-address-card'],
-  ['signe', 'i-fa6-solid-hands'],
-]
-const featureIcon = (title: string) => {
-  const lower = title.toLowerCase()
-  return ICONS.find(([k]) => lower.includes(k))?.[1] ?? 'i-fa6-solid-star'
-}
-
-const BADGE_CLASSES: Record<string, string> = {
-  'Culture générale': 'badge-accent',
-  Culture: 'badge-secondary',
-  Quiz: 'badge-info',
-  Expressions: 'badge-warning',
-}
-const categoryBadgeClass = (cat: string) => BADGE_CLASSES[cat] ?? 'badge-ghost'
 </script>
