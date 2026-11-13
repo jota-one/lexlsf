@@ -44,6 +44,9 @@ On peut imaginer par exemple la situation "Assemblée générale d'une associati
 
 ## Historique (fait)
 
+- [2026-09-09] Outillage — dans l'application de découpage, chaque clip peut être renommé après coup (le nom du signe, accents et espaces compris) et un bouton les déplace tous d'un coup vers le dossier de son choix, sans jamais écraser un fichier existant. Relancer un découpage par-dessus des clips déjà produits demande confirmation.
+- [2026-09-09] Outillage — petite application locale à fournir aux personnes qui filment : elles déposent leur vidéo, voient les pauses détectées sur une courbe, ajustent la découpe et récupèrent un clip par signe. Fonctionne sans rien installer (ffmpeg embarqué) et sans connexion.
+- [2026-09-09] Outillage — un script découpe une vidéo continue de signes en un clip par signe en détectant les pauses : planche de contrôle à valider avant écriture, et option pour produire d'avance les vidéos au format optimisé du site.
 - [2026-09-08] Recherche — choix des collections cherchées (signes, culture, champs lexicaux, expressions françaises, expressions pi-sourdes) : boutons sous le champ sur l'accueil, bouton de filtre dans l'en-tête, choix mémorisé d'une page à l'autre et d'une visite à l'autre. Une collection décochée n'est plus interrogée du tout.
 - [2026-09-07] Recherche — choisir un terme de champ lexical dans la recherche du site amène directement sur ce terme, sa carte dépliée et le terme mis en évidence, comme un lien entre termes.
 - [2026-09-07] Lexique — un signe sans vidéo n'affiche plus un lecteur vide : un cadre gris de la taille du lecteur indique « Vidéo non disponible ».

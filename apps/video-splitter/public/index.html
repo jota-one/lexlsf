@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Découpeur de signes LSF</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <h1 class="wordmark">Découpeur<br><em>de signes</em></h1>
+    <p class="standfirst">Vous filmez vos signes à la suite, en marquant une pause entre chaque. L’outil repère les pauses et vous rend un clip par signe.</p>
+    <p class="chip" id="ffmpeg-chip" data-state="loading">Vérification…</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="step" id="step-film">
+    <p class="step-mark">Étape 1</p>
+    <h2>Filmer</h2>
+    <p class="lede">La qualité du découpage se joue au tournage. Quatre choses à respecter :</p>
+    <ol class="advice">
+      <li>
+        <h3>Posez la caméra</h3>
+        <p>Sur un pied ou une pile de livres, peu importe, mais elle ne doit pas bouger. Une caméra tenue à la main fait bouger toute l’image, et l’outil ne distingue plus vos mains du décor.</p>
+      </li>
+      <li>
+        <h3>Choisissez un fond calme</h3>
+        <p>Un mur uni fait un fond idéal. Évitez une fenêtre derrière vous, un miroir, ou quelqu’un qui passe dans le champ.</p>
+      </li>
+      <li>
+        <h3>Revenez au repos entre deux signes</h3>
+        <p>Baissez complètement les mains le long du corps. C’est ce retour au calme que l’outil cherche : un simple ralentissement ne suffit pas.</p>
+      </li>
+      <li>
+        <h3>Comptez jusqu’à un</h3>
+        <p>Une seconde d’immobilité entre deux signes, et le découpage sera net. Moins d’une demi-seconde, et deux signes risquent de finir dans le même clip.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="step" id="step-drop">
+    <p class="step-mark">Étape 2</p>
+    <h2>Déposer la vidéo</h2>
+
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer une vidéo ou choisir un fichier">
+      <input type="file" id="file-input" accept="video/*" hidden>
+      <p class="dropzone-main">Glissez votre vidéo ici</p>
+      <p class="dropzone-sub">ou cliquez pour la choisir — mp4, mov, m4v, avi, mkv, webm</p>
+    </div>
+
+    <div class="progress" id="progress" hidden>
+      <p class="progress-label" id="progress-label">Transfert…</p>
+      <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+
+    <p class="error" id="error" hidden></p>
+  </section>
+
+  <section class="step" id="step-adjust" hidden>
+    <p class="step-mark">Étape 3</p>
+    <h2>Vérifier le découpage</h2>
+    <p class="lede">
+      Chaque bosse est un mouvement, chaque creux une pause. Les blocs jaunes sont les signes retenus.
+      La ligne pointillée est le niveau au-dessus duquel l’outil considère que ça bouge : c’est elle que vous
+      déplacez avec la sensibilité.
+    </p>
+
+    <figure class="trace">
+      <canvas id="trace-canvas" aria-label="Courbe de mouvement de la vidéo"></canvas>
+      <figcaption class="trace-readout" id="trace-readout" hidden>
+        <video id="scrub" muted playsinline preload="auto"></video>
+        <span class="mono" id="scrub-time">0.00 s</span>
+      </figcaption>
+    </figure>
+
+    <div class="panel">
+      <div class="controls">
+        <h3 class="panel-title">Réglages</h3>
+
+        <div class="control">
+          <label for="sensitivity">Sensibilité aux pauses <output class="mono" id="sensitivity-out"></output></label>
+          <input type="range" id="sensitivity" min="0.10" max="0.40" step="0.01">
+          <p class="hint"><strong>Montez</strong> si deux signes se retrouvent dans le même clip. <strong>Baissez</strong> si un même signe est coupé en deux.</p>
+        </div>
+
+        <div class="control">
+          <label for="min-pause">Pause minimale <output class="mono" id="min-pause-out"></output></label>
+          <input type="range" id="min-pause" min="0.1" max="1.5" step="0.05">
+          <p class="hint">Durée d’immobilité exigée pour parler d’une pause. <strong>Montez</strong> si un signe est coupé en plein milieu, sur un temps d’arrêt interne au geste.</p>
+        </div>
+
+        <div class="control">
+          <label for="min-sign">Durée minimale d’un signe <output class="mono" id="min-sign-out"></output></label>
+          <input type="range" id="min-sign" min="0.2" max="2" step="0.05">
+          <p class="hint">En dessous, le mouvement est ignoré. <strong>Montez</strong> pour écarter les gestes parasites : se recoiffer, ajuster son haut.</p>
+        </div>
+
+        <div class="control">
+          <label for="pad">Marge autour du signe <output class="mono" id="pad-out"></output></label>
+          <input type="range" id="pad" min="0" max="0.5" step="0.01">
+          <p class="hint">Temps gardé avant et après chaque signe, pour ne pas couper au ras du geste.</p>
+        </div>
+
+        <button type="button" class="link-button" id="reset">Revenir aux réglages conseillés</button>
+      </div>
+
+      <div class="results">
+        <h3 class="panel-title">
+          <span id="count">0 signe</span>
+          <span class="panel-note" id="source-name"></span>
+        </h3>
+        <ol class="segments" id="segments"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="step-cut" hidden>
+    <p class="step-mark">Étape 4</p>
+    <h2>Découper</h2>
+    <p class="lede">
+      Les clips sont enregistrés sans son, prêts à être envoyés sur le site.
+      Donnez à chacun le nom du signe : cliquez sur le nom sous la vidéo et tapez le vôtre.
+      Vous pourrez ensuite les déplacer d’un coup là où vous les rangez.
+    </p>
+    <div class="actions">
+      <button type="button" class="button" id="cut">Découper les clips</button>
+      <button type="button" class="button ghost" id="move" hidden>Déplacer vers un dossier…</button>
+      <button type="button" class="link-button" id="reveal" hidden>Ouvrir le dossier</button>
+    </div>
+    <p class="error" id="cut-error" hidden></p>
+    <div class="moved" id="moved" hidden></div>
+    <div class="clips" id="clips"></div>
+  </section>
+
+</main>
+
+<footer class="wrap footer">
+  <p>Tout se passe sur votre Mac. Aucune vidéo n’est envoyée sur internet.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
