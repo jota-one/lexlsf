@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import useQuizzes from '@admin/composables/useQuizzes'
 import usePbErrorToast from '@admin/composables/usePbErrorToast'
+import { itemTypeBadge, itemTypeLabel } from '@admin/helpers/quizItemType'
 
 const router = useRouter()
 const { quizzes, loading, quizItemCounts, loadQuizzes } = useQuizzes()
@@ -18,27 +19,6 @@ onMounted(async () => {
 
 const startQuiz = (quizId: string) => {
   router.push(`/quiz/${quizId}`)
-}
-
-const itemTypeLabel = (type: string): string => {
-  const labels: Record<string, string> = {
-    sign: 'Signes',
-    person: 'Personnes',
-    mixed: 'Mixte',
-  }
-  return labels[type] || type
-}
-
-/**
- * Signs are blue, the colour of the Deaf, and persons take the Culture pink.
- * The Start button is yellow, the one logo colour neither badge uses.
- */
-const itemTypeBadge = (type: string): string => {
-  const classes: Record<string, string> = {
-    sign: 'badge-primary',
-    person: 'badge-secondary',
-  }
-  return classes[type] ?? 'badge-ghost'
 }
 </script>
 
@@ -75,6 +55,7 @@ const itemTypeBadge = (type: string): string => {
           </div>
         </div>
         <div class="card-actions justify-end p-4">
+          <!-- Yellow: the one logo colour neither type badge uses. -->
           <button class="btn btn-sm border-none bg-logo-yellow text-neutral hover:brightness-95">
             Commencer
           </button>

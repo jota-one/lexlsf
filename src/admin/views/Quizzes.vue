@@ -11,6 +11,7 @@ import ConfirmModal from '@admin/components/ConfirmModal.vue'
 import QuizAddModal from '@admin/components/QuizAddModal.vue'
 import QuizShareModal from '@admin/components/QuizShareModal.vue'
 import PbErrorToast from '@admin/components/PbErrorToast.vue'
+import { itemTypeBadge, itemTypeLabel } from '@admin/helpers/quizItemType'
 import type { QuizRecord } from '@admin/composables/useQuizzes'
 
 const { quizzes, loading, loadQuizzes, deleteQuiz, quizItemCounts } = useQuizzes()
@@ -26,15 +27,6 @@ const deleteMessage = ref('')
 onMounted(() => {
   loadQuizzes()
 })
-
-const itemTypeLabel = (itemType: string) => {
-  const labels: Record<string, string> = {
-    sign: 'Signes',
-    person: 'Personnes',
-    mixed: 'Mixte',
-  }
-  return labels[itemType] || itemType
-}
 
 const openDeleteConfirm = (quiz: QuizRecord) => {
   quizToDelete.value = quiz
@@ -131,7 +123,7 @@ const handleQuizSaved = async () => {
         <!-- Type column -->
         <Column field="item_type" header="Type" :sortable="true" style="min-width: 120px">
           <template #body="slotProps">
-            <span class="badge badge-primary badge-sm">
+            <span class="badge badge-sm" :class="itemTypeBadge(slotProps.data.item_type)">
               {{ itemTypeLabel(slotProps.data.item_type) }}
             </span>
           </template>
