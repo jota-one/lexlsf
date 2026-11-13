@@ -9,21 +9,26 @@
           <div
             v-for="person in persons"
             :key="person.id"
-            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md transition-all"
-            :class="SECTION_ACCENTS.culture.cardHover"
+            class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md transition-all aspect-square overflow-hidden"
+            :class="person.illustration ? 'group relative' : SECTION_ACCENTS.culture.cardHover"
             @click="goToPerson(person.slug)"
           >
-            <figure v-if="person.illustration" class="aspect-square overflow-hidden">
+            <template v-if="person.illustration">
               <img
                 :src="getIllustrationUrl(person)"
-                :alt="person.name"
+                :alt="displayName(person)"
                 class="w-full h-full object-cover"
               />
-            </figure>
-            <div
-              class="card-body items-center justify-center p-3 sm:p-4"
-              :class="{ 'aspect-square': !person.illustration }"
-            >
+              <!-- Touch screens cannot hover: there the name stays shown. -->
+              <div
+                class="absolute inset-0 flex items-center justify-center p-3 bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100 [@media(hover:none)]:items-end [@media(hover:none)]:bg-linear-to-t [@media(hover:none)]:from-black/70 [@media(hover:none)]:to-transparent"
+              >
+                <h2 class="text-base sm:text-lg md:text-xl font-semibold text-center">
+                  {{ displayName(person) }}
+                </h2>
+              </div>
+            </template>
+            <div v-else class="card-body items-center justify-center p-3 sm:p-4">
               <h2 class="card-title text-base sm:text-lg md:text-xl text-center">
                 {{ displayName(person) }}
               </h2>
