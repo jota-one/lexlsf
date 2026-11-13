@@ -1,9 +1,10 @@
 ---
 id: TASK-2
 title: 'Liste des signes : voir tous les signes'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-13T07:49:00Z'
+updated_date: '2026-11-13T16:43:00Z'
 labels:
   - signes
   - admin
@@ -27,10 +28,10 @@ La liste se pagine, et un filtre « avec vidéo / sans vidéo » permet de retro
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Tous les signes sont accessibles depuis la liste, page par page
-- [ ] #2 La recherche porte sur tous les signes, pas seulement sur une page
-- [ ] #3 Un filtre affiche les signes avec vidéo, sans vidéo, ou tous
-- [ ] #4 Le crayon d'édition est à gauche du terme, la poubelle reste dans la dernière colonne
+- [x] #1 Tous les signes sont accessibles depuis la liste, page par page
+- [x] #2 La recherche porte sur tous les signes, pas seulement sur une page
+- [x] #3 Un filtre affiche les signes avec vidéo, sans vidéo, ou tous
+- [x] #4 Le crayon d'édition est à gauche du terme, la poubelle reste dans la dernière colonne
 <!-- AC:END -->
 
 ## Implementation Notes

@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-13] Admin — la liste des signes montre enfin les 800+ signes, page par page (25, 50 ou 100 par page). La recherche porte sur tous les signes, un filtre isole ceux avec ou sans vidéo, et le crayon d'édition passe à gauche du terme.
 - [2026-11-13] Admin — sur mobile, le menu se referme dès qu'on choisit une page.
 - [2026-11-13] Mobile — les tuiles des catégories, des signes, des personnes et des champs lexicaux s'affichent deux par ligne, avec une marge sur les côtés.
 - [2026-11-13] Mobile — le bouton Login s'affiche enfin sur téléphone (le site y était inaccessible). Une fois connecté, le menu du compte reprend la navigation (Lexique, Culture, outils, admin), et l'en-tête laisse plus de place à la recherche.

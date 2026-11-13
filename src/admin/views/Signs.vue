@@ -5,7 +5,7 @@
       Signes
     </h2>
     <div class="card">
-      <div class="flex justify-between mb-2">
+      <div class="flex flex-wrap justify-between gap-2 mb-2">
         <Button
           label="Import / Export"
           icon="i-fa-solid-file-import-export"
@@ -13,7 +13,16 @@
           severity="secondary"
           @click="openImportExportModal"
         />
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <SelectButton
+            v-model="videoFilter"
+            :options="videoFilterOptions"
+            option-label="label"
+            option-value="value"
+            :allow-empty="false"
+            size="small"
+            aria-label="Filtrer par vidéo"
+          />
           <InputText
             v-model="searchQuery"
             placeholder="Rechercher (nom, catégorie…)"
@@ -28,18 +37,19 @@
           />
         </div>
       </div>
-      <div class="text-sm text-base-content/60 mb-2">
-        <span v-if="debouncedQuery"
-          >{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span
-        >
-        <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
-      </div>
+      <div class="text-sm text-base-content/60 mb-2">{{ summary }}</div>
       <DataTable
         :value="signs"
         :sortField="sortField"
         :sortOrder="sortOrder"
         :lazy="true"
+        paginator
+        :rows="perPage"
+        :first="(page - 1) * perPage"
+        :totalRecords="totalSigns"
+        :rowsPerPageOptions="[25, 50, 100]"
         @sort="onSort"
+        @page="onPage"
         tableStyle="min-width: 50rem"
       >
         <Column style="width: 40px" :header="''">
@@ -56,7 +66,20 @@
             </template>
           </template>
         </Column>
-        <Column field="name" header="Terme" sortable></Column>
+        <Column field="name" header="Terme" sortable>
+          <template #body="slotProps">
+            <div class="flex items-center gap-2">
+              <button
+                class="btn btn-xs btn-ghost"
+                title="Modifier"
+                @click="editSign(slotProps.data)"
+              >
+                <span class="i-fa-solid-pen"></span>
+              </button>
+              <span>{{ slotProps.data.name }}</span>
+            </div>
+          </template>
+        </Column>
         <Column field="category" header="Catégorie(s)">
           <template #body="slotProps">
             {{ categories(slotProps.data.expand?.Category) }}
@@ -90,32 +113,17 @@
             <span>{{ formatDate(slotProps.data.updated) }}</span>
           </template>
         </Column>
-        <Column header="Actions" style="width: 80px">
+        <Column style="width: 50px">
           <template #body="slotProps">
-            <div class="flex gap-2">
-              <button
-                class="btn btn-xs btn-ghost"
-                title="Modifier"
-                @click="editSign(slotProps.data)"
-              >
-                <span class="i-fa-solid-pen"></span>
-              </button>
-              <button
-                class="btn btn-xs btn-ghost"
-                title="Supprimer"
-                @click="confirmDelete(slotProps.data)"
-              >
-                <span class="i-fa-solid-trash"></span>
-              </button>
-            </div>
+            <button
+              class="btn btn-xs btn-ghost"
+              title="Supprimer"
+              @click="confirmDelete(slotProps.data)"
+            >
+              <span class="i-fa-solid-trash"></span>
+            </button>
           </template>
         </Column>
-        <template #footer>
-          <span v-if="debouncedQuery"
-            >{{ signs.length }} résultat(s) pour « {{ debouncedQuery }} »</span
-          >
-          <span v-else>{{ signs.length }} signes chargés sur un total de {{ totalSigns }}</span>
-        </template>
       </DataTable>
     </div>
     <SignModal v-model="showSignModal" :sign-id="editedSignId" @saved="reload" />
@@ -129,15 +137,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import dayjs from 'dayjs'
-import useSigns from '../composables/useSigns'
-import DataTable, { type DataTableSortEvent } from 'primevue/datatable'
+import useSigns, { SIGNS_PER_PAGE, type SignVideoFilter } from '../composables/useSigns'
+import DataTable, { type DataTablePageEvent, type DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Rating from 'primevue/rating'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import SelectButton from 'primevue/selectbutton'
 import SignModal from '../components/SignModal.vue'
 import SignsImportExportModal from '../components/SignsImportExportModal.vue'
 import ConfirmModal from '../components/ConfirmModal.vue'
@@ -168,20 +177,50 @@ const searchQuery = ref('')
 const debouncedQuery = refDebounced(searchQuery, 350)
 const sortField = ref('updated')
 const sortOrder = ref<1 | -1>(-1)
+const page = ref(1)
+const perPage = ref(SIGNS_PER_PAGE)
+const videoFilter = ref<SignVideoFilter>('all')
 
-const pbSort = () => `${sortOrder.value === -1 ? '-' : ''}${sortField.value}`
+const videoFilterOptions: Array<{ label: string; value: SignVideoFilter }> = [
+  { label: 'Tous', value: 'all' },
+  { label: 'Avec vidéo', value: 'with' },
+  { label: 'Sans vidéo', value: 'without' },
+]
+
+const reload = () =>
+  loadSigns({
+    search: debouncedQuery.value,
+    video: videoFilter.value,
+    sort: `${sortOrder.value === -1 ? '-' : ''}${sortField.value}`,
+    page: page.value,
+    perPage: perPage.value,
+  })
 
 const onSort = (event: DataTableSortEvent) => {
   if (typeof event.sortField === 'string') {
     sortField.value = event.sortField
   }
   sortOrder.value = event.sortOrder === -1 ? -1 : 1
-  loadSigns(debouncedQuery.value, pbSort())
+  page.value = 1
+  reload()
 }
 
-watch(debouncedQuery, q => loadSigns(q, pbSort()))
+const onPage = (event: DataTablePageEvent) => {
+  page.value = event.page + 1
+  perPage.value = event.rows
+  reload()
+}
 
-const reload = () => loadSigns(debouncedQuery.value, pbSort())
+// A new search or filter starts again from the first page.
+watch([debouncedQuery, videoFilter], () => {
+  page.value = 1
+  reload()
+})
+
+const summary = computed(() => {
+  const count = `${totalSigns.value} signe${totalSigns.value > 1 ? 's' : ''}`
+  return debouncedQuery.value.trim() ? `${count} pour « ${debouncedQuery.value.trim()} »` : count
+})
 
 const getPrimaryLanguageLabel = (value: string) =>
   primaryLanguageOptions.find(o => o.value === value)?.label ?? value ?? ''
@@ -243,5 +282,5 @@ const formatDate = (date: string) => {
   return dayjs(date).format('DD/MM/YYYY HH:mm')
 }
 
-onMounted(loadSigns)
+onMounted(reload)
 </script>
