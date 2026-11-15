@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-15] Sécurité — les quiz et leurs éléments ne sont plus lisibles sans être connecté, ni par un compte sans rôle.
 - [2026-11-15] Quiz — un quiz se partage avec un rôle entier (tous les étudiants, tous les admins), en plus du partage personne par personne. Un utilisateur qui reçoit le rôle plus tard voit le quiz sans qu'on y retouche.
 - [2026-11-15] Admin — dans le formulaire d'un signe, la case « Personne / organisme » crée la fiche culture correspondante, liée au signe, à compléter ensuite dans les personnes. Un signe qui a déjà sa fiche l'affiche à la place.
 - [2026-11-15] Admin — dans les éléments d'un quiz, on filtre par une ou plusieurs catégories et par rôle (par exemple les signes du rôle étudiant) ; le filtre « Niveau de difficulté » disparaît.
