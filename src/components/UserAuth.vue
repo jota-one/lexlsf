@@ -57,6 +57,12 @@
               <span>Mes quiz</span>
             </a>
           </li>
+          <li v-if="hasSplitterAccess">
+            <a href="/decoupeur" class="flex items-center gap-3 text-gray-700 hover:bg-gray-100">
+              <span class="i-fa-solid-cut text-base"></span>
+              <span>Découpeur de signes</span>
+            </a>
+          </li>
           <li v-if="isImpersonating">
             <button
               @click="exitImpersonation"
@@ -82,11 +88,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useTemplateRef } from 'vue'
 import useAuth from '@admin/composables/useAuth'
 import config from '@config'
 import LoginModal from './LoginModal.vue'
+import { pb } from '@lib/pb'
+import { SPLITTER_SLUG } from '@admin/composables/useTools'
 
 const { isAuthenticated, isAdmin, isStudent, isImpersonating, user, logout, exitImpersonation } =
   useAuth()
@@ -124,6 +132,29 @@ const navLinks = computed(() => [
       ]
     : []),
 ])
+
+// The splitter is shown only to whom it is shared with: PocketBase returns the
+// tool to admins and to its allowed users, and nothing to anyone else.
+const hasSplitterAccess = ref(false)
+watch(
+  () => user.value?.id,
+  async userId => {
+    if (!userId) {
+      hasSplitterAccess.value = false
+      return
+    }
+    try {
+      const list = await pb.collection('tool').getList(1, 1, {
+        filter: pb.filter('slug = {:slug}', { slug: SPLITTER_SLUG }),
+        fields: 'id',
+      })
+      hasSplitterAccess.value = list.items.length > 0
+    } catch {
+      hasSplitterAccess.value = false
+    }
+  },
+  { immediate: true },
+)
 
 const openLoginModal = () => {
   loginModalRef.value?.open()

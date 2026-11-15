@@ -1,0 +1,9 @@
+---
+import PageLayout from '@layouts/PageLayout.astro'
+import ToolDownloadsApp from '@components/tools/ToolDownloadsApp.vue'
+export const prerender = false
+---
+
+<PageLayout>
+  <ToolDownloadsApp client:only class="py-8" />
+</PageLayout>

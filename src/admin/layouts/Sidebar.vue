@@ -75,6 +75,12 @@
             Expr. pi-sourdes
           </RouterLink>
         </li>
+        <li>
+          <RouterLink to="/tools" class="flex items-center gap-3" active-class="menu-active">
+            <span class="i-fa-solid-cut text-xl"></span>
+            Découpeur
+          </RouterLink>
+        </li>
         <li class="menu-title mt-2 text-xs uppercase opacity-50">Culture générale</li>
         <li>
           <RouterLink

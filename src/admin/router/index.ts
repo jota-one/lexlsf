@@ -13,6 +13,7 @@ import FrenchExpressions from '../views/FrenchExpressions.vue'
 import PiDeafExpressions from '../views/PiDeafExpressions.vue'
 import GeneralCulture from '../views/GeneralCulture.vue'
 import Roadmap from '../views/Roadmap.vue'
+import Tools from '../views/Tools.vue'
 import useAuth from '../composables/useAuth'
 
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
   { path: '/pi-deaf-expressions', component: PiDeafExpressions },
   { path: '/general-culture', component: GeneralCulture },
   { path: '/roadmap', component: Roadmap },
+  { path: '/tools', component: Tools },
 ]
 
 const baseUrl = import.meta.env.BASE_URL || '/'

@@ -28,6 +28,8 @@ export const Collections = {
 	Roles: "roles",
 	Sign: "sign",
 	SignCountPerCategory: "sign_count_per_category",
+	Tool: "tool",
+	ToolRelease: "tool_release",
 	Users: "users",
 	Video: "video",
 } as const
@@ -374,6 +376,26 @@ export type SignCountPerCategoryRecord<Tcategory_id = unknown, Trole_id = unknow
 	sign_count?: number
 }
 
+export type ToolRecord = {
+	allowed_users?: RecordIdString[]
+	created: IsoAutoDateString
+	description?: string
+	id: string
+	name: string
+	slug: string
+	updated: IsoAutoDateString
+}
+
+export type ToolReleaseRecord = {
+	Tool: RecordIdString
+	changelog?: string
+	created: IsoAutoDateString
+	file: FileNameString
+	id: string
+	updated: IsoAutoDateString
+	version: string
+}
+
 export type UsersRecord = {
 	avatar?: FileNameString
 	created: IsoAutoDateString
@@ -419,6 +441,8 @@ export type QuizSessionResponse<Tsettings_snapshot = unknown, Tstats = unknown, 
 export type RolesResponse<Texpand = unknown> = Required<RolesRecord> & BaseSystemFields<Texpand>
 export type SignResponse<Tplacement = unknown, Texpand = unknown> = Required<SignRecord<Tplacement>> & BaseSystemFields<Texpand>
 export type SignCountPerCategoryResponse<Tcategory_id = unknown, Trole_id = unknown, Texpand = unknown> = Required<SignCountPerCategoryRecord<Tcategory_id, Trole_id>> & BaseSystemFields<Texpand>
+export type ToolResponse<Texpand = unknown> = Required<ToolRecord> & BaseSystemFields<Texpand>
+export type ToolReleaseResponse<Texpand = unknown> = Required<ToolReleaseRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 export type VideoResponse<Texpand = unknown> = Required<VideoRecord> & BaseSystemFields<Texpand>
 
@@ -447,6 +471,8 @@ export type CollectionRecords = {
 	roles: RolesRecord
 	sign: SignRecord
 	sign_count_per_category: SignCountPerCategoryRecord
+	tool: ToolRecord
+	tool_release: ToolReleaseRecord
 	users: UsersRecord
 	video: VideoRecord
 }
@@ -474,6 +500,8 @@ export type CollectionResponses = {
 	roles: RolesResponse
 	sign: SignResponse
 	sign_count_per_category: SignCountPerCategoryResponse
+	tool: ToolResponse
+	tool_release: ToolReleaseResponse
 	users: UsersResponse
 	video: VideoResponse
 }
