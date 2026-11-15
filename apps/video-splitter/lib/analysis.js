@@ -12,13 +12,14 @@ import { join } from 'node:path'
 import { promisify } from 'node:util'
 
 import { resolveFfmpeg } from './ffmpeg.js'
+import { SITE_CROP, SITE_ENCODE_ARGS } from './siteFormat.js'
 
 const execFileAsync = promisify(execFile)
 
 // Same 4:3 window the site keeps when it optimizes an upload (see pb/hooks.go),
 // so motion is measured on exactly the framing that ends up online.
 const ANALYSIS_FILTERS = [
-  'crop=ih*4/3:ih',
+  SITE_CROP,
   'scale=160:-2',
   'format=gray',
   'gblur=sigma=2.5',
@@ -67,8 +68,9 @@ export async function extractMotion(videoPath) {
 }
 
 /**
- * Cuts one clip. Re-encodes rather than copying: stream copy would snap each cut
- * to the nearest keyframe, which is nowhere near frame accurate.
+ * Cuts one clip, straight into the site's video format: ready to upload, and the
+ * server leaves it as it is. Re-encodes rather than copying: stream copy would
+ * snap each cut to the nearest keyframe, which is nowhere near frame accurate.
  */
 export async function cutClip(videoPath, start, end, outputPath) {
   await execFileAsync(ffmpegPath(), [
@@ -77,11 +79,7 @@ export async function cutClip(videoPath, start, end, outputPath) {
     '-ss', start.toFixed(3),
     '-to', end.toFixed(3),
     '-i', videoPath,
-    '-an',
-    '-c:v', 'libx264',
-    '-crf', '18',
-    '-preset', 'veryfast',
-    '-movflags', '+faststart',
+    ...SITE_ENCODE_ARGS,
     outputPath,
   ], { maxBuffer: 16 * 1024 * 1024 })
 }

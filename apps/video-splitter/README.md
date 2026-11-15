@@ -38,6 +38,11 @@ besoin, puis découpez.
 
 Fermez la fenêtre noire (Terminal) qui s'est ouverte, ou faites `Ctrl+C` dedans.
 
+### Les clips produits
+
+Chaque clip est déjà au format du site : recadré, réduit et compressé. Il pèse en
+général une centaine de Ko et s'envoie tel quel dans la fiche du signe.
+
 ### Nommer les clips
 
 Une fois les clips découpés, cliquez sur le nom sous chaque vidéo et tapez celui
@@ -110,8 +115,13 @@ contours du décor est lu comme du mouvement et noie les vraies pauses.
 Le recadrage 4:3 est celui que le site applique à l'upload (`pb/hooks.go`), pour
 que l'analyse porte sur le cadrage qui finira réellement en ligne.
 
-L'app n'optimise pas les vidéos : la compression est faite par le serveur au
-moment de l'envoi.
+Les clips sortent directement au format vidéo du site, défini dans
+[`lib/siteFormat.js`](lib/siteFormat.js) : recadrage 4:3, 720 px de large, 24 images
+par seconde, HEVC (`libx265`, `-crf 24`), sans son. Le serveur laisse tels quels
+les fichiers déjà en HEVC : un clip de quelques secondes pèse une centaine de Ko,
+loin de la limite de 10 Mo, et n'est pas compressé une seconde fois.
+`scripts/split-sign-video.js --optimize` utilise ce même module, et
+`pb/hooks.go` applique les mêmes réglages : à modifier ensemble.
 
 Une nuance à connaître : le ffmpeg embarqué (6.0) et un ffmpeg récent installé
 via Homebrew (8.x) ne produisent pas exactement la même courbe — les bornes

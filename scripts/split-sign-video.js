@@ -40,10 +40,8 @@ import { basename, extname, join, resolve } from 'node:path'
 // Shared with the local web app so the two can never drift apart. It lives
 // there because that folder is what gets zipped and sent to the client.
 import { DEFAULTS, findSegments } from '../apps/video-splitter/public/segmentation.js'
-
 // Same geometry and codec settings as the `sign` collection hook in pb/hooks.go
-const SITE_CROP = 'crop=ih*4/3:ih'
-const SITE_OPTIMIZE_VF = `${SITE_CROP},scale=720:-2:flags=lanczos:force_divisible_by=2,fps=24`
+import { SITE_CROP, SITE_ENCODE_ARGS } from '../apps/video-splitter/lib/siteFormat.js'
 
 function parseArgs(argv) {
   const opts = {
@@ -156,15 +154,7 @@ function optimizeClip(inputPath, outputPath) {
   ffmpeg([
     '-y',
     '-i', inputPath,
-    '-vf', SITE_OPTIMIZE_VF,
-    '-c:v', 'libx265',
-    '-crf', '24',
-    '-preset', 'slow',
-    // x265 prints its banner on stderr regardless of ffmpeg's -loglevel
-    '-x265-params', 'log-level=error',
-    '-tag:v', 'hvc1',
-    '-an',
-    '-movflags', '+faststart',
+    ...SITE_ENCODE_ARGS,
     outputPath,
   ])
 }
