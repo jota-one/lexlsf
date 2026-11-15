@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import MultiSelect from 'primevue/multiselect'
 import RadioButton from 'primevue/radiobutton'
 import Button from 'primevue/button'
 import useQuizItemSearch from '@admin/composables/useQuizItemSearch'
+import useRoles from '@admin/composables/useRoles'
+import { pb } from '@lib/pb'
+import type { CategoryResponse } from '@types'
 import type { ItemType } from '@admin/types/quiz'
 
 type Props = {
@@ -66,24 +70,65 @@ watch(filteredResults, list => {
 const hasActiveFilters = computed(
   () =>
     searchTerm.value.length > 0 ||
-    !!selectedLevel.value ||
+    selectedCategories.value.length > 0 ||
+    !!selectedRole.value ||
     deafFilter.value !== 'both' ||
     !!addedSince.value,
 )
 
 // Search filters
 const searchTerm = ref('')
-const selectedLevel = ref<string>('')
+const selectedCategories = ref<string[]>([])
+const selectedRole = ref('')
 const deafFilter = ref<'deaf' | 'hearing' | 'both'>('both')
 const addedSince = ref('')
 
-const levelOptions = [
-  { label: 'A1', value: 'a1' },
-  { label: 'A2', value: 'a2' },
-  { label: 'B1', value: 'b1' },
-  { label: 'B2', value: 'b2' },
-  { label: 'C1', value: 'c1' },
-]
+const { roles, loadRoles } = useRoles()
+const roleOptions = computed(() => roles.value.map(role => ({ label: role.name, value: role.id })))
+
+/**
+ * Sign categories carry no entity, culture ones are tagged "person": a quiz
+ * offers the categories of the items it holds, grouped under their parent.
+ */
+type CategoryGroup = { label: string; items: Array<{ label: string; value: string }> }
+const allCategories = ref<Array<CategoryResponse<{ Parent?: CategoryResponse }>>>([])
+const categoryGroups = computed<CategoryGroup[]>(() => {
+  const wanted = (category: CategoryResponse) => {
+    const entities = category.entities ?? []
+    const forSigns = entities.length === 0
+    const forPersons = (entities as string[]).includes('person')
+    if (props.itemType === 'sign') {
+      return forSigns
+    }
+    if (props.itemType === 'person') {
+      return forPersons
+    }
+    return forSigns || forPersons
+  }
+  const groups = new Map<string, CategoryGroup>()
+  for (const category of allCategories.value) {
+    const parent = category.expand?.Parent
+    if (!parent || !wanted(category)) {
+      continue
+    }
+    const group = groups.get(parent.id) ?? { label: parent.tag, items: [] }
+    group.items.push({ label: category.tag, value: category.id })
+    groups.set(parent.id, group)
+  }
+  return [...groups.values()].sort((a, b) => a.label.localeCompare(b.label))
+})
+
+onMounted(async () => {
+  const [categories] = await Promise.all([
+    pb.collection('category').getFullList<CategoryResponse<{ Parent?: CategoryResponse }>>({
+      filter: 'Parent != ""',
+      expand: 'Parent',
+      sort: 'tag',
+    }),
+    loadRoles(),
+  ])
+  allCategories.value = categories
+})
 
 const deafFilterOptions = [
   { label: 'Sourds et entendants', value: 'both' },
@@ -92,7 +137,6 @@ const deafFilterOptions = [
 ]
 
 // Show/hide advanced filters based on item type
-const showLevelFilter = () => props.itemType === 'sign' || props.itemType === 'mixed'
 const showDeafFilter = () => props.itemType === 'person' || props.itemType === 'mixed'
 
 /**
@@ -110,7 +154,8 @@ const performSearch = async () => {
     : undefined
   await search({
     search: searchTerm.value,
-    level: selectedLevel.value || undefined,
+    categories: selectedCategories.value,
+    role: selectedRole.value || undefined,
     deafFilter: deafFilter.value,
     itemType: props.itemType,
     addedSince: addedSinceIso,
@@ -119,7 +164,8 @@ const performSearch = async () => {
 
 const handleClear = () => {
   searchTerm.value = ''
-  selectedLevel.value = ''
+  selectedCategories.value = []
+  selectedRole.value = ''
   deafFilter.value = 'both'
   addedSince.value = ''
   selectedKeys.value = []
@@ -138,7 +184,8 @@ const debouncedSearch = () => {
   searchTimeout = setTimeout(() => {
     if (
       searchTerm.value.length > 2 ||
-      selectedLevel.value ||
+      selectedCategories.value.length > 0 ||
+      selectedRole.value ||
       deafFilter.value !== 'both' ||
       usableAddedSince.value
     ) {
@@ -147,7 +194,7 @@ const debouncedSearch = () => {
   }, 300)
 }
 
-watch([searchTerm, selectedLevel, deafFilter], () => {
+watch([searchTerm, selectedCategories, selectedRole, deafFilter], () => {
   debouncedSearch()
 })
 
@@ -185,17 +232,38 @@ watch(usableAddedSince, () => {
       />
     </div>
 
-    <!-- Level Filter (Signs only or mixed) -->
-    <div v-if="showLevelFilter()">
+    <!-- Categories Filter -->
+    <div>
       <label class="label">
-        <span class="label-text font-semibold">Niveau de difficulté</span>
+        <span class="label-text font-semibold">Catégories</span>
       </label>
-      <Select
-        v-model="selectedLevel"
-        :options="levelOptions"
+      <MultiSelect
+        v-model="selectedCategories"
+        :options="categoryGroups"
         optionLabel="label"
         optionValue="value"
-        placeholder="Tous les niveaux"
+        optionGroupLabel="label"
+        optionGroupChildren="items"
+        placeholder="Toutes les catégories"
+        display="chip"
+        filter
+        filterPlaceholder="Chercher une catégorie"
+        class="w-full"
+        :disabled="loading"
+      />
+    </div>
+
+    <!-- Role Filter -->
+    <div>
+      <label class="label">
+        <span class="label-text font-semibold">Rôle</span>
+      </label>
+      <Select
+        v-model="selectedRole"
+        :options="roleOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Tous les rôles"
         class="w-full"
         :disabled="loading"
         showClear

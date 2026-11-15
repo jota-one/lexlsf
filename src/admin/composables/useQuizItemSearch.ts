@@ -14,7 +14,10 @@ type SearchItem = {
 
 export type QuizItemSearchQuery = {
   search: string
-  level?: string
+  /** Category ids; an item in any of them matches. */
+  categories?: string[]
+  /** Role id the item must carry, e.g. the student role. */
+  role?: string
   deafFilter?: 'deaf' | 'hearing' | 'both'
   itemType: ItemType
   addedSince?: string
@@ -30,41 +33,53 @@ export default function useQuizItemSearch() {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
+  /** Filters shared by signs and persons: categories, role, date added. */
+  const commonFilters = (query: QuizItemSearchQuery): string[] => {
+    const filters: string[] = []
+
+    // An item matches when it is in any of the ticked categories. On a multiple
+    // relation, `field ?=` matches nothing: the comparison goes through `.id`.
+    const categories = query.categories ?? []
+    if (categories.length) {
+      const params = Object.fromEntries(categories.map((id, i) => [`c${i}`, id]))
+      const anyCategory = categories.map((_, i) => `Category.id ?= {:c${i}}`).join(' || ')
+      filters.push(pb.filter(`(${anyCategory})`, params))
+    }
+
+    if (query.role) {
+      filters.push(pb.filter('Roles.id ?= {:role}', { role: query.role }))
+    }
+
+    if (query.addedSince) {
+      // A Date is formatted the way PocketBase stores datetimes.
+      filters.push(pb.filter('created >= {:since}', { since: new Date(query.addedSince) }))
+    }
+
+    return filters
+  }
+
   /**
    * Build filter string for signs collection
    */
-  const buildSignFilter = (search: string, level?: string, addedSince?: string): string => {
+  const buildSignFilter = (query: QuizItemSearchQuery): string => {
     const filters: string[] = []
 
-    const q = search.trim()
+    const q = query.search.trim()
     if (q) {
       // Search in name, definition, or Category.tag
       filters.push(pb.filter('(name ~ {:q} || definition ~ {:q} || Category.tag ~ {:q})', { q }))
     }
 
-    if (level) {
-      filters.push(pb.filter('level = {:level}', { level }))
-    }
-
-    if (addedSince) {
-      // A Date is formatted the way PocketBase stores datetimes.
-      filters.push(pb.filter('created >= {:since}', { since: new Date(addedSince) }))
-    }
-
-    return filters.join(' && ')
+    return [...filters, ...commonFilters(query)].join(' && ')
   }
 
   /**
    * Build filter string for persons collection
    */
-  const buildPersonFilter = (
-    search: string,
-    deafFilter?: 'deaf' | 'hearing' | 'both',
-    addedSince?: string,
-  ): string => {
+  const buildPersonFilter = (query: QuizItemSearchQuery): string => {
     const filters: string[] = []
 
-    const q = search.trim()
+    const q = query.search.trim()
     if (q) {
       // Search in name, firstname, description, Activities.tag, or Category.tag
       filters.push(
@@ -75,18 +90,14 @@ export default function useQuizItemSearch() {
       )
     }
 
-    if (deafFilter === 'deaf') {
+    if (query.deafFilter === 'deaf') {
       filters.push('deaf = true')
-    } else if (deafFilter === 'hearing') {
+    } else if (query.deafFilter === 'hearing') {
       filters.push('deaf = false')
     }
     // 'both' means no filter on the deaf field
 
-    if (addedSince) {
-      filters.push(pb.filter('created >= {:since}', { since: new Date(addedSince) }))
-    }
-
-    return filters.join(' && ')
+    return [...filters, ...commonFilters(query)].join(' && ')
   }
 
   /**
@@ -125,7 +136,7 @@ export default function useQuizItemSearch() {
 
       // Search signs if applicable
       if (query.itemType === 'sign' || query.itemType === 'mixed') {
-        const filter = buildSignFilter(query.search, query.level, query.addedSince)
+        const filter = buildSignFilter(query)
         const signResults = await pb.collection('sign').getList(1, SEARCH_LIMIT, {
           filter: filter || undefined,
           expand: 'Category',
@@ -138,7 +149,7 @@ export default function useQuizItemSearch() {
 
       // Search persons if applicable
       if (query.itemType === 'person' || query.itemType === 'mixed') {
-        const filter = buildPersonFilter(query.search, query.deafFilter, query.addedSince)
+        const filter = buildPersonFilter(query)
         const personResults = await pb.collection('person').getList(1, SEARCH_LIMIT, {
           filter: filter || undefined,
           expand: 'Category,Activities',
