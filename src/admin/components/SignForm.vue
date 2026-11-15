@@ -46,6 +46,28 @@
           <label for="name" class="font-semibold w-40">Définition</label>
           <Textarea v-model="form.definition" class="w-full" rows="5" cols="30" />
         </div>
+        <!-- Culture card of the person or organism this sign names -->
+        <div class="flex items-center gap-4">
+          <label for="culture-card" class="font-semibold w-40">Personne / organisme</label>
+          <p v-if="cultureCard" class="text-sm">
+            <span class="i-fa6-solid-address-card text-secondary mr-1"></span>
+            Fiche culture liée :
+            <strong>{{
+              [cultureCard.firstname, cultureCard.name].filter(Boolean).join(' ')
+            }}</strong>
+          </p>
+          <label v-else class="flex items-center gap-2 cursor-pointer">
+            <input
+              id="culture-card"
+              v-model="form.createCultureCard"
+              type="checkbox"
+              class="checkbox checkbox-sm"
+            />
+            <span class="text-sm">
+              Créer sa fiche culture, liée au signe, à compléter ensuite dans les personnes
+            </span>
+          </label>
+        </div>
         <div class="flex items-center gap-4">
           <label for="roles" class="font-semibold w-40">Visible pour</label>
           <div class="flex flex-wrap gap-2 w-full">
@@ -302,6 +324,12 @@ import BodyZonesOverlay from './BodyZonesOverlay.vue'
 import type { TSign, Ui } from '../../types'
 import HandMovementForm from './HandMovementForm.vue'
 import { createSlug } from '@lib/slug'
+
+type Props = {
+  /** The culture card already linked to this sign; then none can be created. */
+  cultureCard?: { id: string; name: string; firstname?: string } | null
+}
+defineProps<Props>()
 
 const form = defineModel<TSign.TForm>({ required: true })
 const selectedCategories = defineModel<{ [parentId: string]: string[] }>('categories', {

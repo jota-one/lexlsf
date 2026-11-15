@@ -1,9 +1,10 @@
 ---
 id: TASK-8
 title: Créer une fiche culture depuis un signe
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-13T07:49:00Z'
+updated_date: '2026-11-15T09:24:00Z'
 labels:
   - culture
   - signes
@@ -28,14 +29,16 @@ Dans le formulaire d'un signe, une case « Personne / organisme » crée la fich
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Le formulaire d'un signe a une case « Personne / organisme »
-- [ ] #2 Cochée, elle crée une fiche culture au nom du signe, liée à ce signe
-- [ ] #3 La fiche apparaît dans la liste des personnes et organismes de l'admin
-- [ ] #4 Cocher la case sur un signe qui a déjà sa fiche n'en crée pas une deuxième
+- [x] #1 Le formulaire d'un signe a une case « Personne / organisme »
+- [x] #2 Cochée, elle crée une fiche culture au nom du signe, liée à ce signe
+- [x] #3 La fiche apparaît dans la liste des personnes et organismes de l'admin
+- [x] #4 Cocher la case sur un signe qui a déjà sa fiche n'en crée pas une deuxième
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 Context: person.Sign already links a culture card to its sign.
+
+The checkbox sits in the sign form's Informations tab. On save, the card is created with the sign's name and slug, linked through person.Sign, as a person (organism unticked) to be completed in the persons list. A sign that already has a card shows it instead of the checkbox, and createCultureCard checks again before creating.
 <!-- SECTION:NOTES:END -->

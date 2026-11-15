@@ -83,6 +83,8 @@ export type TForm = Omit<
   Roles: string[]
   ConfigurationRight: Partial<THandConfiguration.TRecord>
   ConfigurationLeft: Partial<THandConfiguration.TRecord>
+  /** Ticked: saving also creates the culture card of this person or organism. */
+  createCultureCard?: boolean
 }
 
 /** A sign as the public detail page loads it, with its relations expanded. */

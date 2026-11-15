@@ -111,6 +111,30 @@ export default function useSigns() {
     return pb.collection('sign').update(id, formData)
   }
 
+  /** The culture card (person or organism) linked to a sign, if there is one. */
+  const findCultureCard = async (signId: string) => {
+    const list = await pb.collection('person').getList(1, 1, {
+      filter: pb.filter('Sign = {:signId}', { signId }),
+      fields: 'id,name,firstname,organism',
+    })
+    return list.items[0] ?? null
+  }
+
+  /**
+   * Creates the culture card of the person or organism a sign names, linked to
+   * it, to be completed later from the persons list. Never a second one.
+   */
+  const createCultureCard = async (sign: { id: string; name: string }) => {
+    if (await findCultureCard(sign.id)) {
+      return null
+    }
+    return pb.collection('person').create({
+      name: sign.name,
+      slug: createSlug(sign.name),
+      Sign: sign.id,
+    })
+  }
+
   const deleteSign = async (id: string) => {
     return pb.collection('sign').delete(id)
   }
@@ -127,5 +151,7 @@ export default function useSigns() {
     verificationStatusOptions,
     deleteSign,
     updateSign,
+    findCultureCard,
+    createCultureCard,
   }
 }

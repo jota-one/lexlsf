@@ -5,7 +5,7 @@
     :header="signId ? 'Modifier un signe' : 'Ajouter un signe'"
     class="w-[60%]"
   >
-    <SignForm v-model="form" v-model:categories="selectedCategories" />
+    <SignForm v-model="form" v-model:categories="selectedCategories" :culture-card="cultureCard" />
     <!-- Toast container for PocketBase errors -->
     <PbErrorToast />
     <template #footer>
@@ -43,7 +43,10 @@ const emit = defineEmits<Events>()
 
 const visible = defineModel<boolean>({ required: true })
 
-const { addSign, updateSign, loadSign, getNumericLevel } = useSigns()
+const { addSign, updateSign, loadSign, getNumericLevel, findCultureCard, createCultureCard } =
+  useSigns()
+// The culture card already linked to the edited sign, if any.
+const cultureCard = ref<{ id: string; name: string; firstname?: string } | null>(null)
 const saving = ref(false)
 const { showPbError } = usePbErrorToast()
 
@@ -90,10 +93,9 @@ const save = async () => {
     Category: selectedCategoryIds,
   }
   try {
-    if (props.signId) {
-      await updateSign(props.signId, payload)
-    } else {
-      await addSign(payload)
+    const sign = props.signId ? await updateSign(props.signId, payload) : await addSign(payload)
+    if (form.value.createCultureCard && !cultureCard.value) {
+      await createCultureCard({ id: sign.id, name: sign.name })
     }
     emit('saved')
     visible.value = false
@@ -115,9 +117,11 @@ watch(
       // Reset form when modal is opened in create mode
       form.value = emptyForm()
       selectedCategories.value = {}
+      cultureCard.value = null
       return
     }
-    const sign = await loadSign(props.signId)
+    const [sign, card] = await Promise.all([loadSign(props.signId), findCultureCard(props.signId)])
+    cultureCard.value = card
 
     form.value = {
       Category: sign.Category || [],
