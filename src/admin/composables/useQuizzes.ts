@@ -111,9 +111,11 @@ export default function useQuizzes() {
   /**
    * Update the list of users a quiz is shared with
    */
-  const shareQuiz = async (id: string, userIds: string[]) => {
+  /** Shares a quiz with users one by one and with whole roles. */
+  const shareQuiz = async (id: string, userIds: string[], roleIds: string[]) => {
     return pb.collection<QuizRecord>('quiz').update(id, {
       shared_with_users: userIds,
+      shared_with_roles: roleIds,
     })
   }
 

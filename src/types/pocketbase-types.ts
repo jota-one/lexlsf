@@ -244,6 +244,7 @@ export type QuizRecord<Tsettings = unknown> = {
 	id: string
 	item_type: QuizItemTypeOptions
 	settings?: null | Tsettings
+	shared_with_roles?: RecordIdString[]
 	shared_with_users?: RecordIdString[]
 	title: string
 	updated: IsoAutoDateString
@@ -271,6 +272,7 @@ export type QuizCountsRecord = {
 	items_count?: number
 	items_count_person?: number
 	items_count_sign?: number
+	shared_with_roles?: RecordIdString[]
 	shared_with_users?: RecordIdString[]
 }
 

@@ -14,6 +14,7 @@ export type Quiz = {
   item_type: ItemType
   settings?: QuizSettings
   shared_with_users?: string[]
+  shared_with_roles?: string[]
   created: string
   updated: string
 }

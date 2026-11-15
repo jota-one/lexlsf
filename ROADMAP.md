@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-15] Quiz — un quiz se partage avec un rôle entier (tous les étudiants, tous les admins), en plus du partage personne par personne. Un utilisateur qui reçoit le rôle plus tard voit le quiz sans qu'on y retouche.
 - [2026-11-15] Admin — dans le formulaire d'un signe, la case « Personne / organisme » crée la fiche culture correspondante, liée au signe, à compléter ensuite dans les personnes. Un signe qui a déjà sa fiche l'affiche à la place.
 - [2026-11-15] Admin — dans les éléments d'un quiz, on filtre par une ou plusieurs catégories et par rôle (par exemple les signes du rôle étudiant) ; le filtre « Niveau de difficulté » disparaît.
 - [2026-11-13] Admin — dans les éléments d'un quiz, la recherche passe en haut ; on coche les résultats (ou « Tout cocher ») et un seul bouton les ajoute d'un coup. Les résultats défilent dans un cadre, limités aux 100 premiers, et le filtre « Ajouté depuis » attend une date complète. Le titre « Éléments actuels » affiche le nombre de signes (ou de personnes) du quiz.

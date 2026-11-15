@@ -1,9 +1,10 @@
 ---
 id: TASK-5
 title: 'Quiz : partager par rôle'
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-11-13T07:49:00Z'
+updated_date: '2026-11-15T09:30:00Z'
 labels:
   - quiz
   - admin
@@ -27,13 +28,15 @@ Demande de Geetha (13.11.2026) : partager un quiz avec un rôle (tous les étudi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 La fenêtre de partage propose les rôles étudiant et admin
-- [ ] #2 Un utilisateur du rôle choisi voit le quiz et peut le lancer, y compris s'il a été créé après le partage
-- [ ] #3 Un utilisateur hors du rôle ne le voit pas
+- [x] #1 La fenêtre de partage propose les rôles étudiant et admin
+- [x] #2 Un utilisateur du rôle choisi voit le quiz et peut le lancer, y compris s'il a été créé après le partage
+- [x] #3 Un utilisateur hors du rôle ne le voit pas
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 Context: sharing goes through quiz.shared_with_users; the access rules of quiz, quiz_item and the quiz_counts view only look at that field.
+
+Decision: role sharing is added on top of per-user sharing, so existing shares are untouched. New field quiz.shared_with_roles (migration quiz_sharing_by_role); the rules of quiz, quiz_item and the quiz_counts view also let in a user holding one of those roles (shared_with_roles.id ?= @request.auth.roles.id). Checked locally: a student account created after sharing sees the quiz, opens it and starts a session; a visitor account does not see it.
 <!-- SECTION:NOTES:END -->
