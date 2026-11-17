@@ -6,6 +6,7 @@ Format d'une entrée : `- [AAAA-MM-JJ] Titre — note courte`.
 
 ## Historique (fait)
 
+- [2026-11-17] Sécurité — les signes, fiches culture, expressions et champs lexicaux ne sont plus lisibles sans être connecté ; ce que voient les étudiants et les admins ne change pas.
 - [2026-11-15] Découpeur de signes 1.1 — les clips sortent directement au format du site (recadrés, 720 px, compressés) : une centaine de Ko au lieu de plusieurs Mo, prêts à l'envoi sans dépasser la limite.
 - [2026-11-15] Outils — le découpeur de signes se publie dans l'admin, version par version avec ce qui a changé ; les personnes choisies le téléchargent depuis le menu de leur compte, et le lien ne fonctionne pour personne d'autre.
 - [2026-11-15] Sécurité — les quiz et leurs éléments ne sont plus lisibles sans être connecté, ni par un compte sans rôle.
