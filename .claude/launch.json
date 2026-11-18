@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pocketbase",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["db"],
+      "port": 8090
+    },
+    {
+      "name": "lexlsf",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["astro", "dev", "--port", "4322"],
+      "port": 4322
+    },
+    {
+      "name": "backlog",
+      "runtimeExecutable": "backlog",
+      "runtimeArgs": ["browser", "--port", "6421", "--no-open"],
+      "port": 6421
+    }
+  ]
+}
