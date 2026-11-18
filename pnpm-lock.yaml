@@ -61,8 +61,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       pocketbase:
-        specifier: ^0.28.2
-        version: 0.28.2
+        specifier: ^0.29.0
+        version: 0.29.0
       primevue:
         specifier: ^4.5.5
         version: 4.5.5(vue@3.5.45(typescript@6.0.3))
@@ -2751,8 +2751,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  pocketbase@0.28.2:
-    resolution: {integrity: sha512-5lS4g7iDZi90LxLai8kyUK4r5u1GkEAoZ3yuzTEFX97FyDQAoEmXWbTqf+pYA1hz5e/icBQu1MCUjM/9V8mitg==}
+  pocketbase@0.29.0:
+    resolution: {integrity: sha512-GIEcwI9zTeK++TMV97nIjMbcLvzTzvbQQF32af5WikWQpELHQosI5Rb6+y1ikVL2ezl0X+Itd9ds1USpYvGYug==}
 
   postcss-selector-parser@6.1.6:
     resolution: {integrity: sha512-BK87/Qgti3DIcgS2PaCVoteFIkjIFvCJBizZDIVSjdlFNg4Jv+SRqbN2JONb/qQUH4ZFqfXYF+izg15W2HVRvA==}
@@ -6078,7 +6078,7 @@ snapshots:
       commander: 9.5.0
       dotenv-flow: 4.1.0
 
-  pocketbase@0.28.2: {}
+  pocketbase@0.29.0: {}
 
   postcss-selector-parser@6.1.6:
     dependencies:
