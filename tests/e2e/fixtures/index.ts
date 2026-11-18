@@ -1,6 +1,11 @@
 import { test as base, expect, type Page } from '@playwright/test'
+import { execFileSync } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
+import { resolve } from 'node:path'
 
 export const PB_URL = process.env.PB_URL || 'http://127.0.0.1:8090'
+// Folder of the local PocketBase binary whose database PB_URL serves (`pnpm db`)
+const PB_DIR = resolve(process.env.PB_DIR || 'pb')
 const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL || 'e2e-admin@test.local'
 const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD || 'e2e-password-123'
 
@@ -19,8 +24,12 @@ export async function pbFetch(path: string, init: RequestInit = {}, token?: stri
   return fetch(`${PB_URL}${path}`, { ...init, headers })
 }
 
-async function authWithPassword(email: string, password: string): Promise<Auth> {
-  const res = await pbFetch('/api/collections/users/auth-with-password', {
+async function authWithPassword(
+  email: string,
+  password: string,
+  collection = 'users',
+): Promise<Auth> {
+  const res = await pbFetch(`/api/collections/${collection}/auth-with-password`, {
     method: 'POST',
     body: JSON.stringify({ identity: email, password }),
   })
@@ -30,11 +39,11 @@ async function authWithPassword(email: string, password: string): Promise<Auth> 
   return res.json() as Promise<Auth>
 }
 
-async function getAdminRoleId(): Promise<string> {
-  // The roles collection is publicly listable, so the admin role id can be
-  // fetched before any account exists.
+async function getAdminRoleId(token: string): Promise<string> {
   const res = await pbFetch(
     '/api/collections/roles/records?filter=' + encodeURIComponent('slug="admin"'),
+    {},
+    token,
   )
   const data = (await res.json()) as { items?: { id: string }[] }
   const id = data.items?.[0]?.id
@@ -44,12 +53,37 @@ async function getAdminRoleId(): Promise<string> {
   return id
 }
 
+function pocketbaseCli(...args: string[]) {
+  execFileSync('./pocketbase', args, { cwd: PB_DIR, stdio: 'pipe' })
+}
+
+/**
+ * Runs `task` with a throwaway superuser, deleted afterwards.
+ *
+ * Only admins may create accounts, so the test account cannot be provisioned
+ * through the public API. The superuser is created with the local PocketBase
+ * CLI, which writes straight to the database the dev server uses.
+ */
+async function withTemporarySuperuser<T>(task: (token: string) => Promise<T>): Promise<T> {
+  const email = 'e2e-setup@test.local'
+  const password = randomBytes(18).toString('base64url')
+  try {
+    pocketbaseCli('superuser', 'upsert', email, password)
+  } catch (e) {
+    throw new Error(
+      `Could not create a temporary superuser with ${PB_DIR}/pocketbase (build it with \`pnpm build:db\`, or set PB_DIR): ${(e as Error).message}`,
+    )
+  }
+  try {
+    const { token } = await authWithPassword(email, password, '_superusers')
+    return await task(token)
+  } finally {
+    pocketbaseCli('superuser', 'delete', email)
+  }
+}
+
 /**
  * Logs the admin test account in, creating it first when it does not exist.
- *
- * The `users` collection has an open create rule and an assignable `roles`
- * relation, so the account (admin role included) can be provisioned entirely
- * through the public API — no seeded credentials or email verification needed.
  */
 export async function ensureAdminAuth(): Promise<Auth> {
   try {
@@ -58,21 +92,28 @@ export async function ensureAdminAuth(): Promise<Auth> {
     // account missing — create it below
   }
 
-  const roleId = await getAdminRoleId()
-  const res = await pbFetch('/api/collections/users/records', {
-    method: 'POST',
-    body: JSON.stringify({
-      email: ADMIN_EMAIL,
-      emailVisibility: true,
-      password: ADMIN_PASSWORD,
-      passwordConfirm: ADMIN_PASSWORD,
-      name: 'E2E Admin',
-      roles: [roleId],
-    }),
+  await withTemporarySuperuser(async token => {
+    const roleId = await getAdminRoleId(token)
+    const res = await pbFetch(
+      '/api/collections/users/records',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: ADMIN_EMAIL,
+          emailVisibility: true,
+          verified: true,
+          password: ADMIN_PASSWORD,
+          passwordConfirm: ADMIN_PASSWORD,
+          name: 'E2E Admin',
+          roles: [roleId],
+        }),
+      },
+      token,
+    )
+    if (!res.ok) {
+      throw new Error(`Could not create admin test account: ${res.status} ${await res.text()}`)
+    }
   })
-  if (!res.ok) {
-    throw new Error(`Could not create admin test account: ${res.status} ${await res.text()}`)
-  }
   return authWithPassword(ADMIN_EMAIL, ADMIN_PASSWORD)
 }
 

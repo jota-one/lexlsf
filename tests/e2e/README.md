@@ -25,11 +25,13 @@ checks PocketBase is reachable before starting.
 
 ## How auth works
 
-The `users` collection has an open create rule and an assignable `roles`
-relation, so the admin test account is **provisioned on the fly** through the
-public API on first run (`ensureAdminAuth`) — no seeded credentials needed. Its
-session is injected into `localStorage` before each page loads, matching the
-app's own PocketBase authStore.
+Only admins may create accounts, so on first run `ensureAdminAuth` provisions
+the admin test account with a throwaway superuser: it creates one with the local
+PocketBase CLI (`pb/pocketbase superuser upsert`), creates the account through
+the API with its token, then deletes the superuser. This needs the binary built
+(`pnpm build:db`) next to the database the dev server uses; set `PB_DIR` if it
+lives elsewhere. The account's session is then injected into `localStorage`
+before each page loads, matching the app's own PocketBase authStore.
 
 ## Data & cleanup
 
